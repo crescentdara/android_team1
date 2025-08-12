@@ -1,4 +1,4 @@
 package bitc.full502.spring.controller;
 
-public class BoardController {
+public class PostController {
 }
