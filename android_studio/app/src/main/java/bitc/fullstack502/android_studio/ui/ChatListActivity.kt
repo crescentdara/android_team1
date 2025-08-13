@@ -21,7 +21,9 @@ class ChatListActivity : AppCompatActivity() {
     companion object {
         const val EXTRA_ROOM_ID = "roomId"
         const val EXTRA_PARTNER_ID = "partnerId"
+
     }
+
 
     private val myUserId = "android1" // 임시
 

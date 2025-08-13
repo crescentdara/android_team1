@@ -32,9 +32,8 @@ public class ChatMessageEntity {
     @Column(nullable = false)
     private Instant sentAt;
 
-    @Column(nullable = false, length = 100)
+    @Column(length = 100)
     private String receiverId;
-
 
     @PrePersist
     public void prePersist() {

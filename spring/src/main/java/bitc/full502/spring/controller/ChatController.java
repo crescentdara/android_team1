@@ -19,18 +19,24 @@ public class ChatController {
 
     @MessageMapping("/chat.send")
     public void handleMessage(@Payload ChatMessageDTO message) {
-        // 1) DB 저장(서버에서 sentAt/type 보정)
+        // 1) 저장(서버에서 sentAt/type 보정)
         ChatMessageDTO saved = chatMessageService.save(message);
-        log.info("saved chat: room={}, from={}, content={}",
-                saved.getRoomId(), saved.getSenderId(), saved.getContent());
+        log.info("saved chat: room={}, from={}, to={}, content={}",
+                saved.getRoomId(), saved.getSenderId(), saved.getReceiverId(), saved.getContent());
 
-        // 2) 구독자에게 방송(방 전체) — 기존 유지
-        String destination = "/topic/room." + saved.getRoomId();
-        messagingTemplate.convertAndSend(destination, saved);
+        // 2) 방 전체 브로드캐스트(옵션이지만 유지 권장)
+        String roomDest = "/topic/room." + saved.getRoomId();
+        messagingTemplate.convertAndSend(roomDest, saved);
 
-        // ✅ 추가: 받는 사람(inbox) + 보낸 사람(내 대화창 동기화용)
-        messagingTemplate.convertAndSendToUser(saved.getReceiverId(), "/queue/inbox", saved);
-        messagingTemplate.convertAndSendToUser(saved.getSenderId(),  "/queue/inbox", saved);
-
+        // 3) 인박스(개인함) 전송 — 보낸 사람 에코는 항상
+        if (hasText(saved.getSenderId())) {
+            messagingTemplate.convertAndSendToUser(saved.getSenderId(), "/queue/inbox", saved);
+        }
+        //    받는 사람이 있으면 그리고 본인이 아니면 전송
+        if (hasText(saved.getReceiverId()) && !saved.getSenderId().equals(saved.getReceiverId())) {
+            messagingTemplate.convertAndSendToUser(saved.getReceiverId(), "/queue/inbox", saved);
+        }
     }
+    private boolean hasText(String s) { return s != null && !s.isBlank(); }
+
 }

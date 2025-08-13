@@ -14,8 +14,8 @@ public class ChatMessageDTO {
     private String senderId;
     private String receiverId;
     private String content;
-    private MessageType type;
-    private Instant sentAt;
 
+    private Instant sentAt;
+    private MessageType type;
     public enum MessageType { TEXT, JOIN, LEAVE }
 }

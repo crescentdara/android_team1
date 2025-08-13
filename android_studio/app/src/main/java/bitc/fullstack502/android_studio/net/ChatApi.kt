@@ -2,6 +2,7 @@ package bitc.fullstack502.android_studio.net
 
 import bitc.fullstack502.android_studio.model.ChatMessage
 import bitc.fullstack502.android_studio.model.ConversationSummary
+import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.PUT
 import retrofit2.http.Query
@@ -20,6 +21,5 @@ interface ChatApi {
     suspend fun markRead(
         @Query("roomId") roomId: String,
         @Query("userId") userId: String
-    )
-
+    ): Response<Unit>   // ✅ 바디 없는 응답 허용
 }

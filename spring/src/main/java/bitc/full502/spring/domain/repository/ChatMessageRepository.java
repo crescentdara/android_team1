@@ -42,4 +42,6 @@ public interface ChatMessageRepository extends JpaRepository<ChatMessageEntity, 
         """, nativeQuery = true
     )
     List<Object[]> findLatestConversationsByUser(@Param("userId") String userId);
+
+    Page<ChatMessageEntity> findByRoomId(String roomId, Pageable pageable);
 }

@@ -7,5 +7,6 @@ import java.util.Optional;
 
 public interface ChatLastReadRepository extends JpaRepository<ChatLastReadEntity, Long> {
     Optional<ChatLastReadEntity> findByRoomIdAndUserId(String roomId, String userId);
+
 }
 
