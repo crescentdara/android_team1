@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>채팅 테스트</title>
+  <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+
+</head>
+<body>
+<h2>채팅 테스트 페이지</h2>
+<div>
+  <input id="roomId" placeholder="방 ID" value="testroom"/>
+  <input id="senderId" placeholder="보내는 사람" value="user1"/>
+  <input id="message" placeholder="메시지"/>
+  <button onclick="sendMessage()">전송</button>
+</div>
+<div id="chat-box"></div>
+
+<script>
+  let stompClient = null;
+
+  function connect() {
+    const socket = new SockJS('/ws'); // WebSocketConfig에서 /ws로 열었음
+    stompClient = Stomp.over(socket);
+    stompClient.connect({}, function () {
+      console.log('Connected');
+      const roomId = document.getElementById('roomId').value;
+      stompClient.subscribe(`/topic/room.${roomId}`, function (msg) {
+        const message = JSON.parse(msg.body);
+        document.getElementById('chat-box').innerHTML += `<p><b>${message.senderId}:</b> ${message.content}</p>`;
+      });
+    });
+  }
+
+  function sendMessage() {
+    const roomId = document.getElementById('roomId').value;
+    const senderId = document.getElementById('senderId').value;
+    const content = document.getElementById('message').value;
+    stompClient.send("/app/chat.send", {}, JSON.stringify({
+      roomId: roomId,
+      senderId: senderId,
+      content: content
+    }));
+  }
+
+  connect();
+</script>
+</body>
+</html>

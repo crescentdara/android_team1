@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:padding="14dp" android:layout_width="match_parent" android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/tvPartner"
+        android:textStyle="bold" android:textSize="16sp"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/tvTime"
+        android:layout_alignParentEnd="true"
+        android:textSize="12sp"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/tvLast"
+        android:layout_below="@id/tvPartner"
+        android:maxLines="1" android:ellipsize="end"
+        android:layout_width="match_parent" android:layout_height="wrap_content"/>
+
+    <TextView
+        android:id="@+id/badge"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/tvTime"
+        android:padding="4dp"
+        android:background="@android:color/darker_gray"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"
+        android:visibility="gone"
+        android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+</RelativeLayout>
