@@ -14,7 +14,10 @@ interface ChatApi {
     @GET("/api/chat/history")
     suspend fun history(
         @Query("roomId") roomId: String,
-        @Query("size") size: Int = 50
+        @Query("size") size: Int,
+        @Query("beforeId") beforeId: Long?,
+        @Query("me") me: String,
+        @Query("other") other: String
     ): List<ChatMessage>
 
     @PUT("/api/chat/read")

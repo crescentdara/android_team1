@@ -14,21 +14,26 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Android_studio">
-        <!-- ✅ 앱 실행 시 뜨는 화면: 채팅 목록 -->
+
+        <!-- ① 최초 실행: IdInputActivity가 런처 -->
         <activity
-            android:name=".ui.ChatListActivity"
+            android:name=".IdInputActivity"
             android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <!-- ✅ 일반 화면: 채팅방 -->
+        <!-- ② 채팅 목록 화면 -->
         <activity
-            android:name=".MainActivity"
-            android:exported="false"/>
+            android:name=".ui.ChatListActivity"
+            android:exported="false" />
 
+        <!-- ③ 채팅방 화면 -->
+        <activity
+            android:name=".ChatRoomActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

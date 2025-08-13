@@ -2,4 +2,5 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="unreadBadge">#FF3B30</color> <!-- 원하면 다른 색 -->
 </resources>

@@ -30,20 +30,23 @@ public class ChatConversationServiceImpl implements ChatConversationService {
             String content   = (String) r[2];
             Instant lastAt   = ((Timestamp) r[3]).toInstant();
 
-            Instant lastReadAt = lastReadRepo.findByRoomIdAndUserId(roomId, userId)
-                    .map(ChatLastReadEntity::getLastReadAt)
-                    .orElse(Instant.EPOCH);
+            // ✅ lastReadId 기준
+            long lastReadId = lastReadRepo.findByRoomIdAndUserId(roomId, userId)
+                    .map(ChatLastReadEntity::getLastReadId)
+                    .orElse(0L);
 
-            long unread = messageRepo.countByRoomIdAndSentAtAfterAndSenderIdNot(roomId, lastReadAt, userId);
+            long unread = messageRepo.countByRoomIdAndIdGreaterThanAndSenderIdNot(
+                    roomId, lastReadId, userId);
 
             list.add(ConversationSummaryDTO.builder()
                     .partnerId(partnerId)
                     .roomId(roomId)
                     .lastContent(content)
                     .lastAt(lastAt)
-                    .unreadCount(unread)
+                    .unreadCount(unread) // ✅ 채팅 리스트 배지용
                     .build());
         }
         return list;
     }
+
 }
