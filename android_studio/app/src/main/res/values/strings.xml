@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">android_studio</string>
+    <string-array name="search_fields">
+        <item>제목</item>
+        <item>내용</item>
+        <item>작성자</item>
+    </string-array>
 </resources>
