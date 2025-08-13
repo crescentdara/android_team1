@@ -16,9 +16,9 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        maven(url = "https://jitpack.io")  // 라이브러리 저장소(JitPack) 등록
     }
 }
 
-rootProject.name = "android_studio"
+rootProject.name = "app_20250805"
 include(":app")
- 

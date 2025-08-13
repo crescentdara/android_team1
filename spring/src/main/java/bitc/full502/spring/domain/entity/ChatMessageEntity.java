@@ -5,17 +5,13 @@ import lombok.*;
 
 import java.time.Instant;
 
-@Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
-@Table(
-        name = "chat_message",
-        indexes = {
-                @Index(name="idx_chat_msg_room", columnList = "room_id"),
-                @Index(name="idx_chat_msg_sent_at", columnList = "sent_at"),
-                @Index(name="idx_chat_msg_sender", columnList = "sender_id"),
-                @Index(name="idx_chat_msg_receiver", columnList = "receiver_id")
-        }
-)
+@Table(name = "chat_message")
 public class ChatMessageEntity {
 
     public enum MessageType { TEXT, JOIN, LEAVE }
@@ -23,16 +19,11 @@ public class ChatMessageEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name="room_id", nullable = false, length = 100)
+    @Column(nullable = false, length = 100)
     private String roomId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sender_id", nullable = false)  // users.id FK
-    private Users sender;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "receiver_id", nullable = false) // users.id FK
-    private Users receiver;
+    @Column(nullable = false, length = 100)
+    private String senderId;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
@@ -41,8 +32,11 @@ public class ChatMessageEntity {
     @Column(nullable = false, length = 2000)
     private String content;
 
-    @Column(name="sent_at", nullable = false)
+    @Column(nullable = false)
     private Instant sentAt;
+
+    @Column(length = 100)
+    private String receiverId;
 
     @PrePersist
     public void prePersist() {
