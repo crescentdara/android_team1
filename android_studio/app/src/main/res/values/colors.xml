@@ -5,6 +5,12 @@
     <color name="jeju_bg">#FAF9F3</color>        <!-- 오프화이트 배경 -->
     <color name="jeju_tint">#E6F0EF</color>      <!-- 연한 그린 톤(상대 버블/보더) -->
 
+    <color name="colorPrimary_je">#206064</color>
+    <color name="colorBg_je">#FAF9F3</color>
+    <color name="colorTextDark">#222222</color>
+    <color name="colorTextLight">#FFFFFF</color>
+    <color name="colorGray">#9AA0A6</color>
+
     <!-- Text -->
     <color name="jeju_text_primary">#111111</color>
     <color name="jeju_text_muted">#666666</color>

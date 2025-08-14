@@ -1,3 +1,14 @@
 <resources>
-    <string name="app_name">android_studio</string>
+    <string name="app_name">JE:U</string>
+    <string name="nav_open">메뉴 열기</string>
+    <string name="nav_close">메뉴 닫기</string>
+
+    <string name="greeting_fmt">%1$s님, 안녕하세요!</string>
+    <string name="sample_email">jay@example.com</string>
+    <string name="mypage">마이페이지</string>
+    <string name="logout">로그아웃</string>
+
+    <string name="prev_image">이전 이미지</string>
+    <string name="next_image">다음 이미지</string>
+
 </resources>

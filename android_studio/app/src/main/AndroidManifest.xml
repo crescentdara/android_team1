@@ -15,15 +15,21 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Android_studio">
 
-        <!-- ① 최초 실행: IdInputActivity가 런처 -->
+
+        <!-- ✅ 홈 화면: MainActivity 를 런처로 지정 -->
         <activity
-            android:name=".IdInputActivity"
+            android:name=".ui.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- IdInputActivity가 런처 -->
+        <activity
+            android:name=".IdInputActivity"
+            android:exported="false"/>
 
         <!-- ② 채팅 목록 화면 -->
         <activity
@@ -34,6 +40,7 @@
         <activity
             android:name=".ChatRoomActivity"
             android:exported="false" />
+
     </application>
 
 </manifest>
