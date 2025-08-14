@@ -2,6 +2,7 @@ package bitc.fullstack502.android_studio.ui.post
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.inputmethod.EditorInfo
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import bitc.fullstack502.android_studio.databinding.ActivityPostListBinding
@@ -25,18 +26,25 @@ class PostListActivity : AppCompatActivity() {
         bind.recycler.layoutManager = LinearLayoutManager(this)
         bind.recycler.adapter = adapter
 
-        bind.fab.setOnClickListener {
-            startActivity(Intent(this, PostWriteActivity::class.java))
+        // 검색 버튼 제거 → 엔터로 검색
+        bind.etQuery.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                doSearch()
+                true
+            } else {
+                false
+            }
         }
 
-        bind.btnSearch.setOnClickListener {
-            doSearch()
+        bind.fab.setOnClickListener {
+            startActivity(Intent(this, PostWriteActivity::class.java))
         }
 
         bind.swipe.setOnRefreshListener { reload() }
         bind.swipe.isRefreshing = true
         reload()
     }
+
 
     override fun onResume() {
         super.onResume()

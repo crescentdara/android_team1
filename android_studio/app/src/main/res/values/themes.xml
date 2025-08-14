@@ -20,4 +20,7 @@
 
     <!-- Actual app theme -->
     <style name="Theme.Android_studio" parent="Base.Theme.Android_studio"/>
+
+
+
 </resources>
