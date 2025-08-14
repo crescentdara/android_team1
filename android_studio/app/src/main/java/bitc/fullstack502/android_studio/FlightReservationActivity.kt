@@ -3,6 +3,7 @@ package bitc.fullstack502.android_studio
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.DatePickerDialog
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Button
@@ -22,6 +23,7 @@ import androidx.core.util.Pair
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener
+import kotlin.jvm.java
 
 class FlightReservationActivity : AppCompatActivity() {
 
@@ -55,6 +57,7 @@ class FlightReservationActivity : AppCompatActivity() {
         binding.btnPassenger.setOnClickListener {
             showPassengerPickerDialog()
         }
+        
     }
 
 //    /** 날짜 선택 모달창 **/
