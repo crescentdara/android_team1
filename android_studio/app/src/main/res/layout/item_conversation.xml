@@ -1,32 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:padding="14dp" android:layout_width="match_parent" android:layout_height="wrap_content">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="14dp">
 
+    <!-- 대화 상대명 -->
     <TextView
         android:id="@+id/tvPartner"
-        android:textStyle="bold" android:textSize="16sp"
-        android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textSize="16sp"
+        android:fontFamily="@font/scd_3"
+        android:textColor="@color/jeju_text_primary" />
 
+    <!-- 시간 -->
     <TextView
         android:id="@+id/tvTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
+        android:layout_alignTop="@id/tvPartner"
         android:textSize="12sp"
-        android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        android:textColor="@color/jeju_text_muted" />
 
+    <!-- 마지막 메시지(한 줄, 시간 영역을 피해서) -->
     <TextView
         android:id="@+id/tvLast"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_below="@id/tvPartner"
-        android:maxLines="1" android:ellipsize="end"
-        android:layout_width="match_parent" android:layout_height="wrap_content"/>
+        android:layout_toStartOf="@id/tvTime"
+        android:layout_marginTop="4dp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textSize="14sp"
+        android:fontFamily="@font/scd_3"
+        android:textColor="@color/jeju_text_muted" />
 
+    <!-- 뱃지 (미확인 개수) -->
     <TextView
         android:id="@+id/badge"
-        android:layout_alignParentEnd="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_below="@id/tvTime"
-        android:padding="4dp"
-        android:background="@android:color/darker_gray"
-        android:textColor="@android:color/white"
+        android:layout_alignEnd="@id/tvTime"
+        android:layout_marginTop="6dp"
+        android:minWidth="22dp"
+        android:minHeight="22dp"
+        android:paddingLeft="6dp"
+        android:paddingRight="6dp"
+        android:gravity="center"
+        android:textColor="@color/white"
         android:textStyle="bold"
+        android:textSize="12sp"
         android:visibility="gone"
-        android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        android:background="@drawable/bg_unread_badge" />
 </RelativeLayout>

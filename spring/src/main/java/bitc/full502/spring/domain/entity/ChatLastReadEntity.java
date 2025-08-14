@@ -23,6 +23,10 @@ public class ChatLastReadEntity {
 
     @PrePersist
     public void prePersist() {
-        if (lastReadAt == null) lastReadAt = Instant.EPOCH; // 기본값
+        if (lastReadAt == null) lastReadAt = Instant.EPOCH.plusSeconds(1); // 1970-01-01 00:00:01
     }
+
+    @Column(name="last_read_id", nullable=false)
+    private Long lastReadId = 0L;
+
 }

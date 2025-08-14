@@ -1,18 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="wrap_content"
-    android:gravity="end" android:padding="6dp">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="6dp"
+    android:gravity="end">
+
+    <!-- 오른쪽 정렬 가로줄: 배지 · 시간 · 버블  (모두 아래 정렬) -->
     <LinearLayout
-        android:background="#D1E8FF" android:padding="10dp"
-        android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="bottom|end">
+
+        <!-- 읽음 배지 (있으면 시간 왼쪽에 보임) -->
         <TextView
-            android:id="@+id/tvContent"
-            android:textSize="15sp"
-            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+            android:id="@+id/tvUnread"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_marginEnd="6dp"
+            android:gravity="center"
+            android:text="1"
+            android:textSize="10sp"
+            android:textColor="@color/white"
+            android:visibility="gone"
+            android:background="@drawable/bg_unread_badge" />
+
+        <!-- 시간: 버블 '바깥' 왼쪽 하단 -->
         <TextView
             android:id="@+id/tvTime"
-            android:textSize="11sp" android:textColor="#666"
-            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="6dp"
+            android:textSize="11sp"
+            android:textColor="@color/jeju_text_muted" />
+
+        <!-- 버블 -->
+        <LinearLayout
+            android:id="@+id/bubble"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_bubble_me">
+
+            <TextView
+                android:id="@+id/tvContent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxWidth="260dp"
+                android:padding="10dp"
+                android:textSize="15sp"
+                android:textColor="@color/white" />
+        </LinearLayout>
     </LinearLayout>
 </LinearLayout>
