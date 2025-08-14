@@ -14,10 +14,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Android_studio"
         android:usesCleartextTraffic="true">
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/his/FlightReservationImplement
         <activity
             android:name=".FlightReservationActivity"
             android:exported="false" />

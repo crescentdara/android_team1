@@ -27,17 +27,9 @@ public class BookingRequestDto {
 
     private Integer child = 0;
 
-    @Column(nullable = false)
-    private String dep;
 
-    @Column(nullable = false)
-    private String arr;
+    private LocalDate tripDate;
 
-    @Column(nullable = false)
-    private LocalDate departureDate;
-
-    // 편도 선택 시 returnDate 없을 수 있으니 null 가능
-    private LocalDate returnDate;
 
     @Column(nullable = false)
     private Long totalPrice;
