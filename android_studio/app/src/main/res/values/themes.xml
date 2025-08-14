@@ -6,4 +6,18 @@
     </style>
 
     <style name="Theme.Android_studio" parent="Base.Theme.Android_studio" />
+
+    <!-- DatePicker 테마 -->
+    <style name="CustomDatePicker" parent="ThemeOverlay.MaterialComponents.MaterialCalendar">
+        <!-- 상단 툴바/버튼 색상 -->
+        <item name="colorPrimary">@color/jeju_primary</item>
+        <item name="colorOnPrimary">@android:color/white</item>
+
+        <!-- 선택된 날짜 배경색 -->
+        <item name="colorSecondary">@color/jeju_primary_dark</item>
+        <item name="colorOnSecondary">@android:color/white</item>
+    </style>
+
+
+
 </resources>
