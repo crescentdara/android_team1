@@ -2,14 +2,8 @@ package bitc.fullstack502.android_studio
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
-<<<<<<< HEAD
-import android.app.DatePickerDialog
-import android.content.Intent
-=======
->>>>>>> jdb/AndroidFlightUI
 import android.os.Bundle
 import android.widget.Button
-import android.widget.DatePicker
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -17,13 +11,10 @@ import androidx.core.view.WindowInsetsCompat
 import bitc.fullstack502.android_studio.databinding.ActivityFlightReservationBinding
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.datepicker.MaterialDatePicker
-<<<<<<< HEAD
-import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener
-import kotlin.jvm.java
-=======
 import java.text.SimpleDateFormat
-import java.util.*
->>>>>>> jdb/AndroidFlightUI
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 
 class FlightReservationActivity : AppCompatActivity() {
 

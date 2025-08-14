@@ -90,22 +90,17 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-<<<<<<< HEAD
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:layout_marginTop="16dp"
         android:layout_marginHorizontal="8dp"
-        android:background="@drawable/layout_border"
-        android:padding="12dp">
-=======
-        android:orientation="horizontal"
+        android:padding="12dp"
         android:layout_marginBottom="20dp">
->>>>>>> jdb/AndroidFlightUI
 
         <Button
             android:id="@+id/btn_date"
             android:layout_width="0dp"
             android:layout_height="48dp"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:text="가는 날 ~ 오는 날"
             android:textColor="@android:color/white"
             android:backgroundTint="@color/jeju_primary" />
@@ -126,6 +121,7 @@
         android:id="@+id/btn_search_flight"
         android:layout_width="match_parent"
         android:layout_height="48dp"
+        android:layout_marginHorizontal = "20dp"
         android:text="항공편 검색"
         android:textColor="@android:color/white"
         android:backgroundTint="@color/jeju_primary" />

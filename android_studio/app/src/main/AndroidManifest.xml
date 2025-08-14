@@ -14,10 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Android_studio"
         android:usesCleartextTraffic="true">
-<<<<<<< HEAD
 
-=======
->>>>>>> jdb/AndroidFlightUI
         <activity
             android:name=".FlightReservationActivity"
             android:exported="false" />
