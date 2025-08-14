@@ -26,8 +26,8 @@ public class DataLoader implements CommandLineRunner {
 
     @Override
     public void run(String... args) {
-        loadFlights("flight_data.csv");
-        loadLodgings("lodging_data.csv");
+//        loadFlights("flight_data.csv");
+//        loadLodgings("lodging_data.csv");
         System.out.println("CSV 데이터 로드 완료 ✅");
     }
 
