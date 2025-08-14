@@ -13,7 +13,11 @@ import com.bumptech.glide.Glide
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import bitc.fullstack502.android_studio.ChatRoomActivity
+import bitc.fullstack502.android_studio.IdInputActivity
+
 
 
 class PostDetailActivity: AppCompatActivity() {
@@ -27,6 +31,7 @@ class PostDetailActivity: AppCompatActivity() {
 
     private lateinit var cAdapter: CommentAdapter
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         b = ActivityPostDetailBinding.inflate(layoutInflater)
@@ -34,7 +39,7 @@ class PostDetailActivity: AppCompatActivity() {
 
         id = intent.getLongExtra("id", 0L)
 
-        cAdapter = CommentAdapter { comm -> showCommentUserMenu(comm) } // ← 추가
+        cAdapter = CommentAdapter { comm -> openChat(comm.author) }
         b.rvComments.layoutManager = LinearLayoutManager(this)
         b.rvComments.adapter = cAdapter
 
@@ -64,7 +69,11 @@ class PostDetailActivity: AppCompatActivity() {
                 b.btnEdit.visibility = if (mine) View.VISIBLE else View.GONE
                 b.btnDelete.visibility = if (mine) View.VISIBLE else View.GONE
                 b.tvLikeCount.text = "♥ ${p.likeCount}"
+
+                // ▼ 여기 추가: 글 작성자 클릭 → 바로 채팅방
+                b.tvMeta.setOnClickListener { openChat(p.author) }
             }
+
             override fun onFailure(call: Call<PostDto>, t: Throwable) {}
         })
     }
@@ -194,7 +203,23 @@ class PostDetailActivity: AppCompatActivity() {
             }.show()
     }
 
+    private fun makeRoomId(a: String, b: String): String {
+        val (x, y) = listOf(a, b).sorted()
+        return "p2p.$x-$y"
+    }
 
+    private fun openChat(partner: String) {
+        if (partner.isBlank() || partner == TEST_USER) {
+            Toast.makeText(this, "상대 아이디가 올바르지 않습니다.", Toast.LENGTH_SHORT).show()
+            return
+        }
+        val room = makeRoomId(TEST_USER, partner)
+        val it = Intent(this, ChatRoomActivity::class.java)
+            .putExtra(IdInputActivity.EXTRA_MY_ID, TEST_USER)
+            .putExtra(IdInputActivity.EXTRA_PARTNER_ID, partner)
+            .putExtra(IdInputActivity.EXTRA_ROOM_ID, room)
+        startActivity(it)
+    }
 
 
 }
