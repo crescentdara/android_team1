@@ -1,18 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="wrap_content"
-    android:gravity="start" android:padding="6dp">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="6dp"
+    android:gravity="start">
+
+    <!-- 가로줄: 버블 · 시간  (하단 정렬) -->
     <LinearLayout
-        android:background="#EEEEEE" android:padding="10dp"
-        android:layout_width="wrap_content" android:layout_height="wrap_content"
-        android:orientation="vertical">
-        <TextView
-            android:id="@+id/tvContent"
-            android:textSize="15sp"
-            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="bottom|start">
+
+        <!-- 버블 -->
+        <LinearLayout
+            android:id="@+id/bubble"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_bubble_other">
+
+            <TextView
+                android:id="@+id/tvContent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxWidth="260dp"
+                android:padding="10dp"
+                android:textSize="15sp"
+                android:textColor="@color/jeju_text_primary" />
+        </LinearLayout>
+
+        <!-- 시간: 버블 '바깥' 오른쪽 하단 -->
         <TextView
             android:id="@+id/tvTime"
-            android:textSize="11sp" android:textColor="#666"
-            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:textSize="11sp"
+            android:textColor="@color/jeju_text_muted" />
     </LinearLayout>
 </LinearLayout>

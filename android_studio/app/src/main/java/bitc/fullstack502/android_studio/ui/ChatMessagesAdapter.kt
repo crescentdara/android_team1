@@ -8,6 +8,9 @@ import androidx.recyclerview.widget.RecyclerView
 import bitc.fullstack502.android_studio.R
 import bitc.fullstack502.android_studio.model.ChatMessage
 import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 import kotlin.math.max
 
 class ChatMessagesAdapter(private val myUserId: String)
@@ -15,6 +18,9 @@ class ChatMessagesAdapter(private val myUserId: String)
 
     /** 항상 “메시지 id 오름차순(과거→현재)”을 유지한다 (임시는 맨 아래 취급) */
     private val items = mutableListOf<ChatItem>()
+
+    // 파일 상단에 포맷터 하나 준비
+    private val timeFmt = DateTimeFormatter.ofPattern("a hh:mm", Locale.KOREA)
 
     companion object {
         private const val TYPE_HEADER = 0
@@ -45,7 +51,6 @@ class ChatMessagesAdapter(private val myUserId: String)
     /** 과거 N개 프리펜드 (olderAsc는 id ASC라고 가정) */
     fun prependMany(olderAsc: List<ChatMessage>) {
         if (olderAsc.isEmpty()) return
-        // 안전하게 동일 정렬 규칙 재적용
         val sorted = olderAsc.sortedWith(compareBy<ChatMessage> { sortKey(it) }.thenBy { it.sentAt })
         val before = withHeaders(sorted).toMutableList()
 
@@ -58,7 +63,6 @@ class ChatMessagesAdapter(private val myUserId: String)
                 before.removeAt(before.size - 1)
             }
         }
-
         items.addAll(0, before)
         notifyItemRangeInserted(0, before.size)
     }
@@ -67,11 +71,9 @@ class ChatMessagesAdapter(private val myUserId: String)
     fun getFirstIdOrNull(): Long? =
         items.firstOrNull { it is ChatItem.Msg }?.let { (it as ChatItem.Msg).m.id }
 
-    /** 로컬 에코: 전송 즉시 화면에 임시 말풍선 표시
-     *  - 임시 id는 음수 사용 (정렬에서는 맨 아래로 취급하도록 처리)
-     */
+    /** 로컬 에코: 전송 즉시 화면에 임시 말풍선 표시 */
     fun addLocalEcho(content: String, roomId: String, partnerId: String, myUserId: String): Long {
-        val tempId = -System.nanoTime() // 거의 충돌 없음 (음수)
+        val tempId = -System.nanoTime() // 음수
         val nowIso = Instant.now().toString()
         val local = ChatMessage(
             id = tempId,
@@ -83,13 +85,12 @@ class ChatMessagesAdapter(private val myUserId: String)
             sentAt = nowIso,
             readByOther = false
         )
-        addOneSortedById(local)   // ASC 정렬 유지, 하지만 임시는 맨 아래 취급
+        addOneSortedById(local)
         return tempId
     }
 
     /** 서버에서 진짜가 오면 임시(음수) 버블을 교체. 못 찾으면 그냥 추가 */
     fun reconcileIncoming(real: ChatMessage) {
-        // 뒤에서부터(가장 최근 쪽) 임시 버블을 찾는다: 음수 id + 같은 보낸이 + 동일 내용
         for (i in items.indices.reversed()) {
             val it = items[i]
             if (it is ChatItem.Msg) {
@@ -97,22 +98,18 @@ class ChatMessagesAdapter(private val myUserId: String)
                 if ((m.id ?: 0L) < 0 &&
                     m.senderId == real.senderId &&
                     m.content == real.content) {
-                    // 교체: 서버 값으로 갱신
                     it.m = it.m.copy(
                         id = real.id,
                         sentAt = real.sentAt,
                         readByOther = real.readByOther
                     )
-                    // 정렬상 위치가 달라질 수 있으므로 제거 후 다시 삽입
                     val updated = it.m
-                    items.removeAt(i)
-                    notifyItemRemoved(i)
+                    items.removeAt(i); notifyItemRemoved(i)
                     addOneSortedById(updated)
                     return
                 }
             }
         }
-        // 못 찾으면 정상 추가
         addOne(real)
     }
 
@@ -141,7 +138,6 @@ class ChatMessagesAdapter(private val myUserId: String)
 
     /* ---------- 내부 로직 ---------- */
 
-    /** 정렬 키: 임시(음수 id)인 경우 가장 뒤로 보내기 위해 Long.MAX_VALUE 사용 */
     private fun sortKey(m: ChatMessage): Long {
         val id = m.id ?: Long.MIN_VALUE
         return if (id < 0) Long.MAX_VALUE else id
@@ -151,7 +147,7 @@ class ChatMessagesAdapter(private val myUserId: String)
     private fun addOneSortedById(m: ChatMessage): Int {
         val key = sortKey(m)
 
-        // 1) 삽입 인덱스 탐색 (메시지들만 기준으로 비교)
+        // 1) 삽입 인덱스 탐색
         var insertAt = items.size
         for (i in items.indices) {
             val it = items[i]
@@ -184,7 +180,6 @@ class ChatMessagesAdapter(private val myUserId: String)
         }
         items.add(pos, ChatItem.Msg(m))
         notifyItemInserted(pos)
-        // 좌우 중복 헤더 안정화(희귀 케이스)
         dedupAround(pos)
         return pos
     }
@@ -239,21 +234,32 @@ class ChatMessagesAdapter(private val myUserId: String)
         return VH(v, viewType)
     }
 
+    private fun formatTimeShort(iso: String, zone: ZoneId = ZoneId.systemDefault()): String =
+        try {
+            Instant.parse(iso).atZone(zone).format(timeFmt)   // 예: 오전 08:09 / 오후 08:09
+        } catch (_: Exception) {
+            // ISO가 아닐 때 간단 Fallback: "yyyy-MM-dd HH:mm"등에서 시분만
+            iso.replace('T',' ').takeLast(5).let { "오전 $it" } // 필요시 더 정교화 가능
+        }
+
     override fun onBindViewHolder(holder: VH, position: Int) {
         when (val it = items[position]) {
             is ChatItem.Header -> holder.tvDate?.text = it.label
             is ChatItem.Msg -> {
                 val m = it.m
                 holder.tvContent?.text = m.content
-                holder.tvTime?.text = m.sentAt.replace('T',' ').take(16)
 
-                // ✅ 읽음 배지: 내 메시지이고 아직 안 읽혔으면 "1" 표시
-                if (holder.tvUnread != null) {
+                // ✅ 버블 시각 표시
+                holder.tvTime?.visibility = View.VISIBLE
+                holder.tvTime?.text = formatTimeShort(m.sentAt)
+
+                // 읽음 배지
+                holder.tvUnread?.let { badge ->
                     if (m.senderId == myUserId && (m.readByOther != true)) {
-                        holder.tvUnread.visibility = View.VISIBLE
-                        holder.tvUnread.text = "1"
+                        badge.visibility = View.VISIBLE
+                        badge.text = "1"
                     } else {
-                        holder.tvUnread.visibility = View.GONE
+                        badge.visibility = View.GONE
                     }
                 }
             }
@@ -269,15 +275,13 @@ class ChatMessagesAdapter(private val myUserId: String)
             val id = it.m.id
             if (id != null) id
             else {
-                // 임시 id가 null인 경우 대비(거의 없음): 내용 기반 해시
                 val seed = (it.m.sentAt + "|" + it.m.senderId + "|" + it.m.content).hashCode().toLong()
-                -0x2000_0000_0000_0000L + seed   // 항상 음수 & 거의 고유
+                -0x2000_0000_0000_0000L + seed
             }
         }
     }
 
     private fun headerIdOf(label: String): Long {
-        // 간단 해시로 헤더 전용 영역 제공 (충분히 고유)
         return HEADER_BASE + (label.hashCode().toLong() and 0x3FFF_FFFF_FFFF_FFFFL)
     }
 
@@ -287,7 +291,7 @@ class ChatMessagesAdapter(private val myUserId: String)
         // 메시지
         val tvContent: TextView? = if (type != TYPE_HEADER) v.findViewById(R.id.tvContent) else null
         val tvTime: TextView?    = if (type != TYPE_HEADER) v.findViewById(R.id.tvTime) else null
-        // ✅ 내 메시지 말풍선 오른쪽의 읽음 배지 (item_msg_me.xml에 존재해야 함)
+        // 내 메시지 말풍선 오른쪽의 읽음 배지
         val tvUnread: TextView?  = if (type == TYPE_ME) v.findViewById(R.id.tvUnread) else null
     }
 

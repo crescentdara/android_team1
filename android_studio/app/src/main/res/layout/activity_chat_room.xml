@@ -1,36 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:padding="12dp"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@color/jeju_bg"
+    android:padding="12dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-    <!-- 상단: 상대 아이디 표시 -->
-    <TextView
-        android:id="@+id/tvTitle"
-        android:textStyle="bold" android:textSize="16sp"
-        android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:text="-" />
+    <!-- 상단바 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:gravity="center_vertical">
 
-    <!-- 말풍선 리스트 -->
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:textColor="@color/jeju_primary"
+            android:text="-"/>
+    </LinearLayout>
+
+    <!-- 메시지 리스트 -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvChat"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"/>
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:paddingTop="6dp"/>
 
-    <!-- 입력창 -->
+    <!-- 입력영역 -->
     <LinearLayout
-        android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingTop="6dp">
 
         <EditText
             android:id="@+id/etMsg"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
             android:hint="메시지"
-            android:layout_width="0dp" android:layout_height="wrap_content"
-            android:layout_weight="1"/>
+            android:paddingHorizontal="14dp"
+            android:background="@drawable/bg_input"
+            android:textColor="@color/jeju_text_primary"
+            android:textColorHint="@color/jeju_text_muted"/>
 
-        <Button
+        <!-- MaterialButton로 바꾸고 tint 고정 -->
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btnSend"
+            style="@style/Widget.MaterialComponents.Button"
+            android:layout_width="84dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="8dp"
             android:text="Send"
-            android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            app:cornerRadius="14dp"
+            app:backgroundTint="@color/jeju_primary"/>
     </LinearLayout>
 </LinearLayout>

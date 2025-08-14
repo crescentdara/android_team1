@@ -1,9 +1,23 @@
+<!-- res/values/themes.xml -->
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
+
+    <!-- Base application theme -->
     <style name="Base.Theme.Android_studio" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <!-- ✅ 앱 전역 기본 폰트 = S-CoreDream Light -->
+        <item name="android:fontFamily">@font/scd_3</item>
+        <item name="fontFamily">@font/scd_3</item>
+
+        <!-- ✅ 배경/포인트 컬러(브랜드 톤) -->
+        <item name="android:colorBackground">@color/jeju_bg</item>
+        <item name="colorSurface">@color/jeju_bg</item>
+        <item name="colorPrimary">@color/jeju_primary</item>
+        <item name="colorSecondary">@color/jeju_primary</item>
+
+        <!-- (선택) 기본 텍스트 색 살짝 보정 -->
+        <item name="android:textColorPrimary">@color/jeju_text_primary</item>
+        <item name="android:textColorHint">@color/jeju_text_muted</item>
     </style>
 
-    <style name="Theme.Android_studio" parent="Base.Theme.Android_studio" />
+    <!-- Actual app theme -->
+    <style name="Theme.Android_studio" parent="Base.Theme.Android_studio"/>
 </resources>
