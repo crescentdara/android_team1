@@ -26,6 +26,8 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:text="-"
+            android:textStyle="bold"
+            android:paddingHorizontal="20dp"
             android:backgroundTint="@color/jeju_tint"
             android:textColor="@color/jeju_primary" />
 
@@ -43,6 +45,8 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:text="+"
+            android:textStyle="bold"
+            android:paddingHorizontal="20dp"
             android:backgroundTint="@color/jeju_tint"
             android:textColor="@color/jeju_primary" />
     </LinearLayout>
@@ -66,6 +70,8 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:text="-"
+            android:textStyle="bold"
+            android:paddingHorizontal="20dp"
             android:backgroundTint="@color/jeju_tint"
             android:textColor="@color/jeju_primary" />
 
@@ -83,6 +89,8 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:text="+"
+            android:textStyle="bold"
+            android:paddingHorizontal="20dp"
             android:backgroundTint="@color/jeju_tint"
             android:textColor="@color/jeju_primary" />
     </LinearLayout>
