@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="20dp"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/jeju_bg">
 
     <DatePicker
         android:id="@+id/datePicker"
@@ -15,5 +16,8 @@
         android:id="@+id/btnConfirmDate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="확인" />
+        android:text="확인"
+        android:textColor="@android:color/white"
+        android:backgroundTint="@color/jeju_primary"
+        android:layout_marginTop="16dp" />
 </LinearLayout>
