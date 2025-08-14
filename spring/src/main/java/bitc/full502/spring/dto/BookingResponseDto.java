@@ -18,5 +18,8 @@ public class BookingResponseDto {
     private Integer child;
     private Long totalPrice;
     private String status;
-    private LocalDate tripDate;
+    private String dep;
+    private LocalDate departureDate;
+    private String arr;
+    private LocalDate returnDate;
 }

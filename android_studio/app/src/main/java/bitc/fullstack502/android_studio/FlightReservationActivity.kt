@@ -2,6 +2,11 @@ package bitc.fullstack502.android_studio
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+<<<<<<< HEAD
+=======
+import android.app.DatePickerDialog
+import android.content.Intent
+>>>>>>> origin/his/FlightReservationImplement
 import android.os.Bundle
 import android.widget.Button
 import android.widget.DatePicker
@@ -12,8 +17,13 @@ import androidx.core.view.WindowInsetsCompat
 import bitc.fullstack502.android_studio.databinding.ActivityFlightReservationBinding
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.datepicker.MaterialDatePicker
+<<<<<<< HEAD
 import java.text.SimpleDateFormat
 import java.util.*
+=======
+import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener
+import kotlin.jvm.java
+>>>>>>> origin/his/FlightReservationImplement
 
 class FlightReservationActivity : AppCompatActivity() {
 
@@ -92,6 +102,7 @@ class FlightReservationActivity : AppCompatActivity() {
         } else if (value == "제주" && currentArrival() == "제주") {
             setArrival(lastNonJejuForArrival.ifBlank { "김포(서울)" }, true)
         }
+        
     }
 
     private fun setArrival(value: String, recordNonJeju: Boolean) {
