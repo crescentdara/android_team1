@@ -373,5 +373,7 @@
         android:layout_height="match_parent"
         android:layout_gravity="end"
         app:headerLayout="@layout/nav_header_jeu"
-        app:menu="@menu/drawer_menu_jeu" />
+        app:menu="@menu/drawer_menu_jeu"
+        app:itemBackground="@drawable/nav_item_bg_jeu" />
+
 </androidx.drawerlayout.widget.DrawerLayout>
