@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id("kotlin-kapt")
 }
 
 android {
@@ -15,7 +16,6 @@ android {
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
-
     // <-- ViewBinding은 이 형태로 사용 (AGP 8.x)
     buildFeatures {
         viewBinding = true
@@ -69,4 +69,6 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    kapt("com.github.bumptech.glide:compiler:4.16.0") // Kotlin일 때
 }
