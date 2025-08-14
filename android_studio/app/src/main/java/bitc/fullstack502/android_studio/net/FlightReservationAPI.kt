@@ -1,7 +1,7 @@
-package bitc.fullstack502.android_studio
+package bitc.fullstack502.android_studio.net
 
-import bitc.fullstack502.android_studio.data.BookingRequest
-import bitc.fullstack502.android_studio.data.BookingResponse
+import bitc.fullstack502.android_studio.model.BookingRequest
+import bitc.fullstack502.android_studio.model.BookingResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST

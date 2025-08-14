@@ -1,5 +1,6 @@
-package bitc.fullstack502.android_studio
+package bitc.fullstack502.android_studio.net
 
+import bitc.fullstack502.android_studio.net.FlightReservationAPI
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
