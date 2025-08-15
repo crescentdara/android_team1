@@ -18,8 +18,5 @@ public class LodCnt {
     /** 이 예약이 점유하는 객실 수(기본 1) */
     @Column(nullable = false)
     private Integer rooms = 1;
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> origin/shs/lodgingSetting
+

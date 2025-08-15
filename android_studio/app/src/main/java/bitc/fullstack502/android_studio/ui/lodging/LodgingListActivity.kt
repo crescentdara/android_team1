@@ -1,5 +1,6 @@
 package bitc.fullstack502.android_studio.ui.lodging
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -26,6 +27,7 @@ class LodgingListActivity : AppCompatActivity() {
     private lateinit var rv: RecyclerView
     private lateinit var progress: View
     private lateinit var empty: View
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_lodging_list)
@@ -85,7 +87,13 @@ class LodgingListActivity : AppCompatActivity() {
                 if (items.isEmpty()) {
                     empty.visibility = View.VISIBLE
                 } else {
-                    rv.adapter = LodgingAdapter(items)
+                    rv.adapter = LodgingAdapter(items) { selectedItem ->
+                        // ✅ 클릭 시 상세 화면 이동
+                        val intent = Intent(this@LodgingListActivity, LodgingDetailActivity::class.java).apply {
+                            putExtra("lodgingId", selectedItem.id) // LodgingItem.id 필드 사용
+                        }
+                        startActivity(intent)
+                    }
                     rv.visibility = View.VISIBLE
                 }
             } catch (e: Exception) {
@@ -102,7 +110,8 @@ class LodgingListActivity : AppCompatActivity() {
     }
 
     private class LodgingAdapter(
-        private val items: List<LodgingItem>
+        private val items: List<LodgingItem>,
+        private val onItemClick: (LodgingItem) -> Unit
     ) : RecyclerView.Adapter<LodgingAdapter.VH>() {
 
         class VH(view: View) : RecyclerView.ViewHolder(view) {
@@ -123,21 +132,24 @@ class LodgingListActivity : AppCompatActivity() {
             holder.tvName.text = item.name
             holder.tvAddr.text = listOfNotNull(item.city, item.town).joinToString(" ")
 
-            // ✅ 가격 가드: 0/누락이어도 빈칸 방지
+            // 가격 표시
             if (item.price > 0L) {
                 val won = NumberFormat.getNumberInstance(Locale.KOREA).format(item.price)
                 holder.tvPrice.text = "${won}원"
-                holder.tvPrice.visibility = View.VISIBLE
             } else {
                 holder.tvPrice.text = "가격 정보 없음"
-                holder.tvPrice.visibility = View.VISIBLE
             }
 
             // 이미지
             if (item.img.isNullOrBlank()) {
                 holder.iv.setImageResource(R.drawable.ic_launcher_foreground)
             } else {
-                holder.iv.load(item.img)  // Coil
+                holder.iv.load(item.img)
+            }
+
+            // ✅ 클릭 이벤트
+            holder.itemView.setOnClickListener {
+                onItemClick(item)
             }
         }
 

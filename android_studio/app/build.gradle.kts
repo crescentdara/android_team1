@@ -69,7 +69,6 @@ dependencies {
     implementation("com.github.NaikSoftware:StompProtocolAndroid:1.6.6")
     implementation("io.reactivex.rxjava2:rxjava:2.2.21")
     implementation("io.reactivex.rxjava2:rxandroid:2.1.1")
-<<<<<<< HEAD
 
 
     // ====== Fragment 확장 ======
@@ -77,8 +76,7 @@ dependencies {
     
     // 네이버 지도
     implementation("com.naver.maps:map-sdk:3.22.1")
-}
-=======
+
     // 추가 ~
     implementation("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.11")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
@@ -88,4 +86,3 @@ dependencies {
     implementation("com.google.android.flexbox:flexbox:3.0.0")
     implementation("io.coil-kt:coil:2.6.0")
 }
->>>>>>> origin/shs/lodgingSetting
