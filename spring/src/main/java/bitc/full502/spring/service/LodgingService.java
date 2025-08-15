@@ -6,6 +6,8 @@ import bitc.full502.spring.domain.repository.LodCntRepository;
 import bitc.full502.spring.domain.repository.LodgingRepository;
 import bitc.full502.spring.dto.AvailabilityDto;
 import bitc.full502.spring.dto.LodgingDetailDto;
+import bitc.full502.spring.dto.LodgingListDto;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,12 +15,9 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
+import java.util.*;
+import java.util.stream.Collectors;
 
-/**
- * 숙박 상세/집계/가용체크 비즈니스 로직
- * - 기존 코드는 삭제하지 않고 본 구현으로 교체 사용 가능
- * - 패키지 경로가 다르면 import 및 package만 프로젝트에 맞게 수정하세요
- */
 @Service
 public class LodgingService {
 
@@ -36,6 +35,11 @@ public class LodgingService {
 
     private static Long nvl(Long v) {
         return v == null ? 0L : v;
+    }
+
+    @FunctionalInterface
+    private interface SupplierWithException<T> {
+        T get() throws Exception;
     }
 
     private static <T> T safe(SupplierWithException<T> s, T def) {
@@ -56,8 +60,7 @@ public class LodgingService {
     }
 
     /**
-     * 상세 진입 시 조회수 +1
-     * - lod_cnt 행이 없으면 0으로 생성 후 증가
+     * 상세 진입 시 조회수 +1 (카운터 테이블 보장 후 증가)
      */
     @Transactional
     public void increaseViewCount(Long lodgingId) {
@@ -65,14 +68,10 @@ public class LodgingService {
         lodCntRepository.incrementViews(lodgingId);
     }
 
-    /* ---------- 유틸 ---------- */
-
     /**
      * 상세 보기 응답 조립
-     * - 조회수 증가 반영 후 DTO로 변환
-     * - wish/book 카운트는 테이블이 존재할 때만 계산(없으면 0)
      */
-    @Transactional
+    @Transactional(readOnly = true)
     public LodgingDetailDto getDetail(Long id) {
         Lodging lod = findByIdOrThrow(id);
 
@@ -84,7 +83,6 @@ public class LodgingService {
         Long wishCount = safe(() -> lodCntRepository.countWish(id), 0L);
         Long bookCount = safe(() -> lodCntRepository.countBooking(id), 0L);
 
-        // DTO 변환
         return LodgingDetailDto.builder()
                 .id(lod.getId())
                 .name(lod.getName())
@@ -106,17 +104,12 @@ public class LodgingService {
 
     /**
      * 예약 가능 여부 체크
-     * - 겹침 조건: existing.check_in < 요청.checkOut AND existing.check_out > 요청.checkIn
-     * - CANCEL 상태 예약은 제외
      */
     @Transactional(readOnly = true)
     public AvailabilityDto checkAvailability(Long lodgingId, String checkInStr, String checkOutStr, Integer guests) {
-        // 입력 검증
         if (checkInStr == null || checkOutStr == null) {
             return AvailabilityDto.builder()
-                    .available(false)
-                    .reason("checkIn/checkOut 파라미터가 필요합니다")
-                    .build();
+                    .available(false).reason("checkIn/checkOut 파라미터가 필요합니다").build();
         }
 
         LocalDate checkIn, checkOut;
@@ -127,9 +120,7 @@ public class LodgingService {
             return AvailabilityDto.builder()
                     .available(false)
                     .reason("날짜 형식은 YYYY-MM-DD 입니다")
-                    .checkIn(checkInStr)
-                    .checkOut(checkOutStr)
-                    .guests(guests)
+                    .checkIn(checkInStr).checkOut(checkOutStr).guests(guests)
                     .build();
         }
 
@@ -137,20 +128,15 @@ public class LodgingService {
             return AvailabilityDto.builder()
                     .available(false)
                     .reason("체크인은 체크아웃보다 이전이어야 합니다")
-                    .checkIn(checkInStr)
-                    .checkOut(checkOutStr)
-                    .guests(guests)
+                    .checkIn(checkInStr).checkOut(checkOutStr).guests(guests)
                     .build();
         }
 
-        // 숙소 존재 확인
         Lodging lodging = findByIdOrThrow(lodgingId);
         int total = lodging.getTotalRoom() == null ? 0 : lodging.getTotalRoom();
 
-        // 기간 겹침 예약 수
         long overlapping = lodBookRepository.countOverlapping(lodgingId, checkIn, checkOut);
 
-        // 남은 객실 계산
         int availableRooms = Math.max(total - (int) overlapping, 0);
         boolean ok = availableRooms > 0;
 
@@ -160,14 +146,116 @@ public class LodgingService {
                 .reservedRooms(overlapping)
                 .availableRooms(availableRooms)
                 .reason(ok ? null : (total == 0 ? "총 객실 수가 0입니다" : "요청 기간 만실입니다"))
-                .checkIn(checkInStr)
-                .checkOut(checkOutStr)
-                .guests(guests)
+                .checkIn(checkInStr).checkOut(checkOutStr).guests(guests)
                 .build();
     }
 
-    @FunctionalInterface
-    private interface SupplierWithException<T> {
-        T get() throws Exception;
+    /**
+     * 🔍 조건 검색 + 페이지네이션 (내부 필터 로직)
+     * - city / town(CSV) / vill(CSV) / 날짜(가용객실) 필터
+     */
+    @Transactional(readOnly = true)
+    public Page<Lodging> searchLodgings(
+            String city,
+            String town,
+            String vill,
+            String checkIn,
+            String checkOut,
+            Integer adults,
+            Integer children,
+            Pageable pageable
+    ) {
+        List<Lodging> lodgings = lodgingRepository.findAll();
+
+        if (city != null && !city.isBlank()) {
+            lodgings = lodgings.stream()
+                    .filter(l -> city.equals(l.getCity()))
+                    .toList();
+        }
+
+        if (town != null && !town.isBlank()) {
+            Set<String> towns = Arrays.stream(town.split(","))
+                    .map(String::trim).filter(s -> !s.isEmpty())
+                    .collect(Collectors.toSet());
+            lodgings = lodgings.stream()
+                    .filter(l -> towns.isEmpty() || towns.contains(l.getTown()))
+                    .toList();
+        }
+
+        if (vill != null && !vill.isBlank()) {
+            Set<String> vills = Arrays.stream(vill.split(","))
+                    .map(String::trim).filter(s -> !s.isEmpty())
+                    .collect(Collectors.toSet());
+            lodgings = lodgings.stream()
+                    .filter(l -> vills.isEmpty() || vills.contains(l.getVill()))
+                    .toList();
+        }
+
+        if (checkIn != null && checkOut != null && !checkIn.isBlank() && !checkOut.isBlank()) {
+            LocalDate ci = LocalDate.parse(checkIn);
+            LocalDate co = LocalDate.parse(checkOut);
+            lodgings = lodgings.stream()
+                    .filter(l -> {
+                        long overlapping = lodBookRepository.countOverlapping(l.getId(), ci, co);
+                        int total = (l.getTotalRoom() != null ? l.getTotalRoom() : 0);
+                        int availableRooms = total - (int) overlapping;
+                        return availableRooms > 0;
+                    })
+                    .toList();
+        }
+
+        // 페이지네이션
+        if (pageable == null) pageable = PageRequest.of(0, 30, Sort.by("name").ascending());
+        int start = (int) pageable.getOffset();
+        int end = Math.min(start + pageable.getPageSize(), lodgings.size());
+        List<Lodging> pageContent = start > end ? Collections.emptyList() : lodgings.subList(start, end);
+        return new PageImpl<>(pageContent, pageable, lodgings.size());
+    }
+
+    /**
+     * 2페이지용 목록 DTO 반환 (사진/이름/주소/가격)
+     * - Android 2페이지에서 바로 사용
+     * - ✅ 핵심: 엔티티 basePrice(Integer) → DTO price(Long) 명시 매핑
+     */
+    @Transactional(readOnly = true)
+    public List<LodgingListDto> findLodgingsAsList(
+            String city,
+            String town,
+            String vill,
+            String checkIn,
+            String checkOut,
+            Integer adults,
+            Integer children
+    ) {
+        // 적절한 기본 페이지 크기(예: 100)
+        Page<Lodging> page = searchLodgings(
+                city, town, vill, checkIn, checkOut, adults, children,
+                PageRequest.of(0, 100, Sort.by("name").ascending())
+        );
+
+        return page.getContent().stream()
+                .map(this::toListDto)
+                .toList();
+    }
+
+    /**
+     * Lodging → LodgingListDto 변환
+     * - ✅ price = basePrice(Long)로 변환하여 Android가 기대하는 "price" 필드에 채움
+     */
+    private LodgingListDto toListDto(Lodging l) {
+        String addr = (l.getAddrRd() != null && !l.getAddrRd().isBlank())
+                ? l.getAddrRd()
+                : l.getAddrJb();
+        Long price = (l.getBasePrice() != null) ? l.getBasePrice().longValue() : 0L; // 기본가(없으면 0)
+
+        return LodgingListDto.builder()
+                .id(l.getId())
+                .name(l.getName())
+                .city(l.getCity())
+                .town(l.getTown())
+                .addrRd(addr)
+                .price(price) // ★ 핵심
+                .img(l.getImg())
+                .build();
     }
 }

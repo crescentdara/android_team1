@@ -13,9 +13,9 @@ public interface LodCntRepository extends JpaRepository<LodCnt, Long> {
     @Modifying
     @Transactional
     @Query(value = """
-            INSERT INTO lod_cnt (lodging_id, views, wish_cnt, book_cnt)
+            INSERT INTO lod_cnt (lod_id, views, wish_cnt, book_cnt)
             VALUES (:lodgingId, 0, 0, 0)
-            ON DUPLICATE KEY UPDATE lodging_id = lodging_id
+            ON DUPLICATE KEY UPDATE lod_id = lod_id
             """, nativeQuery = true)
     void ensureCounterRow(@Param("lodgingId") Long lodgingId);
 
@@ -23,25 +23,25 @@ public interface LodCntRepository extends JpaRepository<LodCnt, Long> {
     @Modifying
     @Transactional
     @Query(value = """
-            UPDATE lod_cnt 
-            SET views = IFNULL(views, 0) + 1 
-            WHERE lodging_id = :lodgingId
+            UPDATE lod_cnt
+            SET views = IFNULL(views, 0) + 1
+            WHERE lod_id = :lodgingId
             """, nativeQuery = true)
     int incrementViews(@Param("lodgingId") Long lodgingId);
 
     // 현재 조회수 조회
-    @Query(value = "SELECT IFNULL(views, 0) FROM lod_cnt WHERE lodging_id = :lodgingId", nativeQuery = true)
+    @Query(value = "SELECT IFNULL(views, 0) FROM lod_cnt WHERE lod_id = :lodgingId", nativeQuery = true)
     Long getViews(@Param("lodgingId") Long lodgingId);
 
-    // (옵션) 찜 수/예약 수 집계 — 엔티티 구조와 무관하게 네이티브로 계산
-    @Query(value = "SELECT COUNT(*) FROM lod_wish WHERE lodging_id = :lodgingId", nativeQuery = true)
+    // 찜 수
+    @Query(value = "SELECT COUNT(*) FROM lod_wish WHERE lod_id = :lodgingId", nativeQuery = true)
     Long countWish(@Param("lodgingId") Long lodgingId);
 
-    // 예약 수: CANCEL 제외(취소상태 컬럼명이 'status'라고 가정)
+    // 예약 수: CANCEL 제외
     @Query(value = """
-            SELECT COUNT(*) 
-            FROM lod_book 
-            WHERE lodging_id = :lodgingId 
+            SELECT COUNT(*)
+            FROM lod_book
+            WHERE lod_id = :lodgingId
               AND (status IS NULL OR status <> 'CANCEL')
             """, nativeQuery = true)
     Long countBooking(@Param("lodgingId") Long lodgingId);
