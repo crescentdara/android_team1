@@ -1,27 +1,31 @@
 package bitc.fullstack502.android_studio.ui.lodging
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import bitc.fullstack502.android_studio.R
 import bitc.fullstack502.android_studio.model.LodgingItem
 import bitc.fullstack502.android_studio.network.RetrofitProvider
 import bitc.fullstack502.android_studio.ui.LodgingFilterBottomSheet
-import androidx.lifecycle.lifecycleScope
+import coil.load
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.text.NumberFormat
+import java.util.Locale
 
 class LodgingListActivity : AppCompatActivity() {
-
     private lateinit var rv: RecyclerView
     private lateinit var progress: View
     private lateinit var empty: View
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_lodging_list)
@@ -37,12 +41,13 @@ class LodgingListActivity : AppCompatActivity() {
         val keyword = intent.getStringExtra("keyword").orEmpty()
 
         // 2) 상단 요약 표시
-        findViewById<TextView>(R.id.tvKeyword).text = "키워드: ${if (keyword.isBlank()) "-" else keyword}"
         findViewById<TextView>(R.id.tvLocation).text =
             "위치: ${listOfNotNull(city, town, vill).joinToString(" ") { it.ifBlank { "-" } }}"
         findViewById<TextView>(R.id.tvDates).text =
-            if (checkIn.isNotBlank() && checkOut.isNotBlank()) "날짜: $checkIn ~ $checkOut" else "날짜: -"
-        findViewById<TextView>(R.id.tvGuests).text = "인원: 성인 $adults, 아동 $children"
+            if (checkIn.isNotBlank() && checkOut.isNotBlank())
+                "날짜: $checkIn ~ $checkOut" else "날짜: -"
+        findViewById<TextView>(R.id.tvGuests).text =
+            "인원: 성인 $adults, 아동 $children"
 
         // 3) RecyclerView & 상태 뷰
         rv = findViewById(R.id.rvLodgings)
@@ -55,13 +60,9 @@ class LodgingListActivity : AppCompatActivity() {
     }
 
     private fun loadLodgings(
-        city: String?,
-        town: String?,
-        vill: String?,
-        checkIn: String?,
-        checkOut: String?,
-        adults: Int,
-        children: Int
+        city: String?, town: String?, vill: String?,
+        checkIn: String?, checkOut: String?,
+        adults: Int, children: Int
     ) {
         progress.visibility = View.VISIBLE
         empty.visibility = View.GONE
@@ -80,51 +81,66 @@ class LodgingListActivity : AppCompatActivity() {
                         children = children
                     )
                 }
-
                 progress.visibility = View.GONE
                 if (items.isEmpty()) {
                     empty.visibility = View.VISIBLE
-                    rv.visibility = View.GONE
                 } else {
                     rv.adapter = LodgingAdapter(items)
                     rv.visibility = View.VISIBLE
-                    empty.visibility = View.GONE
                 }
             } catch (e: Exception) {
                 progress.visibility = View.GONE
                 empty.visibility = View.VISIBLE
                 rv.visibility = View.GONE
-                Toast.makeText(this@LodgingListActivity, "숙소 불러오기 실패: ${e.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this@LodgingListActivity,
+                    "숙소 불러오기 실패: ${e.message}",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
 
-    /** 심플 어댑터: 이름 / 가격 / 평점만 텍스트로 표시 (레이아웃 없이 코드로 구성) */
     private class LodgingAdapter(
         private val items: List<LodgingItem>
-    ) : RecyclerView.Adapter<LodgingVH>() {
+    ) : RecyclerView.Adapter<LodgingAdapter.VH>() {
 
-        override fun onCreateViewHolder(parent: android.view.ViewGroup, viewType: Int): LodgingVH {
-            val tv = android.widget.TextView(parent.context).apply {
-                setPadding(24, 32, 24, 32)
-                textSize = 16f
-            }
-            return LodgingVH(tv)
+        class VH(view: View) : RecyclerView.ViewHolder(view) {
+            val iv: ImageView = view.findViewById(R.id.ivLodgingThumb)
+            val tvName: TextView = view.findViewById(R.id.tvLodgingName)
+            val tvAddr: TextView = view.findViewById(R.id.tvLodgingAddr)
+            val tvPrice: TextView = view.findViewById(R.id.tvLodgingPrice)
         }
 
-        override fun onBindViewHolder(holder: LodgingVH, position: Int) {
-            holder.bind(items[position])
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
+            val v = LayoutInflater.from(parent.context)
+                .inflate(R.layout.row_lodging, parent, false)
+            return VH(v)
+        }
+
+        override fun onBindViewHolder(holder: VH, position: Int) {
+            val item = items[position]
+            holder.tvName.text = item.name
+            holder.tvAddr.text = listOfNotNull(item.city, item.town).joinToString(" ")
+
+            // ✅ 가격 가드: 0/누락이어도 빈칸 방지
+            if (item.price > 0L) {
+                val won = NumberFormat.getNumberInstance(Locale.KOREA).format(item.price)
+                holder.tvPrice.text = "${won}원"
+                holder.tvPrice.visibility = View.VISIBLE
+            } else {
+                holder.tvPrice.text = "가격 정보 없음"
+                holder.tvPrice.visibility = View.VISIBLE
+            }
+
+            // 이미지
+            if (item.img.isNullOrBlank()) {
+                holder.iv.setImageResource(R.drawable.ic_launcher_foreground)
+            } else {
+                holder.iv.load(item.img)  // Coil
+            }
         }
 
         override fun getItemCount(): Int = items.size
-    }
-
-    private class LodgingVH(private val tv: android.widget.TextView) :
-        RecyclerView.ViewHolder(tv) {
-
-        fun bind(item: LodgingItem) {
-            val rating = item.rating?.let { " | ★ ${"%.1f".format(it)}" } ?: ""
-            tv.text = "${item.name} - ${item.price}원$rating"
-        }
     }
 }

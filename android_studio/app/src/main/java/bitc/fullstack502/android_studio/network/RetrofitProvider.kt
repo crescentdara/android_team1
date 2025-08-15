@@ -7,10 +7,14 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
 object RetrofitProvider {
+<<<<<<< HEAD
 
     // ① 끝에 슬래시 추가 (Retrofit 규칙)
     private const val BASE_URL = "http://10.0.2.2:8080/"
 
+=======
+    private const val BASE_URL = "http://10.100.202.47:8080"
+>>>>>>> origin/shs/lodgingSetting
     private val client by lazy {
         val log = HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
         OkHttpClient.Builder()

@@ -1,65 +1,60 @@
 package bitc.full502.spring.controller;
 
-import bitc.full502.spring.domain.entity.Lodging;
-import bitc.full502.spring.domain.repository.LodgingRepository;
 import bitc.full502.spring.dto.AvailabilityDto;
+import bitc.full502.spring.dto.LodgingDetailDto;
+import bitc.full502.spring.dto.LodgingListDto;
 import bitc.full502.spring.service.LodgingService;
+import org.springframework.web.bind.annotation.*;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;     // ★ 누락되어 에러났던 import
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam; // ★ 이것도 필요
-import org.springframework.web.bind.annotation.RestController;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/lodgings")
 public class LodgingController {
 
-    private final LodgingRepository lodgingRepository;
     private final LodgingService lodgingService;
 
-    // ★ 두 개 모두 주입받도록 생성자 수정
-    public LodgingController(LodgingRepository lodgingRepository,
-                             LodgingService lodgingService) {
-        this.lodgingRepository = lodgingRepository;
+    public LodgingController(LodgingService lodgingService) {
         this.lodgingService = lodgingService;
     }
-    /**
-     * 숙소 목록 조회 API
-     * - 주소: GET /api/lodgings
-     * - 쿼리: page(0부터 시작), size
-     * - 정렬: id 오름차순
-     * - 반환: Page<Lodging> (엔티티 그대로 내려서, 목록 JSON 확인용으로 가장 단순)
-     *
-     * 사용 예:
-     *   /api/lodgings           -> 기본 0페이지, 10개
-     *   /api/lodgings?page=0&size=20
-     */
 
-    /** 숙소 목록 조회 (페이지네이션) */
+    /**
+     * 숙소 목록 조회 (1페이지 조건 → 2페이지 리스트)
+     * - 반환: 2페이지 전용 DTO 리스트 (사진, 이름, 주소(city,town), 가격)
+     */
     @GetMapping
-    public Page<Lodging> getLodgings(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+    public List<LodgingListDto> getLodgings(
+            @RequestParam(required = false) String city,
+            @RequestParam(required = false) String town,
+            @RequestParam(required = false) String vill,
+            @RequestParam(required = false) String checkIn,
+            @RequestParam(required = false) String checkOut,
+            @RequestParam(required = false) Integer adults,
+            @RequestParam(required = false) Integer children
     ) {
-        // ★ Sort.by(Sort.Direction.ASC, "id") 형태로 정확히 입력
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.ASC, "id"));
-        return lodgingRepository.findAll(pageable);
+        return lodgingService.findLodgingsAsList(
+                city, town, vill, checkIn, checkOut, adults, children
+        );
     }
 
-    /** 예약 가능 여부 */
+    /**
+     * 예약 가능 여부 조회
+     */
     @GetMapping("/{id}/availability")
     public AvailabilityDto getAvailability(
-            @PathVariable Long id,                 // ★ import 필요
-            @RequestParam String checkIn,          // YYYY-MM-DD
-            @RequestParam String checkOut,         // YYYY-MM-DD
+            @PathVariable Long id,
+            @RequestParam String checkIn,
+            @RequestParam String checkOut,
             @RequestParam(required = false) Integer guests
     ) {
         return lodgingService.checkAvailability(id, checkIn, checkOut, guests);
+    }
+
+    /**
+     * 숙소 상세 조회 (조회수 증가 + 집계 포함)
+     */
+    @GetMapping("/{id}")
+    public LodgingDetailDto getDetail(@PathVariable Long id) {
+        return lodgingService.getDetail(id);
     }
 }
