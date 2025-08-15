@@ -7,8 +7,10 @@ pluginManagement {
                 includeGroupByRegex("androidx.*")
             }
         }
+        google()
         mavenCentral()
         gradlePluginPortal()
+        maven("https://repository.map.naver.com/archive/maven")
     }
 }
 dependencyResolutionManagement {
@@ -16,9 +18,11 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        maven(url = "https://jitpack.io")
+        maven("https://jitpack.io")
+        maven("https://repository.map.naver.com/archive/maven")
     }
 }
+
 
 rootProject.name = "android_studio"
 include(":app")
