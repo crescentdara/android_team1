@@ -41,4 +41,7 @@ public class Lodging {
 
     @Column(length = 255)
     private String img;
+    /** 2페이지 노출용 대표가/최저가 (추가 필드, ddl-auto=update로 컬럼 자동 추가) */
+    @Column(name = "base_price", nullable = false)
+    private Integer basePrice = 100000;
 }
