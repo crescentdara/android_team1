@@ -1,20 +1,19 @@
 package bitc.fullstack502.android_studio
 
+import android.content.Intent
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import bitc.fullstack502.android_studio.ui.lodging.LodgingSearchActivity
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContentView(R.layout.activity_main)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        
+        // 바로 숙박 검색 화면으로 이동
+        val intent = Intent(this, LodgingSearchActivity::class.java)
+        startActivity(intent)
+        
+        // 현재 Activity 종료 (뒤로가기 시 앱 종료)
+        finish()
     }
 }
