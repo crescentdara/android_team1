@@ -10,6 +10,7 @@
         android:orientation="vertical"
         android:padding="16dp">
 
+        <!-- 숙소 대표 이미지 -->
         <ImageView
             android:id="@+id/imgCover"
             android:layout_width="match_parent"
@@ -17,7 +18,7 @@
             android:scaleType="centerCrop"
             android:src="@mipmap/ic_launcher" />
 
-        <!-- 즐겨찾기(별) 라인 -->
+        <!-- 즐겨찾기(별) 버튼 + 개수 -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -43,6 +44,7 @@
                 android:text="0" />
         </LinearLayout>
 
+        <!-- 숙소 이름 -->
         <TextView
             android:id="@+id/tvName"
             android:layout_width="wrap_content"
@@ -51,16 +53,19 @@
             android:textSize="20sp"
             android:textStyle="bold" />
 
+        <!-- 주소 -->
         <TextView
             android:id="@+id/tvAddr"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
+        <!-- 전화번호 -->
         <TextView
             android:id="@+id/tvPhone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
+        <!-- 지도 -->
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="220dp"
@@ -69,39 +74,10 @@
             <com.naver.maps.map.MapView
                 android:id="@+id/mapView"
                 android:layout_width="match_parent"
-                android:layout_height="220dp"
-                android:layout_marginTop="12dp" />
+                android:layout_height="220dp" />
         </FrameLayout>
 
-        <!-- 날짜: 한 번에 기간 선택 -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:orientation="horizontal">
-
-            <EditText
-                android:id="@+id/etCheckIn"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_weight="1"
-                android:focusable="false"
-                android:hint="체크인 (YYYY-MM-DD)" />
-
-            <Space
-                android:layout_width="8dp"
-                android:layout_height="1dp" />
-
-            <EditText
-                android:id="@+id/etCheckOut"
-                android:layout_width="0dp"
-                android:layout_height="48dp"
-                android:layout_weight="1"
-                android:focusable="false"
-                android:hint="체크아웃 (YYYY-MM-DD)" />
-        </LinearLayout>
-
-        <!-- 객실 타입 -->
+        <!-- 객실 타입 선택 -->
         <RadioGroup
             android:id="@+id/rgRoom"
             android:layout_width="match_parent"
@@ -127,6 +103,7 @@
                 android:text="스위트 (₩100,000)" />
         </RadioGroup>
 
+        <!-- 선택 정보 -->
         <TextView
             android:id="@+id/tvSelection"
             android:layout_width="match_parent"
@@ -134,7 +111,7 @@
             android:layout_marginTop="8dp"
             android:text="선택한 옵션: -" />
 
-        <!-- ✅ 총 결제금액 표시 -->
+        <!-- 총 결제금액 -->
         <TextView
             android:id="@+id/tvTotalPrice"
             android:layout_width="match_parent"
@@ -144,6 +121,7 @@
             android:textSize="16sp"
             android:textStyle="bold" />
 
+        <!-- 예약 버튼 -->
         <Button
             android:id="@+id/btnReserve"
             android:layout_width="match_parent"

@@ -18,14 +18,11 @@ import java.time.format.DateTimeParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-<<<<<<< HEAD
 /**
  * 숙박 상세/집계/가용체크
  * - lod_cnt(예약점유 기록)는 건드리지 않음: 조회수 관련 쿼리 제거
  * - wish/book 집계는 각각 lod_wish / lod_book에서 계산
  */
-=======
->>>>>>> origin/shs/lodgingSetting
 @Service
 public class LodgingService {
 
@@ -41,51 +38,13 @@ public class LodgingService {
         this.lodWishRepository = lodWishRepository;
     }
 
-<<<<<<< HEAD
-=======
-    private static Long nvl(Long v) {
-        return v == null ? 0L : v;
-    }
-
-    @FunctionalInterface
-    private interface SupplierWithException<T> {
-        T get() throws Exception;
-    }
-
-    private static <T> T safe(SupplierWithException<T> s, T def) {
-        try {
-            return s.get();
-        } catch (Exception e) {
-            return def;
-        }
-    }
-
-    /**
-     * Lodging 단건 조회(없으면 404)
-     */
->>>>>>> origin/shs/lodgingSetting
     @Transactional(readOnly = true)
     public Lodging findByIdOrThrow(Long id) {
         return lodgingRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Lodging not found: " + id));
     }
 
-<<<<<<< HEAD
     /** 상세 */
-=======
-    /**
-     * 상세 진입 시 조회수 +1 (카운터 테이블 보장 후 증가)
-     */
-    @Transactional
-    public void increaseViewCount(Long lodgingId) {
-        lodCntRepository.ensureCounterRow(lodgingId);
-        lodCntRepository.incrementViews(lodgingId);
-    }
-
-    /**
-     * 상세 보기 응답 조립
-     */
->>>>>>> origin/shs/lodgingSetting
     @Transactional(readOnly = true)
     public LodgingDetailDto getDetail(Long id) {
         Lodging lod = findByIdOrThrow(id);
@@ -117,14 +76,10 @@ public class LodgingService {
     }
 
     /**
-<<<<<<< HEAD
      * 예약 가능 여부
      * - 겹침: existing.ckIn < 요청.checkOut AND existing.ckOut > 요청.checkIn
      * - CANCEL 제외
      * - 총 객실수(default 3)에서 겹치는 예약 수를 뺌
-=======
-     * 예약 가능 여부 체크
->>>>>>> origin/shs/lodgingSetting
      */
     @Transactional(readOnly = true)
     public AvailabilityDto checkAvailability(Long lodgingId, String checkInStr, String checkOutStr, Integer guests) {
@@ -157,10 +112,6 @@ public class LodgingService {
         int total = lodging.getTotalRoom() == null ? 3 : lodging.getTotalRoom(); // 기본 3
 
         long overlapping = lodBookRepository.countOverlapping(lodgingId, checkIn, checkOut);
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/shs/lodgingSetting
         int availableRooms = Math.max(total - (int) overlapping, 0);
         boolean ok = availableRooms > 0;
 
@@ -169,15 +120,6 @@ public class LodgingService {
                 .totalRoom(total)
                 .reservedRooms(overlapping)
                 .availableRooms(availableRooms)
-<<<<<<< HEAD
-                .reason(ok ? null : "요청 기간 만실입니다")
-                .checkIn(checkInStr)
-                .checkOut(checkOutStr)
-                .guests(guests)
-                .build();
-    }
-}
-=======
                 .reason(ok ? null : (total == 0 ? "총 객실 수가 0입니다" : "요청 기간 만실입니다"))
                 .checkIn(checkInStr).checkOut(checkOutStr).guests(guests)
                 .build();
@@ -292,4 +234,3 @@ public class LodgingService {
                 .build();
     }
 }
->>>>>>> origin/shs/lodgingSetting

@@ -13,7 +13,6 @@ import bitc.fullstack502.android_studio.network.dto.AvailabilityDto
 import bitc.fullstack502.android_studio.network.dto.LodgingDetailDto
 import bitc.fullstack502.android_studio.network.dto.LodgingWishStatusDto
 import com.bumptech.glide.Glide
-import com.google.android.material.datepicker.MaterialDatePicker
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.MapView
@@ -24,7 +23,6 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.text.NumberFormat
-import java.text.SimpleDateFormat
 import java.util.*
 
 class LodgingDetailActivity : AppCompatActivity(), OnMapReadyCallback {
@@ -45,8 +43,6 @@ class LodgingDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var tvName: TextView
     private lateinit var tvAddr: TextView
     private lateinit var tvPhone: TextView
-    private lateinit var etIn: EditText
-    private lateinit var etOut: EditText
     private lateinit var rgRoom: RadioGroup
     private lateinit var rbSingle: RadioButton
     private lateinit var rbDeluxe: RadioButton
@@ -62,6 +58,9 @@ class LodgingDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     private val priceWon = 100_000
     private var selectedNights = 0
 
+    private var checkIn: String = ""
+    private var checkOut: String = ""
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_lodging_detail)
@@ -74,8 +73,6 @@ class LodgingDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         tvName = findViewById(R.id.tvName)
         tvAddr = findViewById(R.id.tvAddr)
         tvPhone = findViewById(R.id.tvPhone)
-        etIn = findViewById(R.id.etCheckIn)
-        etOut = findViewById(R.id.etCheckOut)
         rgRoom = findViewById(R.id.rgRoom)
         rbSingle = findViewById(R.id.rbSingle)
         rbDeluxe = findViewById(R.id.rbDeluxe)
@@ -90,44 +87,27 @@ class LodgingDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         wishApi = RetrofitProvider.retrofit.create(LodgingWishApi::class.java)
 
         lodgingId = intent.getLongExtra("lodgingId", 0L).let { if (it == 0L) 1570L else it }
+        checkIn = intent.getStringExtra("checkIn") ?: ""
+        checkOut = intent.getStringExtra("checkOut") ?: ""
+
+        // 숙박일수 계산
+        selectedNights = try {
+            val fmt = java.text.SimpleDateFormat("yyyy-MM-dd", Locale.KOREA)
+            val start = fmt.parse(checkIn)?.time ?: 0
+            val end = fmt.parse(checkOut)?.time ?: 0
+            ((end - start) / (24 * 60 * 60 * 1000)).toInt()
+        } catch (e: Exception) {
+            0
+        }
 
         setReserveEnabled(false)
         fetchDetail()
 
-        etIn.setOnClickListener { showDateRangePicker() }
-        etOut.setOnClickListener { showDateRangePicker() }
         rgRoom.setOnCheckedChangeListener { _, _ -> updateSelectionAndTotal() }
 
         btnReserve.setOnClickListener {
-            if (etIn.text.isNullOrBlank() || etOut.text.isNullOrBlank()) {
-                Toast.makeText(this, "체크인/체크아웃 날짜를 먼저 선택하세요.", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            if (rgRoom.checkedRadioButtonId == -1) {
-                Toast.makeText(this, "객실 타입을 선택하세요", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            val roomType = when (rgRoom.checkedRadioButtonId) {
-                R.id.rbSingle -> "SINGLE"
-                R.id.rbDeluxe -> "DELUXE"
-                else -> "SUITE"
-            }
-            val totalPrice = priceWon * selectedNights
-
-            val intent = Intent(this, LodgingPaymentActivity::class.java).apply {
-                putExtra("lodgingId", lodgingId)
-                putExtra("lodgingName", name)
-                putExtra("roomType", roomType)
-                putExtra("options", "-")
-                putExtra("totalPrice", totalPrice)
-                putExtra("checkIn", etIn.text.toString())
-                putExtra("checkOut", etOut.text.toString())
-                putExtra("adult", 2)
-                putExtra("child", 0)
-            }
-            startActivity(intent)
+            // 예약 로직
         }
-
         btnWish.setOnClickListener { toggleWish() }
     }
 
@@ -160,6 +140,7 @@ class LodgingDetailActivity : AppCompatActivity(), OnMapReadyCallback {
                 if (!d.img.isNullOrBlank()) Glide.with(this@LodgingDetailActivity).load(d.img).into(imgCover)
                 updateMapMarkerIfReady()
                 refreshWish()
+                checkAvailability(checkIn, checkOut)
             }
             override fun onFailure(c: Call<LodgingDetailDto>, t: Throwable) { }
         })
@@ -203,24 +184,6 @@ class LodgingDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         btnWish.setImageResource(if (wished) R.drawable.ic_star_24 else R.drawable.ic_star_border_24)
     }
 
-    private fun showDateRangePicker() {
-        val picker = MaterialDatePicker.Builder.dateRangePicker().setTitleText("숙박 기간 선택").build()
-        picker.addOnPositiveButtonClickListener { sel ->
-            val start = sel.first
-            val end = sel.second
-            if (start != null && end != null) {
-                val fmt = SimpleDateFormat("yyyy-MM-dd", Locale.KOREA)
-                etIn.setText(fmt.format(Date(start)))
-                etOut.setText(fmt.format(Date(end)))
-                selectedNights = ((end - start) / (24 * 60 * 60 * 1000)).toInt()
-                updateSelectionAndTotal()
-                updateReserveEnabled()
-                checkAvailability(etIn.text.toString(), etOut.text.toString())
-            }
-        }
-        picker.show(supportFragmentManager, "date_range")
-    }
-
     private fun checkAvailability(ci: String, co: String) {
         api.getAvailability(lodgingId, ci, co, null).enqueue(object : Callback<AvailabilityDto> {
             override fun onResponse(c: Call<AvailabilityDto>, r: Response<AvailabilityDto>) {
@@ -251,16 +214,14 @@ class LodgingDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         tvSelection.text = "선택한 옵션: $room$priceText$nightsText"
         val total = priceWon * selectedNights
         tvTotalPrice.text = "총 결제금액: " + NumberFormat.getCurrencyInstance(Locale.KOREA).format(total)
+
+        // 객실 선택 시 예약 버튼 활성화
+        setReserveEnabled(room != "-")
     }
 
     private fun setReserveEnabled(enabled: Boolean) {
         btnReserve.isEnabled = enabled
         btnReserve.alpha = if (enabled) 1f else 0.5f
-    }
-
-    private fun updateReserveEnabled() {
-        val ok = etIn.text?.length == 10 && etOut.text?.length == 10
-        setReserveEnabled(ok)
     }
 
     override fun onStart() { super.onStart(); mapView.onStart() }
