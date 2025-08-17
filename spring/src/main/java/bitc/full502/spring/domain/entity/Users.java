@@ -3,6 +3,7 @@ package bitc.full502.spring.domain.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
 @Entity @Table(name = "users")
 public class Users {
