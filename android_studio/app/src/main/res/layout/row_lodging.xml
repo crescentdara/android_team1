@@ -7,8 +7,8 @@
 
     <ImageView
         android:id="@+id/ivLodgingThumb"
-        android:layout_width="72dp"
-        android:layout_height="72dp"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
         android:scaleType="centerCrop"
         android:src="@drawable/ic_launcher_foreground" />
 
@@ -31,15 +31,14 @@
             android:id="@+id/tvLodgingAddr"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="제주시 구좌읍"
-            android:textSize="13sp" />
+            android:text="주소" />
 
         <TextView
-            android:id="@+id/tvLodgingPrice"
+            android:id="@+id/tvPrice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="120,000원"
+            android:text="가격"
             android:textSize="14sp"
-            android:textStyle="bold" />
+            android:textColor="@color/black" />
     </LinearLayout>
 </LinearLayout>

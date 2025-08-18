@@ -2,7 +2,6 @@ package bitc.fullstack502.android_studio.ui.lodging
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import bitc.fullstack502.android_studio.R
@@ -10,6 +9,9 @@ import bitc.fullstack502.android_studio.network.ApiProvider
 import bitc.fullstack502.android_studio.network.dto.AvailabilityDto
 import bitc.fullstack502.android_studio.network.dto.LodgingDetailDto
 import bitc.fullstack502.android_studio.network.dto.LodgingWishStatusDto
+import bitc.fullstack502.android_studio.util.fullUrl
+import bitc.fullstack502.android_studio.util.isLoggedIn
+import bitc.fullstack502.android_studio.util.userPkOrZero
 import com.bumptech.glide.Glide
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraUpdate
@@ -21,6 +23,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.text.NumberFormat
+import java.text.SimpleDateFormat
 import java.util.*
 
 class LodgingDetailActivity : AppCompatActivity(), OnMapReadyCallback {
@@ -49,8 +52,6 @@ class LodgingDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var tvWishCount: TextView
 
     private var wished = false
-    private val testUserId = 1L
-    private val priceWon = 100_000
     private var selectedNights = 0
 
     private var checkIn: String = ""
@@ -78,19 +79,17 @@ class LodgingDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         btnWish = findViewById(R.id.btnWish)
         tvWishCount = findViewById(R.id.tvWishCount)
 
-        lodgingId = intent.getLongExtra("lodgingId", 0L).let { if (it == 0L) 1570L else it }
+        lodgingId = intent.getLongExtra("lodgingId", 0L)
         checkIn = intent.getStringExtra("checkIn") ?: ""
         checkOut = intent.getStringExtra("checkOut") ?: ""
 
         // 숙박일수 계산
         selectedNights = try {
-            val fmt = java.text.SimpleDateFormat("yyyy-MM-dd", Locale.KOREA)
-            val start = fmt.parse(checkIn)?.time ?: 0
-            val end = fmt.parse(checkOut)?.time ?: 0
-            ((end - start) / (24 * 60 * 60 * 1000)).toInt()
-        } catch (e: Exception) {
-            0
-        }
+            val fmt = SimpleDateFormat("yyyy-MM-dd", Locale.KOREA)
+            val s = fmt.parse(checkIn)?.time ?: 0L
+            val e = fmt.parse(checkOut)?.time ?: 0L
+            ((e - s) / (24 * 60 * 60 * 1000)).toInt().coerceAtLeast(0)
+        } catch (_: Exception) { 0 }
 
         setReserveEnabled(false)
         fetchDetail()
@@ -98,22 +97,35 @@ class LodgingDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         rgRoom.setOnCheckedChangeListener { _, _ -> updateSelectionAndTotal() }
 
         btnReserve.setOnClickListener {
-            // 예약 로직 (결제화면 이동 등)
+            // ✅ 액티비티 컨텍스트 사용
+            if (!isLoggedIn() || userPkOrZero() == 0L) {
+                Toast.makeText(this, "로그인 후 이용해주세요.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            val roomType = when (rgRoom.checkedRadioButtonId) {
+                R.id.rbSingle -> "싱글"
+                R.id.rbDeluxe -> "디럭스"
+                R.id.rbSuite -> "스위트"
+                else -> ""
+            }
+            val total = pricePerNight() * selectedNights
             val intent = Intent(this, LodgingPaymentActivity::class.java).apply {
                 putExtra("lodgingId", lodgingId)
                 putExtra("checkIn", checkIn)
                 putExtra("checkOut", checkOut)
-                putExtra("roomType", when (rgRoom.checkedRadioButtonId) {
-                    R.id.rbSingle -> "싱글"
-                    R.id.rbDeluxe -> "디럭스"
-                    R.id.rbSuite -> "스위트"
-                    else -> ""
-                })
-                putExtra("totalPrice", priceWon * selectedNights)
+                putExtra("roomType", roomType)
+                putExtra("totalPrice", total.toLong())
             }
             startActivity(intent)
         }
-        btnWish.setOnClickListener { toggleWish() }
+
+        btnWish.setOnClickListener {
+            if (!isLoggedIn() || userPkOrZero() == 0L) {
+                Toast.makeText(this, "로그인 후 이용해주세요.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            toggleWish()
+        }
     }
 
     override fun onMapReady(nMap: NaverMap) {
@@ -131,10 +143,6 @@ class LodgingDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun fetchDetail() {
         ApiProvider.api.getDetail(lodgingId).enqueue(object : Callback<LodgingDetailDto> {
             override fun onResponse(c: Call<LodgingDetailDto>, r: Response<LodgingDetailDto>) {
-                if (!r.isSuccessful) {
-                    Log.e("Detail", "HTTP ${r.code()} ${r.errorBody()?.string()}")
-                    return
-                }
                 val d = r.body() ?: return
                 name = d.name.orEmpty()
                 lat = d.lat ?: 0.0
@@ -142,9 +150,10 @@ class LodgingDetailActivity : AppCompatActivity(), OnMapReadyCallback {
                 tvName.text = name
                 tvAddr.text = listOfNotNull(d.addrRd, d.addrJb).joinToString(" / ")
                 tvPhone.text = d.phone ?: ""
-                if (!d.img.isNullOrBlank()) {
-                    Glide.with(this@LodgingDetailActivity).load(d.img).into(imgCover)
-                }
+
+                val url = fullUrl(d.img)
+                if (url != null) Glide.with(this@LodgingDetailActivity).load(url).into(imgCover)
+
                 updateMapMarkerIfReady()
                 refreshWish()
                 checkAvailability(checkIn, checkOut)
@@ -162,10 +171,18 @@ class LodgingDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun refreshWish() {
-        ApiProvider.api.wishStatus(lodgingId, testUserId)
+        // 로그인 안 되어 있으면 서버 호출 안 함
+        if (!isLoggedIn() || userPkOrZero() == 0L) {
+            wished = false
+            tvWishCount.text = "0"
+            updateWishIcon()
+            return
+        }
+        val uid = userPkOrZero()
+        ApiProvider.api.wishStatus(lodgingId, uid)
             .enqueue(object : Callback<LodgingWishStatusDto> {
-                override fun onResponse(call: Call<LodgingWishStatusDto>, response: Response<LodgingWishStatusDto>) {
-                    response.body()?.let { s ->
+                override fun onResponse(call: Call<LodgingWishStatusDto>, res: Response<LodgingWishStatusDto>) {
+                    res.body()?.let { s ->
                         wished = s.wished
                         tvWishCount.text = s.wishCount.toString()
                         updateWishIcon()
@@ -176,10 +193,15 @@ class LodgingDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun toggleWish() {
-        ApiProvider.api.wishToggle(lodgingId, testUserId)
+        val uid = userPkOrZero()
+        if (uid == 0L) {
+            Toast.makeText(this, "로그인 후 이용해주세요.", Toast.LENGTH_SHORT).show()
+            return
+        }
+        ApiProvider.api.wishToggle(lodgingId, uid)
             .enqueue(object : Callback<LodgingWishStatusDto> {
-                override fun onResponse(call: Call<LodgingWishStatusDto>, response: Response<LodgingWishStatusDto>) {
-                    response.body()?.let { s ->
+                override fun onResponse(call: Call<LodgingWishStatusDto>, res: Response<LodgingWishStatusDto>) {
+                    res.body()?.let { s ->
                         wished = s.wished
                         tvWishCount.text = s.wishCount.toString()
                         updateWishIcon()
@@ -199,9 +221,7 @@ class LodgingDetailActivity : AppCompatActivity(), OnMapReadyCallback {
                 override fun onResponse(c: Call<AvailabilityDto>, r: Response<AvailabilityDto>) {
                     val a = r.body() ?: return
                     val enable = a.availableRooms > 0
-                    rbSingle.isEnabled = enable
-                    rbDeluxe.isEnabled = enable
-                    rbSuite.isEnabled = enable
+                    listOf(rbSingle, rbDeluxe, rbSuite).forEach { it.isEnabled = enable }
                     if (!enable) {
                         rgRoom.clearCheck()
                         tvSelection.text = "선택한 옵션: (만실)"
@@ -212,6 +232,13 @@ class LodgingDetailActivity : AppCompatActivity(), OnMapReadyCallback {
             })
     }
 
+    private fun pricePerNight(): Int = when (rgRoom.checkedRadioButtonId) {
+        R.id.rbSingle -> 100_000
+        R.id.rbDeluxe -> 120_000
+        R.id.rbSuite  -> 150_000
+        else -> 0
+    }
+
     private fun updateSelectionAndTotal() {
         val room = when (rgRoom.checkedRadioButtonId) {
             R.id.rbSingle -> "싱글"
@@ -219,13 +246,15 @@ class LodgingDetailActivity : AppCompatActivity(), OnMapReadyCallback {
             R.id.rbSuite -> "스위트"
             else -> "-"
         }
-        val priceText = if (room == "-") "" else " / 1박: ₩%,d".format(priceWon)
+        val won = NumberFormat.getNumberInstance(Locale.KOREA).format(pricePerNight())
         val nightsText = if (selectedNights > 0) " • ${selectedNights}박" else ""
-        tvSelection.text = "선택한 옵션: $room$priceText$nightsText"
-        val total = priceWon * selectedNights
-        tvTotalPrice.text = "총 결제금액: " + NumberFormat.getCurrencyInstance(Locale.KOREA).format(total)
+        tvSelection.text = "선택한 옵션: $room${if (room == "-") "" else " / 1박: ₩$won"}$nightsText"
 
-        setReserveEnabled(room != "-")
+        val total = pricePerNight() * selectedNights
+        tvTotalPrice.text = "총 결제금액: " +
+                NumberFormat.getCurrencyInstance(Locale.KOREA).format(total.toLong())
+
+        setReserveEnabled(room != "-" && selectedNights > 0)
     }
 
     private fun setReserveEnabled(enabled: Boolean) {
@@ -240,7 +269,6 @@ class LodgingDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onLowMemory() { super.onLowMemory(); mapView.onLowMemory() }
     override fun onDestroy() { mapView.onDestroy(); super.onDestroy() }
     override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
-        mapView.onSaveInstanceState(outState)
+        super.onSaveInstanceState(outState); mapView.onSaveInstanceState(outState)
     }
 }

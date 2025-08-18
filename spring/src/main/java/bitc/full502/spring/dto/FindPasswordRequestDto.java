@@ -3,9 +3,8 @@ package bitc.full502.spring.dto;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
-@Setter
+@Getter @Setter
 public class FindPasswordRequestDto {
-    private String usersId; // ✅ usersId 맞춤
-    private String email;
+    private String usersId; // entity: Users.usersId
+    private String email;   // entity: Users.email
 }

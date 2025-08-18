@@ -1,0 +1,10 @@
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="8dp"
+    android:layout_margin="6dp"
+    android:background="@drawable/bg_chip_unselected"
+    android:textColor="@android:color/black"
+    android:textSize="14sp"
+    android:clickable="true"
+    android:focusable="true"/>

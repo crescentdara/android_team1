@@ -5,6 +5,6 @@ import lombok.Setter;
 
 @Getter @Setter
 public class LoginRequestDto {
-    private String userId;
-    private String password;
+    private String usersId; // entity: Users.usersId
+    private String pass;    // entity: Users.pass
 }

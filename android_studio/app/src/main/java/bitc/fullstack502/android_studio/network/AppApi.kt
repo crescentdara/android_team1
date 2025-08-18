@@ -8,6 +8,8 @@ import bitc.fullstack502.android_studio.FindPasswordResponse
 import bitc.fullstack502.android_studio.LoginRequest
 import bitc.fullstack502.android_studio.LoginResponse
 import bitc.fullstack502.android_studio.SignupRequest
+import bitc.fullstack502.android_studio.UpdateUserRequest
+import bitc.fullstack502.android_studio.UsersResponse
 import bitc.fullstack502.android_studio.model.ChatMessage
 import bitc.fullstack502.android_studio.model.ConversationSummary
 import bitc.fullstack502.android_studio.model.LodgingItem
@@ -58,15 +60,20 @@ interface AppApi {
     @GET("/api/posts")
     fun list(@Query("page") page: Int = 0, @Query("size") size: Int = 20): Call<PagePostDto>
 
+    // ✅ detail: 로그인 필수 → 헤더로 사용자 전달
     @GET("/api/posts/{id}")
-    fun detail(@Path("id") id: Long): Call<PostDto>
+    fun detail(
+        @Path("id") id: Long,
+        @Header("X-USER-ID") usersId: String? = null
+    ): Call<PostDto>
 
     @Multipart
     @POST("/api/posts")
     fun create(
         @Part("title") title: RequestBody,
         @Part("content") content: RequestBody,
-        @Part image: MultipartBody.Part?
+        @Part image: MultipartBody.Part?,
+        @Header("X-USER-ID") usersId: String? = null
     ): Call<Long>
 
     @Multipart
@@ -75,40 +82,58 @@ interface AppApi {
         @Path("id") id: Long,
         @Part("title") title: RequestBody,
         @Part("content") content: RequestBody,
-        @Part image: MultipartBody.Part?
+        @Part image: MultipartBody.Part?,
+        @Header("X-USER-ID") usersId: String? = null
     ): Call<Void>
 
+    // ✅ 좋아요: 로그인 필수
     @POST("/api/posts/{id}/like")
-    fun toggleLike(@Path("id") id: Long): Call<Long>
+    fun toggleLike(
+        @Path("id") id: Long,
+        @Header("X-USER-ID") usersId: String? = null
+    ): Call<Long>
 
     @GET("/api/comments/{postId}")
     fun comments(@Path("postId") postId: Long): Call<List<CommDto>>
 
+    // ✅ 댓글 쓰기/수정/삭제: 로그인 필수
     @FormUrlEncoded
     @POST("/api/comments")
     fun writeComment(
         @Field("postId") postId: Long,
         @Field("parentId") parentId: Long?,
-        @Field("content") content: String
+        @Field("content") content: String,
+        @Header("X-USER-ID") usersId: String? = null
     ): Call<Long>
 
     @FormUrlEncoded
     @PUT("/api/comments/{id}")
-    fun editComment(@Path("id") id: Long, @Field("content") content: String): Call<Void>
+    fun editComment(
+        @Path("id") id: Long,
+        @Field("content") content: String,
+        @Header("X-USER-ID") usersId: String? = null
+    ): Call<Void>
 
     @DELETE("/api/comments/{id}")
-    fun deleteComment(@Path("id") id: Long): Call<Void>
+    fun deleteComment(
+        @Path("id") id: Long,
+        @Header("X-USER-ID") usersId: String? = null
+    ): Call<Void>
 
     @DELETE("/api/posts/{id}")
-    fun deletePost(@Path("id") id: Long): Call<Void>
+    fun deletePost(
+        @Path("id") id: Long,
+        @Header("X-USER-ID") usersId: String? = null
+    ): Call<Void>
 
     @GET("/api/posts/search")
-    fun search(
+    fun searchPosts(
         @Query("field") field: String,
         @Query("q") q: String,
         @Query("page") page: Int = 0,
         @Query("size") size: Int = 20
     ): Call<PagePostDto>
+
 
     // ---------- 지역 ----------
     @GET("/api/locations/cities")
@@ -151,7 +176,8 @@ interface AppApi {
     fun prepay(@Path("id") id: Long, @Body body: Map<String, Any>): Call<Map<String, Any>>
 
     // ---------- 숙소 찜 ----------
-    @GET("/api/lodging/{id}/wish/status")
+
+    @GET("/api/lodging/{id}/wish")
     fun wishStatus(@Path("id") lodgingId: Long, @Query("userId") userId: Long): Call<LodgingWishStatusDto>
 
     @POST("/api/lodging/{id}/wish/toggle")
@@ -168,7 +194,7 @@ interface AppApi {
     fun checkId(@Query("id") id: String): Call<CheckIdResponse>
 
     @POST("/api/find-id")
-    fun findUserId(@Body request: FindIdRequest): Call<FindIdResponse>
+    fun findUsersId(@Body request: FindIdRequest): Call<FindIdResponse>
 
     @POST("/api/find-password")
     fun findUserPassword(@Body request: FindPasswordRequest): Call<FindPasswordResponse>
@@ -181,4 +207,24 @@ interface AppApi {
 
     @PUT("/api/update-user")
     fun updateUser(@Body request: SignupRequest): Call<Map<String, String>>
+
+    // 회원가입 (신규 엔드포인트: /api/users/register)
+    @POST("/api/users/register")
+    fun registerUserV2(@Body request: SignupRequest): Call<Void>
+
+    // 아이디 중복 체크 (신규 엔드포인트: /api/users/check-id?usersId=)
+    @GET("/api/users/check-id")
+    fun checkIdV2(@Query("usersId") usersId: String): Call<CheckIdResponse>
+
+    // 사용자 조회 (신규 엔드포인트: /api/users/{usersId})
+    @GET("/api/users/{usersId}")
+    fun getUserInfoV2(@Path("usersId") usersId: String): Call<UsersResponse>
+
+    // 사용자 업데이트 (신규 엔드포인트: PUT /api/users) – 비밀번호 제외
+    @PUT("/api/users")
+    fun updateUserV2(@Body request: UpdateUserRequest): Call<UsersResponse>
+
+    // 회원 삭제 (신규 엔드포인트: DELETE /api/users/{usersId})
+    @DELETE("/api/users/{usersId}")
+    fun deleteUserV2(@Path("usersId") usersId: String): Call<Void>
 }

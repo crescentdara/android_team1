@@ -1,26 +1,32 @@
 package bitc.fullstack502.android_studio.ui
 
 import android.content.Intent
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.Menu
 import android.view.MenuItem
-import android.view.MotionEvent
 import android.view.View
 import android.widget.ImageButton
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.viewpager2.widget.ViewPager2
 import bitc.fullstack502.android_studio.R
+import bitc.fullstack502.android_studio.ui.lodging.LodgingListActivity
+import bitc.fullstack502.android_studio.ui.lodging.LodgingSearchActivity
+import bitc.fullstack502.android_studio.ui.mypage.LoginActivity
+import bitc.fullstack502.android_studio.ui.mypage.MyPageActivity
+import bitc.fullstack502.android_studio.ui.post.PostListActivity
 import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.navigation.NavigationView
-import androidx.drawerlayout.widget.DrawerLayout
+import kotlin.jvm.java
 
 class MainActivity : AppCompatActivity() {
 
@@ -32,8 +38,8 @@ class MainActivity : AppCompatActivity() {
 
     private val handler = Handler(Looper.getMainLooper())
     private var autoRunnable: Runnable? = null
-    private var autoRunning = true
 
+    // 프로젝트에 있는 이미지 리소스에 맞춰 사용하세요(존재하는 파일명으로 유지)
     private val slideImages = listOf(
         R.drawable.slide1, R.drawable.slide2, R.drawable.slide3,
         R.drawable.slide4, R.drawable.slide5
@@ -49,111 +55,175 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         supportActionBar?.title = ""
 
-        // 드로어 헤더 인사말 세팅 (로그인 전 기본값)
-        val header = navView.getHeaderView(0)
-        header.findViewById<TextView>(R.id.tvUserGreeting)
-            .text = getString(R.string.greeting_fmt, "000")
-        header.findViewById<TextView>(R.id.tvUserEmail).text = "guest@example.com"
+        // 드로어 헤더 인사말 세팅 (로그인 상태 반영)
+        updateHeader(navView)
 
-        // 슬라이더
+        // --- 이미지 슬라이더(기존 리소스/어댑터를 그대로 사용) ---
         viewPager = findViewById(R.id.viewPager)
         btnPrev = findViewById(R.id.btnPrev)
         btnNext = findViewById(R.id.btnNext)
         dots = findViewById(R.id.dotsContainer)
 
+        // 프로젝트에 포함된 어댑터 이름 그대로 사용
         viewPager.adapter = ImageSliderAdapter(slideImages)
         setupDots(slideImages.size)
         updateDots(0)
-
-        // slide1 비율로 높이 자동 조정
-        viewPager.post {
-            val width = viewPager.width
-            val d = ContextCompat.getDrawable(this, R.drawable.slide1)!!   // ✅ 기준 이미지(가장 큰 이미지)
-            val ratio = d.intrinsicHeight.toFloat() / d.intrinsicWidth.toFloat()
-            val targetHeight = (width * ratio).toInt()
-            viewPager.layoutParams.height = targetHeight
-            findViewById<View>(R.id.sliderContainer).layoutParams.height = targetHeight
-            viewPager.requestLayout()
-        }
 
         viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
                 updateDots(position)
             }
-            override fun onPageScrollStateChanged(state: Int) {
-                super.onPageScrollStateChanged(state)
-                autoRunning = state == ViewPager2.SCROLL_STATE_IDLE
-            }
         })
 
-        // 좌/우 버튼
         btnPrev.setOnClickListener {
             val prev = (viewPager.currentItem - 1 + slideImages.size) % slideImages.size
-            viewPager.setCurrentItem(prev, true)
+            viewPager.currentItem = prev
         }
         btnNext.setOnClickListener {
             val next = (viewPager.currentItem + 1) % slideImages.size
-            viewPager.setCurrentItem(next, true)
+            viewPager.currentItem = next
         }
 
+        // 자동 슬라이딩
         startAutoSlide()
 
-        // 드로어 메뉴 클릭
-        navView.setNavigationItemSelectedListener {
-            when (it.itemId) {
-                R.id.nav_flight -> { /* TODO */ }
-                R.id.nav_hotel  -> { /* TODO */ }
-                R.id.nav_board  -> { /* TODO */ }
-                R.id.nav_chat   -> { startActivity(Intent(this, ChatListActivity::class.java)) }
-            }
-            drawer.closeDrawer(GravityCompat.END)
-            true
+        // --- 메인 카드 연결 (항공 제외) ---
+        findViewById<MaterialCardView>(R.id.cardHotel).setOnClickListener {
+            startActivity(Intent(this, LodgingSearchActivity::class.java))
+        }
+        findViewById<MaterialCardView>(R.id.cardBoard).setOnClickListener {
+            startActivity(Intent(this, PostListActivity::class.java))
+        }
+        findViewById<MaterialCardView>(R.id.cardChat).setOnClickListener {
+            startActivity(Intent(this, ChatListActivity::class.java))
+        }
+        findViewById<MaterialCardView>(R.id.cardFlight).setOnClickListener {
+            // 항공은 아직 미구현 → 토스트만
+            Toast.makeText(this, "항공권은 준비 중입니다.", Toast.LENGTH_SHORT).show()
         }
 
-        // 메인 2×2 카드 클릭
-        findViewById<MaterialCardView>(R.id.cardFlight).setOnClickListener { /* TODO */ }
-        findViewById<MaterialCardView>(R.id.cardHotel).setOnClickListener  { /* TODO */ }
-        findViewById<MaterialCardView>(R.id.cardBoard).setOnClickListener  { /* TODO */ }
-        findViewById<MaterialCardView>(R.id.cardChat).setOnClickListener   {
-            startActivity(Intent(this, ChatListActivity::class.java))
+        // --- 드로어 메뉴 연결 ---
+        navView.setNavigationItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_hotel -> {
+                    startActivity(Intent(this, LodgingSearchActivity::class.java)); true
+                }
+                R.id.nav_board -> {
+                    startActivity(Intent(this, PostListActivity::class.java)); true
+                }
+                R.id.nav_chat -> {
+                    startActivity(Intent(this, ChatListActivity::class.java)); true
+                }
+                R.id.nav_flight -> {
+                    Toast.makeText(this, "항공권은 준비 중입니다.", Toast.LENGTH_SHORT).show(); true
+                }
+                else -> false
+            }.also { drawer.closeDrawers() }
         }
     }
 
-    // 오른쪽 햄버거 메뉴
+    // 우상단 햄버거 메뉴
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main_toolbar_menu, menu)
         return true
     }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.action_drawer -> { drawer.openDrawer(GravityCompat.END); true }
+            R.id.action_drawer -> {
+                drawer.openDrawer(GravityCompat.END); true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
 
+    // ----------------- 로그인/헤더 처리 -----------------
+
+    private fun isLoggedIn(): Boolean {
+        val sp = getSharedPreferences("userInfo", MODE_PRIVATE)
+        return !sp.getString("usersId", null).isNullOrBlank()
+    }
+
+    private fun currentUserName(): String {
+        val sp = getSharedPreferences("userInfo", MODE_PRIVATE)
+        return sp.getString("name", null) ?: sp.getString("usersId", "") ?: ""
+    }
+
+    private fun currentUserEmail(): String {
+        val sp = getSharedPreferences("userInfo", MODE_PRIVATE)
+        return sp.getString("email", "") ?: ""
+    }
+
+    private fun updateHeader(navView: NavigationView) {
+        val header = navView.getHeaderView(0)
+        val tvGreet = header.findViewById<TextView>(R.id.tvUserGreeting)
+        val tvEmail = header.findViewById<TextView>(R.id.tvUserEmail)
+        val btnMyPage = header.findViewById<MaterialButton>(R.id.btnMyPage)
+        val btnLogout = header.findViewById<MaterialButton>(R.id.btnLogout)
+
+        if (isLoggedIn()) {
+            val name = currentUserName()
+            val email = currentUserEmail()
+            tvGreet.text = getString(R.string.greeting_fmt, if (name.isBlank()) "회원" else name)
+            tvEmail.visibility = View.VISIBLE
+            tvEmail.text = if (email.isNotBlank()) email else "로그인됨"
+
+            btnLogout.visibility = View.VISIBLE
+            btnMyPage.text = getString(R.string.mypage)
+            btnMyPage.setOnClickListener {
+                startActivity(Intent(this, MyPageActivity::class.java))
+            }
+            btnLogout.setOnClickListener {
+                val sp = getSharedPreferences("userInfo", MODE_PRIVATE)
+                sp.edit().clear().apply()
+                Toast.makeText(this, "로그아웃되었습니다.", Toast.LENGTH_SHORT).show()
+                updateHeader(navView)
+            }
+        } else {
+            // 비로그인: “000님” 같은 더미 표시 제거하고 “로그인”만 노출
+            tvGreet.text = "로그인"
+            tvEmail.visibility = View.GONE
+
+            btnLogout.visibility = View.GONE
+            btnMyPage.text = "로그인"
+            btnMyPage.setOnClickListener {
+                startActivity(Intent(this, LoginActivity::class.java))
+            }
+        }
+    }
+
+    // ----------------- 슬라이더 보조 함수 -----------------
+
     private fun startAutoSlide() {
+        stopAutoSlide()
         autoRunnable = object : Runnable {
             override fun run() {
-                if (autoRunning) {
-                    val next = (viewPager.currentItem + 1) % slideImages.size
-                    viewPager.setCurrentItem(next, true)
-                }
+                if (!this@MainActivity::viewPager.isInitialized) return
+                val next = (viewPager.currentItem + 1) % slideImages.size
+                viewPager.currentItem = next
                 handler.postDelayed(this, 3000)
             }
         }
         handler.postDelayed(autoRunnable!!, 3000)
     }
 
+    private fun stopAutoSlide() {
+        autoRunnable?.let { handler.removeCallbacks(it) }
+    }
+
     private fun setupDots(count: Int) {
         dots.removeAllViews()
-        for (i in 0 until count) {
-            val v = View(this)
-            val size = dp(8)
-            val lp = LinearLayout.LayoutParams(size, size)
-            lp.marginStart = dp(4); lp.marginEnd = dp(4)
-            v.layoutParams = lp
-            v.background = ContextCompat.getDrawable(this, R.drawable.dot_inactive)
+        val size = dp(6)
+        val margin = dp(4)
+        repeat(count) {
+            val v = View(this).apply {
+                layoutParams = LinearLayout.LayoutParams(size, size).also { lp ->
+                    lp.leftMargin = margin
+                    lp.rightMargin = margin
+                }
+                background = ContextCompat.getDrawable(this@MainActivity, R.drawable.dot_inactive)
+            }
             dots.addView(v)
         }
     }
@@ -171,6 +241,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        autoRunnable?.let { handler.removeCallbacks(it) }
+        stopAutoSlide()
     }
 }

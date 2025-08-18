@@ -15,12 +15,13 @@ import androidx.recyclerview.widget.RecyclerView
 import bitc.fullstack502.android_studio.R
 import bitc.fullstack502.android_studio.model.LodgingItem
 import bitc.fullstack502.android_studio.network.ApiProvider
+import bitc.fullstack502.android_studio.util.fullUrl
 import coil.load
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.NumberFormat
-import java.util.Locale
+import java.util.*
 
 class LodgingListActivity : AppCompatActivity() {
     private lateinit var rv: RecyclerView
@@ -33,12 +34,11 @@ class LodgingListActivity : AppCompatActivity() {
 
         val checkIn = intent.getStringExtra(LodgingFilterBottomSheet.EXTRA_CHECK_IN).orEmpty()
         val checkOut = intent.getStringExtra(LodgingFilterBottomSheet.EXTRA_CHECK_OUT).orEmpty()
-        val adults = intent.getIntExtra(LodgingFilterBottomSheet.EXTRA_ADULTS, 2)
+        val adults = intent.getIntExtra(LodgingFilterBottomSheet.EXTRA_ADULTS, 1)
         val children = intent.getIntExtra(LodgingFilterBottomSheet.EXTRA_CHILDREN, 0)
         val city = intent.getStringExtra("city")
         val town = intent.getStringExtra("town")
         val vill = intent.getStringExtra("vill")
-        val keyword = intent.getStringExtra("keyword").orEmpty()
 
         findViewById<TextView>(R.id.tvLocation).text =
             "위치: ${listOfNotNull(city, town, vill).joinToString(" ") { it.ifBlank { "-" } }}"
@@ -67,7 +67,7 @@ class LodgingListActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             try {
-                val items: List<LodgingItem> = withContext(Dispatchers.IO) {
+                val items = withContext(Dispatchers.IO) {
                     ApiProvider.api.getLodgings(
                         city = city?.ifBlank { null },
                         town = town?.ifBlank { null },
@@ -82,13 +82,13 @@ class LodgingListActivity : AppCompatActivity() {
                 if (items.isEmpty()) {
                     empty.visibility = View.VISIBLE
                 } else {
-                    rv.adapter = LodgingAdapter(items) { selectedItem ->
-                        val intent = Intent(this@LodgingListActivity, LodgingDetailActivity::class.java).apply {
-                            putExtra("lodgingId", selectedItem.id)
+                    rv.adapter = LodgingAdapter(items) { selected ->
+                        val i = Intent(this@LodgingListActivity, LodgingDetailActivity::class.java).apply {
+                            putExtra("lodgingId", selected.id)
                             putExtra("checkIn", checkIn)
                             putExtra("checkOut", checkOut)
                         }
-                        startActivity(intent)
+                        startActivity(i)
                     }
                     rv.visibility = View.VISIBLE
                 }
@@ -106,11 +106,11 @@ class LodgingListActivity : AppCompatActivity() {
         private val onItemClick: (LodgingItem) -> Unit
     ) : RecyclerView.Adapter<LodgingAdapter.VH>() {
 
-        class VH(view: View) : RecyclerView.ViewHolder(view) {
-            val iv: ImageView = view.findViewById(R.id.ivLodgingThumb)
-            val tvName: TextView = view.findViewById(R.id.tvLodgingName)
-            val tvAddr: TextView = view.findViewById(R.id.tvLodgingAddr)
-            val tvPrice: TextView = view.findViewById(R.id.tvLodgingPrice)
+        class VH(v: View) : RecyclerView.ViewHolder(v) {
+            val iv: ImageView = v.findViewById(R.id.ivLodgingThumb)
+            val tvName: TextView = v.findViewById(R.id.tvLodgingName)
+            val tvAddr: TextView = v.findViewById(R.id.tvLodgingAddr)
+            val tvPrice: TextView = v.findViewById(R.id.tvPrice) // ⚠ row_lodging.xml 과 id 일치
         }
 
         override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): VH {
@@ -118,23 +118,19 @@ class LodgingListActivity : AppCompatActivity() {
             return VH(v)
         }
 
-        override fun onBindViewHolder(holder: VH, position: Int) {
+        override fun onBindViewHolder(h: VH, position: Int) {
             val item = items[position]
-            holder.tvName.text = item.name
-            holder.tvAddr.text = listOfNotNull(item.city, item.town).joinToString(" ")
+            h.tvName.text = item.name
+            h.tvAddr.text = listOfNotNull(item.city, item.town).joinToString(" ")
 
-            if (item.basePrice > 0L) {
-                val won = NumberFormat.getNumberInstance(Locale.KOREA).format(item.basePrice)
-                holder.tvPrice.text = "${won}원"
-            } else holder.tvPrice.text = "가격 정보 없음"
+            val won = NumberFormat.getNumberInstance(Locale.KOREA).format(item.basePrice)
+            h.tvPrice.text = "${won}원"
 
-            if (item.img.isNullOrBlank()) {
-                holder.iv.setImageResource(R.drawable.ic_launcher_foreground)
-            } else {
-                holder.iv.load(item.img)
-            }
+            val url = fullUrl(item.img)
+            if (url == null) h.iv.setImageResource(R.drawable.ic_launcher_foreground)
+            else h.iv.load(url)
 
-            holder.itemView.setOnClickListener { onItemClick(item) }
+            h.itemView.setOnClickListener { onItemClick(item) }
         }
 
         override fun getItemCount(): Int = items.size

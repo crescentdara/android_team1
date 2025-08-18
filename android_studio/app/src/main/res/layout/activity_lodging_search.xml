@@ -11,29 +11,16 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- City: 라디오 버튼(1개만 선택) -->
-        <RadioGroup
-            android:id="@+id/rgCity"
+        <!-- 도시: 텍스트 토글(단일선택) -->
+        <com.google.android.flexbox.FlexboxLayout
+            android:id="@+id/layoutCity"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal">
+            android:paddingTop="8dp"
+            app:flexWrap="wrap"
+            app:justifyContent="center" />
 
-            <RadioButton
-                android:id="@+id/rbJeju"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="제주시" />
-
-            <RadioButton
-                android:id="@+id/rbSeogwipo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:text="서귀포시" />
-        </RadioGroup>
-
-        <!-- Town: 다중 선택(체크박스) -->
+        <!-- 읍/면/동: 텍스트 토글(다중선택) -->
         <com.google.android.flexbox.FlexboxLayout
             android:id="@+id/layoutTown"
             android:layout_width="match_parent"
@@ -43,7 +30,7 @@
             app:flexWrap="wrap"
             app:justifyContent="flex_start" />
 
-        <!-- Vill: 다중 선택(체크박스) -->
+        <!-- 리: 텍스트 토글(다중선택) -->
         <com.google.android.flexbox.FlexboxLayout
             android:id="@+id/layoutVill"
             android:layout_width="match_parent"

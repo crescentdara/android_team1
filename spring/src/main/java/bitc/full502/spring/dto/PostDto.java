@@ -8,10 +8,11 @@ public class PostDto {
     private Long id;
     private String title;
     private String content;
-    private String imgUrl;     // 정적 URL (/uploads/파일명)
+    private String imgUrl;
     private Long lookCount;
     private long likeCount;
-    private String author;     // usersId
+    private String author;
+    private Boolean liked; // ✅ 추가: 현재 로그인 사용자가 좋아요 눌렀는지
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -22,25 +23,36 @@ public class LodgingBookingService {
     private final LodgingRepository lodgingRepository;
     private final UsersRepository usersRepository;
 
-    /** 예약 저장 (yyyy-MM-dd 형식 필요) */
+    /** 예약 저장 (총액은 서버가 객실타입 단가 × 숙박박수로 재계산) */
     public Long saveBooking(LodgingBookingDto dto) {
-        // 1) DTO → 타입 변환
-        LocalDate ckIn  = LocalDate.parse(dto.getCkIn());   // e.g. "2025-08-16"
+        LocalDate ckIn  = LocalDate.parse(dto.getCkIn());
         LocalDate ckOut = LocalDate.parse(dto.getCkOut());
+        if (!ckIn.isBefore(ckOut)) {
+            throw new IllegalArgumentException("체크인은 체크아웃보다 이전이어야 합니다.");
+        }
 
-        // 2) FK 로드
         Lodging lodging = lodgingRepository.findById(dto.getLodId())
                 .orElseThrow(() -> new IllegalArgumentException("숙소를 찾을 수 없습니다. id=" + dto.getLodId()));
         Users user = usersRepository.findById(dto.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다. id=" + dto.getUserId()));
 
-        // 3) 기간 겹침 검사 (CANCEL 제외)
-        long overlap = lodBookRepository.countOverlapping(lodging.getId(), ckIn, ckOut);
-        if (overlap > 0) {
-            throw new IllegalStateException("이미 예약된 기간입니다.");
+        long overlapping = lodBookRepository.countOverlapping(lodging.getId(), ckIn, ckOut);
+        int total = lodging.getTotalRoom() == null ? 3 : lodging.getTotalRoom();
+
+        // 같은 기간에 total(기본 3)건까지 허용, 그 이상이면 만실
+        if (overlapping >= total) {
+            throw new IllegalStateException("요청 기간 만실입니다.");
         }
 
-        // 4) 엔티티 생성/저장
+        long nights = java.time.temporal.ChronoUnit.DAYS.between(ckIn, ckOut);
+        int unit = switch (dto.getRoomType()) {
+            case "싱글" -> 100_000;
+            case "디럭스" -> 120_000;
+            case "스위트" -> 150_000;
+            default -> 0;
+        };
+        long totalPrice = unit * Math.max(nights, 0);
+
         LodBook entity = LodBook.builder()
                 .adult(dto.getAdult())
                 .child(dto.getChild())
@@ -48,7 +60,7 @@ public class LodgingBookingService {
                 .ckOut(ckOut)
                 .roomType(dto.getRoomType())
                 .status(dto.getStatus())
-                .totalPrice(dto.getTotalPrice())
+                .totalPrice(totalPrice)
                 .lodging(lodging)
                 .user(user)
                 .build();

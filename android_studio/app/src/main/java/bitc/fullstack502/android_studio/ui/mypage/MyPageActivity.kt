@@ -1,17 +1,16 @@
+// MyPageActivity.kt
 package bitc.fullstack502.android_studio.ui.mypage
 
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import bitc.fullstack502.android_studio.SignupRequest
+import bitc.fullstack502.android_studio.*
 import bitc.fullstack502.android_studio.network.ApiProvider
 import retrofit2.Call
 import retrofit2.Callback
@@ -20,7 +19,7 @@ import bitc.fullstack502.android_studio.R
 
 class MyPageActivity : AppCompatActivity() {
 
-    private lateinit var tvUserId: TextView
+    private lateinit var tvUsersId: TextView
     private lateinit var tvName: TextView
     private lateinit var tvEmail: TextView
     private lateinit var tvPhone: TextView
@@ -36,43 +35,34 @@ class MyPageActivity : AppCompatActivity() {
             val newEmail = data?.getStringExtra("email") ?: ""
             val newPhone = data?.getStringExtra("phone") ?: ""
 
+            // 로컬 반영
             tvName.text = "이름: $newName"
             tvEmail.text = "Email: $newEmail"
             tvPhone.text = "전화번호: $newPhone"
 
-            val sharedPref = getSharedPreferences("userInfo", MODE_PRIVATE)
-            val pass = sharedPref.getString("pass", "") ?: ""
-
-            // 업데이트된 정보 저장
-            with(sharedPref.edit()) {
+            val sp = getSharedPreferences("userInfo", MODE_PRIVATE)
+            with(sp.edit()) {
                 putString("name", newName)
                 putString("email", newEmail)
                 putString("phone", newPhone)
                 apply()
             }
 
-            // ✅ 서버에 정보 업데이트 요청
-            val updatedUser = SignupRequest(
+            // (선택) 서버 재동기화가 필요하면 아래 유지 / 필요없으면 제거 가능
+            val updated = UpdateUserRequest(
                 usersId = usersId,
                 name = newName,
                 email = newEmail,
-                phone = newPhone,
-                pass = pass
+                phone = newPhone
             )
-
-            val api = ApiProvider.api
-            api.updateUser(request = updatedUser).enqueue(object : Callback<Map<String, String>> {
-                override fun onResponse(call: Call<Map<String, String>>, response: Response<Map<String, String>>) {
-                    if (response.isSuccessful) {
-                        Toast.makeText(this@MyPageActivity, "회원 정보가 성공적으로 수정되었습니다.", Toast.LENGTH_SHORT).show()
-                    } else {
-                        Toast.makeText(this@MyPageActivity, "서버 오류로 정보 수정에 실패했습니다. (${response.code()})", Toast.LENGTH_SHORT).show()
+            ApiProvider.api.updateUserV2(updated).enqueue(object : Callback<UsersResponse> {
+                override fun onResponse(call: Call<UsersResponse>, response: Response<UsersResponse>) {
+                    if (!response.isSuccessful) {
+                        Toast.makeText(this@MyPageActivity, "수정 실패 (${response.code()})", Toast.LENGTH_SHORT).show()
                     }
                 }
-
-                override fun onFailure(call: Call<Map<String, String>>, t: Throwable) {
-                    Toast.makeText(this@MyPageActivity, "네트워크 오류가 발생했습니다.", Toast.LENGTH_SHORT).show()
-                    t.printStackTrace()
+                override fun onFailure(call: Call<UsersResponse>, t: Throwable) {
+                    Toast.makeText(this@MyPageActivity, "네트워크 오류", Toast.LENGTH_SHORT).show()
                 }
             })
         }
@@ -91,84 +81,67 @@ class MyPageActivity : AppCompatActivity() {
             }
         }
 
-        tvUserId = findViewById(R.id.tv_user_id)
+        tvUsersId = findViewById(R.id.tv_user_id)
         tvName = findViewById(R.id.tv_name)
         tvEmail = findViewById(R.id.tv_email)
         tvPhone = findViewById(R.id.tv_phone)
 
-        val appLogoTextView = findViewById<TextView>(R.id.tv_app_logo)
-        appLogoTextView.setOnClickListener {
-            startActivity(Intent(this, LoginActivity::class.java))
-            finish()
-        }
+        // usersId 우선도: intent → SharedPreferences
+        usersId = intent.getStringExtra("usersId") ?: getSharedPreferences("userInfo", MODE_PRIVATE)
+            .getString("usersId", "") ?: ""
 
-        usersId = intent.getStringExtra("usersId") ?: ""
         if (usersId.isBlank()) {
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
             return
         }
 
-        tvUserId.text = "아이디: $usersId"
+        tvUsersId.text = "아이디: $usersId"
+        loadUserInfo(usersId)
 
-        loadUserInfoFromServer(usersId)
-
-        val btnEditInfo = findViewById<Button>(R.id.btn_edit_info)
-        btnEditInfo.setOnClickListener {
-            val sharedPref = getSharedPreferences("userInfo", MODE_PRIVATE)
-            val name = sharedPref.getString("name", "")
-            val email = sharedPref.getString("email", "")
-            val phone = sharedPref.getString("phone", "")
-
+        findViewById<Button>(R.id.btn_edit_info).setOnClickListener {
+            val sp = getSharedPreferences("userInfo", MODE_PRIVATE)
             val intent = Intent(this, EditInfoActivity::class.java).apply {
-                putExtra("name", name)
-                putExtra("email", email)
-                putExtra("phone", phone)
+                putExtra("name", sp.getString("name", ""))
+                putExtra("email", sp.getString("email", ""))
+                putExtra("phone", sp.getString("phone", ""))
             }
             editInfoLauncher.launch(intent)
         }
 
-        val btnLogout = findViewById<Button>(R.id.btn_logout)
-        btnLogout.setOnClickListener {
-            val sharedPref = getSharedPreferences("userInfo", MODE_PRIVATE)
-            with(sharedPref.edit()) {
-                clear()
-                apply()
-            }
+        findViewById<Button>(R.id.btn_logout).setOnClickListener {
+            val sp = getSharedPreferences("userInfo", MODE_PRIVATE)
+            sp.edit().clear().apply()
             Toast.makeText(this, "로그아웃 되었습니다.", Toast.LENGTH_SHORT).show()
             startActivity(Intent(this, LoginActivity::class.java))
             finish()
         }
 
-        val btnDeleteAccount = findViewById<Button>(R.id.btn_delete_account)
-        btnDeleteAccount.setOnClickListener {
+        findViewById<Button>(R.id.btn_delete_account).setOnClickListener {
             AlertDialog.Builder(this)
                 .setTitle("회원 탈퇴")
                 .setMessage("정말 탈퇴하시겠습니까? 탈퇴 시 모든 데이터가 삭제됩니다.")
-                .setPositiveButton("확인") { dialog, _ ->
-                    dialog.dismiss()
-                    deleteUserAccount()
+                .setPositiveButton("확인") { d, _ ->
+                    d.dismiss()
+                    deleteUser()
                 }
-                .setNegativeButton("취소") { dialog, _ ->
-                    dialog.dismiss()
-                }
+                .setNegativeButton("취소") { d, _ -> d.dismiss() }
                 .show()
         }
     }
 
-    private fun loadUserInfoFromServer(userId: String) {
-        val api = ApiProvider.api
-        api.getUserInfo(userId).enqueue(object : Callback<SignupRequest> {
-            override fun onResponse(call: Call<SignupRequest>, response: Response<SignupRequest>) {
+    private fun loadUserInfo(userId: String) {
+        // ✅ V2 엔드포인트 사용
+        ApiProvider.api.getUserInfoV2(userId).enqueue(object : Callback<UsersResponse> {
+            override fun onResponse(call: Call<UsersResponse>, response: Response<UsersResponse>) {
                 if (response.isSuccessful) {
-                    val userInfo = response.body()
-                    userInfo?.let {
+                    response.body()?.let {
                         tvName.text = "이름: ${it.name}"
                         tvEmail.text = "Email: ${it.email}"
                         tvPhone.text = "전화번호: ${it.phone}"
 
-                        val sharedPref = getSharedPreferences("userInfo", MODE_PRIVATE)
-                        with(sharedPref.edit()) {
+                        val sp = getSharedPreferences("userInfo", MODE_PRIVATE)
+                        with(sp.edit()) {
                             putString("name", it.name)
                             putString("email", it.email)
                             putString("phone", it.phone)
@@ -176,40 +149,31 @@ class MyPageActivity : AppCompatActivity() {
                         }
                     }
                 } else {
-                    Toast.makeText(this@MyPageActivity, "사용자 정보를 불러오는데 실패했습니다.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@MyPageActivity, "사용자 정보 로드 실패 (${response.code()})", Toast.LENGTH_SHORT).show()
                 }
             }
-
-            override fun onFailure(call: Call<SignupRequest>, t: Throwable) {
-                Toast.makeText(this@MyPageActivity, "네트워크 오류가 발생했습니다.", Toast.LENGTH_SHORT).show()
+            override fun onFailure(call: Call<UsersResponse>, t: Throwable) {
+                Toast.makeText(this@MyPageActivity, "네트워크 오류", Toast.LENGTH_SHORT).show()
             }
         })
     }
 
-    private fun deleteUserAccount() {
-        val api = ApiProvider.api
-        api.deleteUser(usersId).enqueue(object : Callback<Void> {
+    private fun deleteUser() {
+        // ✅ V2 엔드포인트 사용
+        ApiProvider.api.deleteUserV2(usersId).enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful) {
-                    Toast.makeText(this@MyPageActivity, "회원 탈퇴가 완료되었습니다.", Toast.LENGTH_SHORT).show()
-                    val sharedPref = getSharedPreferences("userInfo", MODE_PRIVATE)
-                    with(sharedPref.edit()) {
-                        clear()
-                        apply()
-                    }
-                    val intent = Intent(this@MyPageActivity, LoginActivity::class.java)
-                    startActivity(intent)
+                    Toast.makeText(this@MyPageActivity, "회원 탈퇴 완료", Toast.LENGTH_SHORT).show()
+                    val sp = getSharedPreferences("userInfo", MODE_PRIVATE)
+                    sp.edit().clear().apply()
+                    startActivity(Intent(this@MyPageActivity, LoginActivity::class.java))
                     finish()
                 } else {
-                    val errorBody = response.errorBody()?.string()
-                    Toast.makeText(this@MyPageActivity, "회원 탈퇴에 실패했습니다. 서버 에러: ${response.code()}", Toast.LENGTH_SHORT).show()
-                    println("회원 탈퇴 실패 서버 응답: $errorBody")
+                    Toast.makeText(this@MyPageActivity, "탈퇴 실패 (${response.code()})", Toast.LENGTH_SHORT).show()
                 }
             }
-
             override fun onFailure(call: Call<Void>, t: Throwable) {
-                Toast.makeText(this@MyPageActivity, "네트워크 오류가 발생했습니다.", Toast.LENGTH_SHORT).show()
-                t.printStackTrace()
+                Toast.makeText(this@MyPageActivity, "네트워크 오류", Toast.LENGTH_SHORT).show()
             }
         })
     }

@@ -1,12 +1,10 @@
 package bitc.full502.spring.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+@AllArgsConstructor
 public class FindIdResponseDto {
-    private String userId;
-
-    public FindIdResponseDto(String userId) {
-        this.userId = userId;
-    }
-
-    public String getUserId() { return userId; }
-    public void setUserId(String userId) { this.userId = userId; }
+    private String usersId; // entity: Users.usersId
 }

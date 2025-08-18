@@ -30,7 +30,7 @@ public class LodBook {
     private String roomType;
 
     @Column(name = "total_price")
-    private Long totalPrice;
+    private long totalPrice;
 
     @Column(length = 20)
     private String status;

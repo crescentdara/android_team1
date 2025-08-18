@@ -5,7 +5,7 @@ data class LodgingBookingDto(
     val lodId: Long,
     val ckIn: String,
     val ckOut: String,
-    val totalPrice: Int,
+    val totalPrice: Long,
     val roomType: String,
     val adult: Int,
     val child: Int,

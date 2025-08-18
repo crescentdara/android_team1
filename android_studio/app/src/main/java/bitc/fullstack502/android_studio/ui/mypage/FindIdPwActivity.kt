@@ -55,7 +55,7 @@ class FindIdPwActivity : AppCompatActivity() {
 
             val request = FindIdRequest(email, password)
 
-            ApiProvider.api.findUserId(request).enqueue(object : Callback<FindIdResponse> {
+            ApiProvider.api.findUsersId(request).enqueue(object : Callback<FindIdResponse> {
                 override fun onResponse(call: Call<FindIdResponse>, response: Response<FindIdResponse>) {
                     if (response.isSuccessful) {
                         val usersId = response.body()?.usersId

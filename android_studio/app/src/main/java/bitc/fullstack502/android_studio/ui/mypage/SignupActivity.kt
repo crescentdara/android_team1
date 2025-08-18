@@ -61,7 +61,7 @@ class SignupActivity : AppCompatActivity() {
                         tvPwCheck.setTextColor(ContextCompat.getColor(this@SignupActivity, android.R.color.holo_red_dark))
                     }
                     else -> {
-                        tvPwCheck.text = "비밀번호 확인 완료"
+                        tvPwCheck.text = "비밀번호가 일치합니다."
                         tvPwCheck.setTextColor(ContextCompat.getColor(this@SignupActivity, android.R.color.holo_green_dark))
                     }
                 }

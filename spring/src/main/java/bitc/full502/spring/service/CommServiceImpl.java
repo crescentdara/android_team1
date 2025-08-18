@@ -1,8 +1,6 @@
 package bitc.full502.spring.service;
 
-import bitc.full502.spring.domain.entity.Comm;
-import bitc.full502.spring.domain.entity.Post;
-import bitc.full502.spring.domain.entity.Users;
+import bitc.full502.spring.domain.entity.*;
 import bitc.full502.spring.domain.repository.CommRepository;
 import bitc.full502.spring.domain.repository.PostRepository;
 import bitc.full502.spring.domain.repository.UsersRepository;
@@ -22,9 +20,9 @@ public class CommServiceImpl implements CommService {
     private final PostRepository postRepository;
     private final UsersRepository usersRepository;
 
-    private Users getTestUser() {
-        return usersRepository.findByUsersId("testuser")
-                .orElseThrow(() -> new IllegalStateException("testuser가 없습니다."));
+    private Users getUserOrThrow(String usersId) {
+        return usersRepository.findByUsersId(usersId)
+                .orElseThrow(() -> new IllegalArgumentException("유효하지 않은 사용자입니다."));
     }
 
     @Override
@@ -43,30 +41,31 @@ public class CommServiceImpl implements CommService {
     }
 
     @Override
-    public Long write(Long postId, Long parentId, String content) {
+    public Long write(Long postId, Long parentId, String content, String usersId) {
         Post post = postRepository.findById(postId).orElseThrow();
-        Users user = getTestUser();
+        Users user = getUserOrThrow(usersId);
         Comm parent = (parentId == null) ? null : commRepository.findById(parentId).orElse(null);
         Comm c = Comm.builder().post(post).user(user).parent(parent).content(content).build();
         return commRepository.save(c).getId();
     }
 
     @Override
-    public void edit(Long commId, String content) {
+    public void edit(Long commId, String content, String usersId) {
+        Users me = getUserOrThrow(usersId);
         Comm c = commRepository.findById(commId).orElseThrow();
-        if (!"testuser".equals(c.getUser().getUsersId())) {
-            throw new IllegalStateException("본인 댓글만 수정할 수 있습니다.");
+        if (!me.getUsersId().equals(c.getUser().getUsersId())) {
+            throw new SecurityException("본인 댓글만 수정할 수 있습니다.");
         }
         c.setContent(content);
     }
 
     @Override
-    public void remove(Long commId) {
+    public void remove(Long commId, String usersId) {
+        Users me = getUserOrThrow(usersId);
         Comm c = commRepository.findById(commId).orElseThrow();
-        if (!"testuser".equals(c.getUser().getUsersId())) {
-            throw new IllegalStateException("본인 댓글만 삭제할 수 있습니다.");
+        if (!me.getUsersId().equals(c.getUser().getUsersId())) {
+            throw new SecurityException("본인 댓글만 삭제할 수 있습니다.");
         }
-        // 자식(대댓글)부터 재귀 삭제 후 본인 삭제
         deleteChildren(c);
         commRepository.delete(c);
     }
