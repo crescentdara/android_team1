@@ -4,11 +4,18 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.os.Bundle
 import android.widget.Button
+import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.LinearLayoutManager
+import bitc.fullstack502.android_studio.adapter.FlightAdapter
 import bitc.fullstack502.android_studio.databinding.ActivityFlightReservationBinding
+import bitc.fullstack502.android_studio.viewmodel.FlightReservationViewModel
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.datepicker.MaterialDatePicker
 import java.text.SimpleDateFormat
@@ -32,6 +39,12 @@ class FlightReservationActivity : AppCompatActivity() {
     private var lastNonJejuForArrival: String = "김포(서울)"
     private var isRoundTrip = true
 
+    private val viewModel: FlightReservationViewModel by viewModels()
+
+    private lateinit var flightAdapter: FlightAdapter
+
+//    private val viewModel: FlightViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
@@ -44,6 +57,31 @@ class FlightReservationActivity : AppCompatActivity() {
 
         setDeparture("김포(서울)", recordNonJeju = true)
         setArrival("제주", recordNonJeju = false)
+
+        // ✅ RecyclerView 초기화
+        flightAdapter = FlightAdapter(emptyList())
+        binding.recyclerFlight.apply {
+            layoutManager = LinearLayoutManager(this@FlightReservationActivity)
+            adapter = flightAdapter
+        }
+
+        // ✅ ViewModel 에서 항공편 데이터 관찰
+        viewModel.flights.observe(this, Observer { flightList ->
+            if (flightList != null) {
+                flightAdapter = FlightAdapter(flightList) // 새 리스트로 갱신
+                binding.recyclerFlight.adapter = flightAdapter
+            }
+        })
+
+        // 항공편 검색 버튼 클릭 시 -> 서버에서 데이터 요청
+        binding.btnSearchFlight.setOnClickListener {
+            val dep = binding.tvDeparture.text.toString()
+            val arr = binding.tvArrival.text.toString()
+            val date = binding.btnDate.text.toString()
+
+            // ViewModel 호출해서 MySQL(API)에서 데이터 가져오기
+            viewModel.searchFlights(dep, arr, date)
+        }
 
         // 편도/왕복 토글
         binding.toggleTripType.addOnButtonCheckedListener { group, checkedId, isChecked ->
@@ -83,6 +121,15 @@ class FlightReservationActivity : AppCompatActivity() {
 
         // ↔ 스왑
         binding.tvSwap.setOnClickListener { swapAirports() }
+
+        // 항공편 검색 버튼 클릭
+        binding.btnSearchFlight.setOnClickListener {
+
+            val dep = binding.tvDeparture.text.toString()
+            val arr = binding.tvArrival.text.toString()
+            val time = binding.btnDate.text.toString()
+            val passenger = binding.btnPassenger.text.toString()
+        }
     }
 
     private fun setDeparture(value: String, recordNonJeju: Boolean) {

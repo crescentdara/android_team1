@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="12dp"
+    app:cardCornerRadius="20dp"
+    app:cardElevation="6dp"
+    android:background="@android:color/white">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- 상단 : 항공사 + 편명 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/tv_airline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:layout_weight="4"
+                android:text="대한항공"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:textColor="@color/jeju_primary" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text=" " />
+
+            <TextView
+                android:id="@+id/tv_fl_no"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="4"
+                android:text="KE123"
+                android:textStyle="bold"
+                android:textSize="16sp"
+                android:textColor="@color/black" />
+        </LinearLayout>
+
+        <!-- 중단 : 출발 - 도착 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="12dp">
+
+            <TextView
+                android:id="@+id/tv_dep"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="김포"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=" ✈ "
+                android:textSize="18sp"
+                android:textColor="@color/jeju_primary"
+                android:layout_marginHorizontal="12dp" />
+
+            <TextView
+                android:id="@+id/tv_arr"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="제주"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/black" />
+        </LinearLayout>
+
+        <!-- 하단 : 출발시간 - 도착시간 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="12dp">
+
+            <TextView
+                android:id="@+id/tv_dep_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="end"
+                android:text="08:30"
+                android:layout_marginEnd="12dp"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/tv_arr_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="09:40"
+                android:layout_marginStart="12dp"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <!-- 예약 버튼 -->
+        <Button
+            android:id="@+id/btn_book"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:text="예매하기"
+            android:textColor="@android:color/white"
+            android:backgroundTint="@color/jeju_primary"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/ticket_button_bg"/>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

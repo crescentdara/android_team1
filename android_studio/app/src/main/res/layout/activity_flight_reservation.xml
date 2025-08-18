@@ -125,4 +125,15 @@
         android:text="항공편 검색"
         android:textColor="@android:color/white"
         android:backgroundTint="@color/jeju_primary" />
+
+    <!-- 항공권 리스트 -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_flight"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="20dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:paddingBottom="16dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
 </LinearLayout>
