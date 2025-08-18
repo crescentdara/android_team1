@@ -12,13 +12,17 @@ import bitc.fullstack502.android_studio.model.ChatMessage
 import bitc.fullstack502.android_studio.model.ConversationSummary
 import bitc.fullstack502.android_studio.model.LodgingItem
 import bitc.fullstack502.android_studio.network.dto.*
+import bitc.fullstack502.android_studio.network.dto.AvailabilityDto
+import bitc.fullstack502.android_studio.network.dto.NaverLocalResp
+import bitc.fullstack502.android_studio.network.dto.PagePostDto
+import bitc.fullstack502.android_studio.network.dto.PostDto
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.*
 
-// 모든 엔드포인트를 하나로 통합한 인터페이스
+/** 모든 엔드포인트 통합 인터페이스 */
 interface AppApi {
 
     // ---------- Chat ----------
@@ -38,7 +42,7 @@ interface AppApi {
     suspend fun markRead(
         @Query("roomId") roomId: String,
         @Query("userId") userId: String
-    ): Response<Unit>    // 바디 없는 200 응답
+    ): Response<Unit>   // body 없는 200
 
     // ---------- Naver Local (서버 프록시) ----------
     @GET("/api/naver/local/nearby")
@@ -52,10 +56,7 @@ interface AppApi {
 
     // ---------- 게시글 / 댓글 ----------
     @GET("/api/posts")
-    fun list(
-        @Query("page") page: Int = 0,
-        @Query("size") size: Int = 20
-    ): Call<PagePostDto>
+    fun list(@Query("page") page: Int = 0, @Query("size") size: Int = 20): Call<PagePostDto>
 
     @GET("/api/posts/{id}")
     fun detail(@Path("id") id: Long): Call<PostDto>
@@ -93,10 +94,7 @@ interface AppApi {
 
     @FormUrlEncoded
     @PUT("/api/comments/{id}")
-    fun editComment(
-        @Path("id") id: Long,
-        @Field("content") content: String
-    ): Call<Void>
+    fun editComment(@Path("id") id: Long, @Field("content") content: String): Call<Void>
 
     @DELETE("/api/comments/{id}")
     fun deleteComment(@Path("id") id: Long): Call<Void>
@@ -112,7 +110,7 @@ interface AppApi {
         @Query("size") size: Int = 20
     ): Call<PagePostDto>
 
-    // ---------- 지역(시/군/읍면동) ----------
+    // ---------- 지역 ----------
     @GET("/api/locations/cities")
     suspend fun getCities(): List<String>
 
@@ -120,10 +118,7 @@ interface AppApi {
     suspend fun getTowns(@Query("city") city: String): List<String>
 
     @GET("/api/locations/vills")
-    suspend fun getVills(
-        @Query("city") city: String,
-        @Query("town") town: String
-    ): List<String>
+    suspend fun getVills(@Query("city") city: String, @Query("town") town: String): List<String>
 
     // ---------- 숙소 목록/예약 ----------
     @GET("/api/lodgings")
@@ -153,46 +148,37 @@ interface AppApi {
     ): Call<AvailabilityDto>
 
     @POST("/api/lodging/{id}/prepay")
-    fun prepay(
-        @Path("id") id: Long,
-        @Body body: Map<String, Any>
-    ): Call<Map<String, Any>>
+    fun prepay(@Path("id") id: Long, @Body body: Map<String, Any>): Call<Map<String, Any>>
 
     // ---------- 숙소 찜 ----------
     @GET("/api/lodging/{id}/wish/status")
-    fun wishStatus(
-        @Path("id") lodgingId: Long,
-        @Query("userId") userId: Long
-    ): Call<LodgingWishStatusDto>
+    fun wishStatus(@Path("id") lodgingId: Long, @Query("userId") userId: Long): Call<LodgingWishStatusDto>
 
     @POST("/api/lodging/{id}/wish/toggle")
-    fun wishToggle(
-        @Path("id") lodgingId: Long,
-        @Query("userId") userId: Long
-    ): Call<LodgingWishStatusDto>
+    fun wishToggle(@Path("id") lodgingId: Long, @Query("userId") userId: Long): Call<LodgingWishStatusDto>
 
     // ---------- 회원/인증 ----------
-    @POST("api/login")
+    @POST("/api/login")
     fun login(@Body request: LoginRequest): Call<LoginResponse>
 
-    @POST("api/signup")
+    @POST("/api/signup")
     fun registerUser(@Body request: SignupRequest): Call<Void>
 
-    @GET("api/checkId")
+    @GET("/api/checkId")
     fun checkId(@Query("id") id: String): Call<CheckIdResponse>
 
-    @POST("api/find-id")
+    @POST("/api/find-id")
     fun findUserId(@Body request: FindIdRequest): Call<FindIdResponse>
 
-    @POST("api/find-password")
+    @POST("/api/find-password")
     fun findUserPassword(@Body request: FindPasswordRequest): Call<FindPasswordResponse>
 
-    @GET("api/user-info")
+    @GET("/api/user-info")
     fun getUserInfo(@Query("userId") userId: String): Call<SignupRequest>
 
-    @DELETE("api/delete-user")
+    @DELETE("/api/delete-user")
     fun deleteUser(@Query("userId") userId: String): Call<Void>
 
-    @PUT("api/update-user")
+    @PUT("/api/update-user")
     fun updateUser(@Body request: SignupRequest): Call<Map<String, String>>
 }

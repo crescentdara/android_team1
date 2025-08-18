@@ -7,11 +7,12 @@ import androidx.appcompat.app.AppCompatActivity
 import bitc.fullstack502.android_studio.FindIdResponse
 import bitc.fullstack502.android_studio.FindPasswordRequest
 import bitc.fullstack502.android_studio.FindPasswordResponse
-import bitc.fullstack502.android_studio.RetrofitClient
 import bitc.fullstack502.android_studio.FindIdRequest
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import bitc.fullstack502.android_studio.R
+import bitc.fullstack502.android_studio.network.ApiProvider
 
 class FindIdPwActivity : AppCompatActivity() {
 
@@ -54,12 +55,12 @@ class FindIdPwActivity : AppCompatActivity() {
 
             val request = FindIdRequest(email, password)
 
-            RetrofitClient.userApiService.findUserId(request).enqueue(object : Callback<FindIdResponse> {
+            ApiProvider.api.findUserId(request).enqueue(object : Callback<FindIdResponse> {
                 override fun onResponse(call: Call<FindIdResponse>, response: Response<FindIdResponse>) {
                     if (response.isSuccessful) {
-                        val userId = response.body()?.userId
-                        if (userId != null) {
-                            Toast.makeText(this@FindIdPwActivity, "당신의 아이디는: $userId", Toast.LENGTH_LONG).show()
+                        val usersId = response.body()?.usersId
+                        if (usersId != null) {
+                            Toast.makeText(this@FindIdPwActivity, "당신의 아이디는: $usersId", Toast.LENGTH_LONG).show()
                         } else {
                             Toast.makeText(this@FindIdPwActivity, "아이디를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show()
                             Log.e("FindIdPwActivity", "userId is null in successful response")
@@ -93,10 +94,10 @@ class FindIdPwActivity : AppCompatActivity() {
 
             val request = FindPasswordRequest(userId, email)
 
-            RetrofitClient.userApiService.findUserPassword(request).enqueue(object : Callback<FindPasswordResponse> {
+            ApiProvider.api.findUserPassword(request).enqueue(object : Callback<FindPasswordResponse> {
                 override fun onResponse(call: Call<FindPasswordResponse>, response: Response<FindPasswordResponse>) {
                     if (response.isSuccessful) {
-                        val password = response.body()?.password
+                        val password = response.body()?.pass
                         if (password != null) {
                             Toast.makeText(this@FindIdPwActivity, "비밀번호: $password", Toast.LENGTH_LONG).show()
                         } else {

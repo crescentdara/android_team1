@@ -7,11 +7,12 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import bitc.fullstack502.android_studio.RetrofitClient
 import bitc.fullstack502.android_studio.SignupRequest
+import bitc.fullstack502.android_studio.network.ApiProvider
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import bitc.fullstack502.android_studio.R
 
 class EditInfoActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,7 +52,7 @@ class EditInfoActivity : AppCompatActivity() {
                 phone = phone
             )
 
-            val api = RetrofitClient.apiService
+            val api = ApiProvider.api
             api.updateUser(request).enqueue(object : Callback<Map<String, String>> {
                 override fun onResponse(
                     call: Call<Map<String, String>>,

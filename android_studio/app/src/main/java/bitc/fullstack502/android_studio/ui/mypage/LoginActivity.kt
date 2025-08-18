@@ -1,5 +1,6 @@
 package bitc.fullstack502.android_studio.ui.mypage
 
+import android.R.attr.password
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -7,19 +8,19 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import bitc.fullstack502.android_studio.LoginRequest
 import bitc.fullstack502.android_studio.LoginResponse
-import bitc.fullstack502.android_studio.RetrofitClient
-import bitc.fullstack502.android_studio.ui.mypage.ui.mypage.FindIdPwActivity
+import bitc.fullstack502.android_studio.network.ApiProvider
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import bitc.fullstack502.android_studio.R
 
 class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        val etUserId = findViewById<EditText>(R.id.et_user_id)
-        val etPassword = findViewById<EditText>(R.id.et_password)
+        val etUsersId = findViewById<EditText>(R.id.et_users_id)
+        val etPass = findViewById<EditText>(R.id.et_pass)
         val btnLogin = findViewById<Button>(R.id.btn_login)
 
         // 회원가입 텍스트뷰
@@ -37,16 +38,16 @@ class LoginActivity : AppCompatActivity() {
         }
 
         btnLogin.setOnClickListener {
-            val userId = etUserId.text.toString().trim()
-            val password = etPassword.text.toString().trim()
+            val usersId = etUsersId.text.toString().trim()
+            val pass = etPass.text.toString().trim()
 
-            if (userId.isBlank() || password.isBlank()) {
+            if (usersId.isBlank() || pass.isBlank()) {
                 Toast.makeText(this, "아이디와 비밀번호를 입력해주세요.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            val request = LoginRequest(userId, password)
-            RetrofitClient.apiService.login(request).enqueue(object : Callback<LoginResponse> {
+            val request = LoginRequest(usersId, pass)
+            ApiProvider.api.login(request).enqueue(object : Callback<LoginResponse> {
                 override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
                     if (response.isSuccessful) {
                         val user = response.body()
@@ -56,8 +57,7 @@ class LoginActivity : AppCompatActivity() {
                             // SharedPreferences에 로그인 정보 저장
                             val sharedPref = getSharedPreferences("userInfo", MODE_PRIVATE)
                             with(sharedPref.edit()) {
-                                putString("userId", user.userId)
-                                putString("pass", password)
+                                putString("usersId", user.usersId)
                                 putString("name", user.name)
                                 putString("email", user.email)
                                 putString("phone", user.phone)
@@ -65,8 +65,8 @@ class LoginActivity : AppCompatActivity() {
                             }
 
                             // 다음 화면으로 이동
-                            val intent = Intent(this@LoginActivity, MyPage::class.java)
-                            intent.putExtra("userId", user.userId)
+                            val intent = Intent(this@LoginActivity, MyPageActivity::class.java)
+                            intent.putExtra("usersId", user.usersId)
                             startActivity(intent)
                             finish()
                         } else {

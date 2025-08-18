@@ -13,6 +13,7 @@ public class LodgingListDto {
     private String city;
     private String town;
     private String addrRd;   // 도로명 주소(없으면 지번 주소로 대체 가능)
-    private Long price;      // 노출용 대표가/최저가 (백엔드 basePrice 값 매핑)
+          // 노출용 대표가/최저가 (백엔드 basePrice 값 매핑)
     private String img;
+    private Long basePrice;
 }

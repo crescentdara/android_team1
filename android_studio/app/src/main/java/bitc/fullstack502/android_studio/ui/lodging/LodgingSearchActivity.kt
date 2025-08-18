@@ -8,10 +8,8 @@ import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import androidx.core.view.children
 import bitc.fullstack502.android_studio.R
-import bitc.fullstack502.android_studio.network.RetrofitProvider
-import bitc.fullstack502.android_studio.ui.lodging.LodgingFilterBottomSheet
+import bitc.fullstack502.android_studio.network.ApiProvider
 import com.google.android.flexbox.FlexboxLayout
 import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.Dispatchers
@@ -29,12 +27,10 @@ class LodgingSearchActivity : AppCompatActivity() {
     private lateinit var btnDateGuest: MaterialButton
     private lateinit var btnSearch: MaterialButton
 
-    // 선택 상태
     private var selectedCity = ""
     private val selectedTowns = mutableListOf<String>()
     private val selectedVills = mutableListOf<String>()
 
-    // 날짜/인원
     private var checkInDate = ""
     private var checkOutDate = ""
     private var adults = 1
@@ -54,7 +50,6 @@ class LodgingSearchActivity : AppCompatActivity() {
         setupDateGuestButton()
         setupSearchButton()
 
-        // 달력/인원 바텀시트 결과 수신
         supportFragmentManager.setFragmentResultListener(
             LodgingFilterBottomSheet.RESULT_KEY, this
         ) { _, bundle ->
@@ -68,7 +63,6 @@ class LodgingSearchActivity : AppCompatActivity() {
 
     private fun setupCityListener() {
         rgCity.setOnCheckedChangeListener { _, checkedId ->
-            // 선택 초기화
             selectedTowns.clear()
             selectedVills.clear()
             layoutTown.removeAllViews()
@@ -97,7 +91,6 @@ class LodgingSearchActivity : AppCompatActivity() {
                 Toast.makeText(this, "시를 선택하세요.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            // 목록 화면으로 이동 (필터 모두 전달)
             val intent = Intent(this, LodgingListActivity::class.java).apply {
                 putExtra("city", selectedCity)
                 putExtra("town", selectedTowns.joinToString(","))
@@ -111,16 +104,12 @@ class LodgingSearchActivity : AppCompatActivity() {
         }
     }
 
-    /** Town 목록 로드 */
     private fun loadTowns(city: String) {
         lifecycleScope.launch {
             try {
-                val towns = withContext(Dispatchers.IO) {
-                    RetrofitProvider.locationApi.getTowns(city)
-                }
+                val towns = withContext(Dispatchers.IO) { ApiProvider.api.getTowns(city) }
                 layoutTown.visibility = View.VISIBLE
                 createCheckBoxes(layoutTown, towns, selectedTowns) { _, _ ->
-                    // 선택된 town이 있으면 vill 로드
                     if (selectedTowns.isNotEmpty()) {
                         loadVillsForSelectedTowns()
                     } else {
@@ -135,29 +124,23 @@ class LodgingSearchActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * LocationApi.getVills(city, town)은 단일 town만 받으므로
-     * 선택된 town들에 대해 병렬로 API 호출 후 결과를 합쳐서 보여줌.
-     */
     private fun loadVillsForSelectedTowns() {
         lifecycleScope.launch {
             try {
                 val city = selectedCity
-                // 병렬 호출
                 val jobs = selectedTowns.map { town ->
-                    async(Dispatchers.IO) { RetrofitProvider.locationApi.getVills(city, town) }
+                    async(Dispatchers.IO) { ApiProvider.api.getVills(city, town) }
                 }
-                val merged = jobs.flatMap { it.await() }.toSet().toList() // 중복 제거
+                val merged = jobs.flatMap { it.await() }.toSet().toList()
 
                 layoutVill.visibility = View.VISIBLE
-                createCheckBoxes(layoutVill, merged, selectedVills) { _, _ -> /* no-op */ }
+                createCheckBoxes(layoutVill, merged, selectedVills) { _, _ -> }
             } catch (e: Exception) {
                 Toast.makeText(this@LodgingSearchActivity, "리 불러오기 실패", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    /** 체크박스 UI 생성(다중선택/해제 + 상태 유지) */
     private fun createCheckBoxes(
         container: FlexboxLayout,
         items: List<String>,

@@ -6,9 +6,7 @@ import android.util.Log
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import bitc.fullstack502.android_studio.R
-import bitc.fullstack502.android_studio.network.LodgingDetailApi
-import bitc.fullstack502.android_studio.network.LodgingWishApi
-import bitc.fullstack502.android_studio.network.RetrofitProvider
+import bitc.fullstack502.android_studio.network.ApiProvider
 import bitc.fullstack502.android_studio.network.dto.AvailabilityDto
 import bitc.fullstack502.android_studio.network.dto.LodgingDetailDto
 import bitc.fullstack502.android_studio.network.dto.LodgingWishStatusDto
@@ -26,9 +24,6 @@ import java.text.NumberFormat
 import java.util.*
 
 class LodgingDetailActivity : AppCompatActivity(), OnMapReadyCallback {
-
-    private lateinit var api: LodgingDetailApi
-    private lateinit var wishApi: LodgingWishApi
 
     private lateinit var mapView: MapView
     private var naverMap: NaverMap? = null
@@ -83,9 +78,6 @@ class LodgingDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         btnWish = findViewById(R.id.btnWish)
         tvWishCount = findViewById(R.id.tvWishCount)
 
-        api = RetrofitProvider.retrofit.create(LodgingDetailApi::class.java)
-        wishApi = RetrofitProvider.retrofit.create(LodgingWishApi::class.java)
-
         lodgingId = intent.getLongExtra("lodgingId", 0L).let { if (it == 0L) 1570L else it }
         checkIn = intent.getStringExtra("checkIn") ?: ""
         checkOut = intent.getStringExtra("checkOut") ?: ""
@@ -106,7 +98,20 @@ class LodgingDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         rgRoom.setOnCheckedChangeListener { _, _ -> updateSelectionAndTotal() }
 
         btnReserve.setOnClickListener {
-            // 예약 로직
+            // 예약 로직 (결제화면 이동 등)
+            val intent = Intent(this, LodgingPaymentActivity::class.java).apply {
+                putExtra("lodgingId", lodgingId)
+                putExtra("checkIn", checkIn)
+                putExtra("checkOut", checkOut)
+                putExtra("roomType", when (rgRoom.checkedRadioButtonId) {
+                    R.id.rbSingle -> "싱글"
+                    R.id.rbDeluxe -> "디럭스"
+                    R.id.rbSuite -> "스위트"
+                    else -> ""
+                })
+                putExtra("totalPrice", priceWon * selectedNights)
+            }
+            startActivity(intent)
         }
         btnWish.setOnClickListener { toggleWish() }
     }
@@ -124,7 +129,7 @@ class LodgingDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun fetchDetail() {
-        api.getDetail(lodgingId).enqueue(object : Callback<LodgingDetailDto> {
+        ApiProvider.api.getDetail(lodgingId).enqueue(object : Callback<LodgingDetailDto> {
             override fun onResponse(c: Call<LodgingDetailDto>, r: Response<LodgingDetailDto>) {
                 if (!r.isSuccessful) {
                     Log.e("Detail", "HTTP ${r.code()} ${r.errorBody()?.string()}")
@@ -137,7 +142,9 @@ class LodgingDetailActivity : AppCompatActivity(), OnMapReadyCallback {
                 tvName.text = name
                 tvAddr.text = listOfNotNull(d.addrRd, d.addrJb).joinToString(" / ")
                 tvPhone.text = d.phone ?: ""
-                if (!d.img.isNullOrBlank()) Glide.with(this@LodgingDetailActivity).load(d.img).into(imgCover)
+                if (!d.img.isNullOrBlank()) {
+                    Glide.with(this@LodgingDetailActivity).load(d.img).into(imgCover)
+                }
                 updateMapMarkerIfReady()
                 refreshWish()
                 checkAvailability(checkIn, checkOut)
@@ -155,29 +162,31 @@ class LodgingDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun refreshWish() {
-        wishApi.status(lodgingId, testUserId).enqueue(object : Callback<LodgingWishStatusDto> {
-            override fun onResponse(call: Call<LodgingWishStatusDto>, response: Response<LodgingWishStatusDto>) {
-                response.body()?.let { s ->
-                    wished = s.wished
-                    tvWishCount.text = s.wishCount.toString()
-                    updateWishIcon()
+        ApiProvider.api.wishStatus(lodgingId, testUserId)
+            .enqueue(object : Callback<LodgingWishStatusDto> {
+                override fun onResponse(call: Call<LodgingWishStatusDto>, response: Response<LodgingWishStatusDto>) {
+                    response.body()?.let { s ->
+                        wished = s.wished
+                        tvWishCount.text = s.wishCount.toString()
+                        updateWishIcon()
+                    }
                 }
-            }
-            override fun onFailure(call: Call<LodgingWishStatusDto>, t: Throwable) { }
-        })
+                override fun onFailure(call: Call<LodgingWishStatusDto>, t: Throwable) { }
+            })
     }
 
     private fun toggleWish() {
-        wishApi.toggle(lodgingId, testUserId).enqueue(object : Callback<LodgingWishStatusDto> {
-            override fun onResponse(call: Call<LodgingWishStatusDto>, response: Response<LodgingWishStatusDto>) {
-                response.body()?.let { s ->
-                    wished = s.wished
-                    tvWishCount.text = s.wishCount.toString()
-                    updateWishIcon()
+        ApiProvider.api.wishToggle(lodgingId, testUserId)
+            .enqueue(object : Callback<LodgingWishStatusDto> {
+                override fun onResponse(call: Call<LodgingWishStatusDto>, response: Response<LodgingWishStatusDto>) {
+                    response.body()?.let { s ->
+                        wished = s.wished
+                        tvWishCount.text = s.wishCount.toString()
+                        updateWishIcon()
+                    }
                 }
-            }
-            override fun onFailure(call: Call<LodgingWishStatusDto>, t: Throwable) { }
-        })
+                override fun onFailure(call: Call<LodgingWishStatusDto>, t: Throwable) { }
+            })
     }
 
     private fun updateWishIcon() {
@@ -185,21 +194,22 @@ class LodgingDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun checkAvailability(ci: String, co: String) {
-        api.getAvailability(lodgingId, ci, co, null).enqueue(object : Callback<AvailabilityDto> {
-            override fun onResponse(c: Call<AvailabilityDto>, r: Response<AvailabilityDto>) {
-                val a = r.body() ?: return
-                val enable = a.availableRooms > 0
-                rbSingle.isEnabled = enable
-                rbDeluxe.isEnabled = enable
-                rbSuite.isEnabled = enable
-                if (!enable) {
-                    rgRoom.clearCheck()
-                    tvSelection.text = "선택한 옵션: (만실)"
-                    Toast.makeText(this@LodgingDetailActivity, a.reason ?: "만실", Toast.LENGTH_SHORT).show()
-                } else updateSelectionAndTotal()
-            }
-            override fun onFailure(c: Call<AvailabilityDto>, t: Throwable) { }
-        })
+        ApiProvider.api.getAvailability(lodgingId, ci, co, null)
+            .enqueue(object : Callback<AvailabilityDto> {
+                override fun onResponse(c: Call<AvailabilityDto>, r: Response<AvailabilityDto>) {
+                    val a = r.body() ?: return
+                    val enable = a.availableRooms > 0
+                    rbSingle.isEnabled = enable
+                    rbDeluxe.isEnabled = enable
+                    rbSuite.isEnabled = enable
+                    if (!enable) {
+                        rgRoom.clearCheck()
+                        tvSelection.text = "선택한 옵션: (만실)"
+                        Toast.makeText(this@LodgingDetailActivity, a.reason ?: "만실", Toast.LENGTH_SHORT).show()
+                    } else updateSelectionAndTotal()
+                }
+                override fun onFailure(c: Call<AvailabilityDto>, t: Throwable) { }
+            })
     }
 
     private fun updateSelectionAndTotal() {
@@ -215,7 +225,6 @@ class LodgingDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         val total = priceWon * selectedNights
         tvTotalPrice.text = "총 결제금액: " + NumberFormat.getCurrencyInstance(Locale.KOREA).format(total)
 
-        // 객실 선택 시 예약 버튼 활성화
         setReserveEnabled(room != "-")
     }
 

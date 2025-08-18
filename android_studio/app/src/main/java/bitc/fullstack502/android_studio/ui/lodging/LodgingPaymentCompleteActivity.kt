@@ -3,7 +3,7 @@ package bitc.fullstack502.android_studio.ui.lodging
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import bitc.fullstack502.android_studio.MainActivity
+import bitc.fullstack502.android_studio.ui.MainActivity
 import bitc.fullstack502.android_studio.databinding.ActivityLodgingPaymentCompleteBinding
 
 class LodgingPaymentCompleteActivity : AppCompatActivity() {

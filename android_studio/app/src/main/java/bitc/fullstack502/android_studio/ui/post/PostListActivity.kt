@@ -6,7 +6,7 @@ import android.view.inputmethod.EditorInfo
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import bitc.fullstack502.android_studio.databinding.ActivityPostListBinding
-import bitc.fullstack502.android_studio.network.RetrofitClient
+import bitc.fullstack502.android_studio.network.ApiProvider
 import bitc.fullstack502.android_studio.network.dto.PagePostDto
 import retrofit2.Call
 import retrofit2.Callback
@@ -72,7 +72,7 @@ class PostListActivity : AppCompatActivity() {
     private fun doSearch() {
         val q = bind.etQuery.text.toString().trim()
         if (q.isEmpty()) { load(); return }
-        RetrofitClient.api.search(fieldKey(), q).enqueue(object : Callback<PagePostDto> {
+        ApiProvider.api.search(fieldKey(), q).enqueue(object : Callback<PagePostDto> {
             override fun onResponse(call: Call<PagePostDto>, res: Response<PagePostDto>) {
                 if (isFinishing || isDestroyed) return
                 bind.swipe.isRefreshing = false
@@ -89,7 +89,7 @@ class PostListActivity : AppCompatActivity() {
     }
 
     private fun load() {
-        RetrofitClient.api.list().enqueue(object : Callback<PagePostDto> {
+        ApiProvider.api.list().enqueue(object : Callback<PagePostDto> {
             override fun onResponse(call: Call<PagePostDto>, res: Response<PagePostDto>) {
                 if (isFinishing || isDestroyed) return
                 bind.swipe.isRefreshing = false

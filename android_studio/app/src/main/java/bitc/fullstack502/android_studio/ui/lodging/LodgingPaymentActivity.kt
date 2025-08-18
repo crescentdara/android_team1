@@ -5,11 +5,11 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import bitc.fullstack502.android_studio.databinding.ActivityLodgingPaymentBinding
+import bitc.fullstack502.android_studio.network.ApiProvider
 import com.bumptech.glide.Glide
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import bitc.fullstack502.android_studio.network.RetrofitProvider
 import bitc.fullstack502.android_studio.network.dto.LodgingDetailDto
 import bitc.fullstack502.android_studio.network.dto.LodgingBookingDto
 
@@ -31,7 +31,7 @@ class LodgingPaymentActivity : AppCompatActivity() {
 
         // 숙소 상세 조회 (주소 상세 표시)
         if (lodgingId != -1L) {
-            RetrofitProvider.lodgingDetailApi.getDetail(lodgingId)
+            ApiProvider.api.getDetail(lodgingId)
                 .enqueue(object : Callback<LodgingDetailDto> {
                     override fun onResponse(call: Call<LodgingDetailDto>, response: Response<LodgingDetailDto>) {
                         val lodging = response.body() ?: return
@@ -66,7 +66,7 @@ class LodgingPaymentActivity : AppCompatActivity() {
                 status = "BOOKED"
             )
 
-            RetrofitProvider.lodgingApi.createBooking(bookingData)
+            ApiProvider.api.createBooking(bookingData)
                 .enqueue(object : Callback<Void> {
                     override fun onResponse(call: Call<Void>, response: Response<Void>) {
                         if (response.isSuccessful) {

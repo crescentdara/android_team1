@@ -8,9 +8,8 @@ data class PostDto(
     val author: String,
     val likeCount: Int,
     val lookCount: Int,
-    val liked: Boolean? = false // 서버에서 안 내려주면 기본 false
+    val liked: Boolean? = false
 )
-
 
 data class PagePostDto(
     val content: List<PostDto>,

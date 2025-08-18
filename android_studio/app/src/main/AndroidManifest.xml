@@ -42,7 +42,7 @@
         <activity android:name=".ui.mypage.EditInfoActivity" android:exported="false" />
         <activity android:name=".ui.mypage.FindIdActivity" android:exported="false" />
         <activity android:name=".ui.mypage.LoginActivity" android:exported="false" />
-        <activity android:name=".ui.mypage.MyPage" android:exported="false" />
+        <activity android:name=".ui.mypage.MyPageActivity" android:exported="false" />
         <activity android:name=".ui.mypage.SignupActivity" android:exported="false" />
         <activity android:name=".ui.mypage.FindIdPwActivity" android:exported="false" />
 

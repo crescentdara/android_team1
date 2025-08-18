@@ -15,7 +15,7 @@ import bitc.fullstack502.android_studio.R
 import bitc.fullstack502.android_studio.StompManager
 import bitc.fullstack502.android_studio.model.ChatMessage
 import bitc.fullstack502.android_studio.model.ReadReceiptDTO
-import bitc.fullstack502.android_studio.net.ApiClient
+import bitc.fullstack502.android_studio.network.ApiProvider
 import bitc.fullstack502.android_studio.util.ForegroundRoom
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
@@ -63,7 +63,7 @@ class ChatRoomActivity : AppCompatActivity() {
         readJob?.cancel()
         readJob = lifecycleScope.launch {
             delay(300)
-            runCatching { ApiClient.chat.markRead(roomId, myUserId) }
+            runCatching { ApiProvider.api.markRead(roomId, myUserId) }
                 .onFailure { Log.w("CHAT", "markRead failed: ${it.message}") }
         }
     }
@@ -242,9 +242,9 @@ class ChatRoomActivity : AppCompatActivity() {
 
                 val list = withContext(Dispatchers.IO) {
                     // 입장 시 읽음 처리
-                    ApiClient.chat.markRead(rid, myUserId)
+                    ApiProvider.api.markRead(rid, myUserId)
                     // 백엔드 변경 반영: me/other 전달
-                    ApiClient.chat.history(rid, 50, null, myUserId, partnerId)
+                    ApiProvider.api.history(rid, 50, null, myUserId, partnerId)
                 }.sortedBy { it.id } // ASC
 
                 // 중복 차단 id 세트 갱신
@@ -282,7 +282,7 @@ class ChatRoomActivity : AppCompatActivity() {
             try {
                 val older = withContext(Dispatchers.IO) {
                     // 백엔드 변경 반영: me/other 전달
-                    ApiClient.chat.history(roomId, 50, beforeId, myUserId, partnerId)
+                    ApiProvider.api.history(roomId, 50, beforeId, myUserId, partnerId)
                 }.sortedBy { it.id }
 
                 if (older.isEmpty()) {

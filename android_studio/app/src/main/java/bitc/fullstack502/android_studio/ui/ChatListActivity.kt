@@ -16,7 +16,7 @@ import bitc.fullstack502.android_studio.model.ChatMessage
 import bitc.fullstack502.android_studio.model.ConversationSummary
 import bitc.fullstack502.android_studio.util.ForegroundRoom
 import bitc.fullstack502.android_studio.StompManager
-import bitc.fullstack502.android_studio.net.ApiClient
+import bitc.fullstack502.android_studio.network.ApiProvider
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -29,7 +29,7 @@ class ChatListActivity : AppCompatActivity() {
         const val EXTRA_PARTNER_ID = "partnerId"
     }
 
-    private lateinit var myUserId: String
+    private lateinit var myUsersId: String
     private lateinit var rv: RecyclerView
     private lateinit var progress: ProgressBar
     private val adapter = ConversationsAdapter { openChat(it) }
@@ -45,7 +45,7 @@ class ChatListActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat_list)
 
-        myUserId = getSharedPreferences("chat", MODE_PRIVATE)
+        myUsersId = getSharedPreferences("chat", MODE_PRIVATE)
             .getString("myId", null) ?: "android1"
 
         rv = findViewById(R.id.rv)
@@ -72,7 +72,7 @@ class ChatListActivity : AppCompatActivity() {
         // 그렇지 않고 connectGlobal(userId: String) 한 가지만 있다면, 그 구현에서
         // /user/queue/inbox 구독 후 전달해주는 리스너를 설정하는 메서드를 사용해도 됨.
         stomp.connectGlobal(
-            userId = myUserId,
+            userId = myUsersId,
             onConnected = { /* 필요시 UI 처리 */ },
             onMessage = { payload ->
                 val msg = runCatching { gson.fromJson(payload, ChatMessage::class.java) }.getOrNull()
@@ -93,7 +93,7 @@ class ChatListActivity : AppCompatActivity() {
         lifecycleScope.launch {
             try {
                 val list = withContext(Dispatchers.IO) {
-                    ApiClient.chat.conversations(myUserId)
+                    ApiProvider.api.conversations(myUsersId)
                 }
                 adapter.submit(list)
             } catch (e: Exception) {
@@ -111,7 +111,7 @@ class ChatListActivity : AppCompatActivity() {
         if (!seenInbox.add(k)) return
 
         val isCurrentRoom = ForegroundRoom.current == m.roomId
-        val shouldIncrementUnread = !isCurrentRoom && (m.senderId != myUserId)
+        val shouldIncrementUnread = !isCurrentRoom && (m.senderId != myUsersId)
 
         val updated = adapter.bumpAndUpdate(
             roomId = m.roomId,

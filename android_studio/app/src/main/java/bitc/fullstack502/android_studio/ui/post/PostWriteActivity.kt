@@ -6,7 +6,6 @@ import android.os.Bundle
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import bitc.fullstack502.android_studio.databinding.ActivityPostWriteBinding
-import bitc.fullstack502.android_studio.network.RetrofitClient
 import com.yalantis.ucrop.UCrop
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -19,6 +18,7 @@ import retrofit2.Response
 import java.io.File
 import java.util.UUID
 import androidx.core.widget.addTextChangedListener
+import bitc.fullstack502.android_studio.network.ApiProvider
 import bitc.fullstack502.android_studio.network.dto.PostDto
 import com.bumptech.glide.Glide
 
@@ -94,7 +94,7 @@ class PostWriteActivity : AppCompatActivity() {
     }
 
     private fun loadForEdit(id: Long) {
-        RetrofitClient.api.detail(id).enqueue(object: Callback<PostDto> {
+        ApiProvider.api.detail(id).enqueue(object: Callback<PostDto> {
             override fun onResponse(call: Call<PostDto>, response: Response<PostDto>) {
                 val p = response.body() ?: return
                 b.etTitle.setText(p.title)
@@ -136,14 +136,14 @@ class PostWriteActivity : AppCompatActivity() {
 
         if (editId == null) {
             // 신규 작성
-            RetrofitClient.api.create(titleRb, contentRb, part)
+            ApiProvider.api.create(titleRb, contentRb, part)
                 .enqueue(object : Callback<Long> {
                     override fun onResponse(call: Call<Long>, response: Response<Long>) { finish() }
                     override fun onFailure(call: Call<Long>, t: Throwable) {}
                 })
         } else {
             // 수정: 이미지 안 바꾸면 part=null → 서버에서 기존 이미지 유지
-            RetrofitClient.api.update(editId!!, titleRb, contentRb, part)
+            ApiProvider.api.update(editId!!, titleRb, contentRb, part)
                 .enqueue(object : Callback<Void> {
                     override fun onResponse(call: Call<Void>, response: Response<Void>) { finish() }
                     override fun onFailure(call: Call<Void>, t: Throwable) {}

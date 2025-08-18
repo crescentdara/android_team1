@@ -7,9 +7,8 @@ data class LodgingItem(
     val name: String,
     val city: String?,
     val town: String?,
-    val addrRd: String?,   // 서버 DTO와 이름 일치
-    // ✅ 서버에서 price, basePrice, lowestPrice 어떤 키를 써도 price 필드로 들어오도록 매핑
-    @SerializedName(value = "price", alternate = ["basePrice", "lowestPrice"])
-    val price: Long,
+    val addrRd: String?,
+    @SerializedName(value = "base_price", alternate = ["basePrice", "lowestPrice"])
+    val basePrice: Long,
     val img: String?
 )

@@ -19,6 +19,7 @@ android {
     // <-- ViewBinding은 이 형태로 사용 (AGP 8.x)
     buildFeatures {
         viewBinding = true
+        dataBinding = true
     }
 
     buildTypes {

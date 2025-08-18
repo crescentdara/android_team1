@@ -9,7 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import bitc.fullstack502.android_studio.R
 import bitc.fullstack502.android_studio.databinding.ActivityPostDetailBinding
-import bitc.fullstack502.android_studio.network.RetrofitClient
+import bitc.fullstack502.android_studio.network.ApiProvider
 import bitc.fullstack502.android_studio.network.dto.CommDto
 import bitc.fullstack502.android_studio.network.dto.PostDto
 import com.bumptech.glide.Glide
@@ -61,7 +61,7 @@ class PostDetailActivity : AppCompatActivity() {
     }
 
     private fun loadDetail() {
-        RetrofitClient.api.detail(id).enqueue(object : Callback<PostDto> {
+        ApiProvider.api.detail(id).enqueue(object : Callback<PostDto> {
             override fun onResponse(call: Call<PostDto>, response: Response<PostDto>) {
                 val p = response.body() ?: return
 
@@ -93,7 +93,7 @@ class PostDetailActivity : AppCompatActivity() {
 
     private fun toggleLikeAndIcon() {
         b.btnHeart.isEnabled = false
-        RetrofitClient.api.toggleLike(id).enqueue(object : Callback<Long> {
+        ApiProvider.api.toggleLike(id).enqueue(object : Callback<Long> {
             override fun onResponse(call: Call<Long>, response: Response<Long>) {
                 val cnt = response.body() ?: return
                 isLiked = !isLiked
@@ -111,7 +111,7 @@ class PostDetailActivity : AppCompatActivity() {
     }
 
     private fun loadComments() {
-        RetrofitClient.api.comments(id).enqueue(object : Callback<List<CommDto>> {
+        ApiProvider.api.comments(id).enqueue(object : Callback<List<CommDto>> {
             override fun onResponse(call: Call<List<CommDto>>, response: Response<List<CommDto>>) {
                 cAdapter.submitList(response.body() ?: emptyList())
             }
@@ -121,7 +121,7 @@ class PostDetailActivity : AppCompatActivity() {
 
     private fun writeComment(parentId: Long?, text: String) {
         if (text.isBlank()) return
-        RetrofitClient.api.writeComment(id, parentId, text).enqueue(object : Callback<Long> {
+        ApiProvider.api.writeComment(id, parentId, text).enqueue(object : Callback<Long> {
             override fun onResponse(call: Call<Long>, response: Response<Long>) {
                 b.etComment.text = null
                 replyTarget = null
@@ -141,7 +141,7 @@ class PostDetailActivity : AppCompatActivity() {
     }
 
     private fun deletePost() {
-        RetrofitClient.api.deletePost(id).enqueue(object : Callback<Void> {
+        ApiProvider.api.deletePost(id).enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) { finish() }
             override fun onFailure(call: Call<Void>, t: Throwable) {}
         })
@@ -187,7 +187,7 @@ class PostDetailActivity : AppCompatActivity() {
             .setTitle("댓글 수정")
             .setView(input)
             .setPositiveButton("저장") { _, _ ->
-                RetrofitClient.api.editComment(c.id, input.text.toString())
+                ApiProvider.api.editComment(c.id, input.text.toString())
                     .enqueue(object : Callback<Void> {
                         override fun onResponse(call: Call<Void>, response: Response<Void>) { loadComments() }
                         override fun onFailure(call: Call<Void>, t: Throwable) {}
@@ -201,7 +201,7 @@ class PostDetailActivity : AppCompatActivity() {
         AlertDialog.Builder(this)
             .setMessage("댓글을 삭제할까요?")
             .setPositiveButton("삭제") { _, _ ->
-                RetrofitClient.api.deleteComment(commentId)
+                ApiProvider.api.deleteComment(commentId)
                     .enqueue(object : Callback<Void> {
                         override fun onResponse(call: Call<Void>, response: Response<Void>) { loadComments() }
                         override fun onFailure(call: Call<Void>, t: Throwable) {}

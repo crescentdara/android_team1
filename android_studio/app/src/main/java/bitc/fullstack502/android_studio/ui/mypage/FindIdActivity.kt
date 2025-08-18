@@ -6,6 +6,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import bitc.fullstack502.android_studio.R
 
 class FindIdActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,10 +41,10 @@ class FindIdActivity : AppCompatActivity() {
         }
     }
 
-    private fun showUserIdDialog(userId: String) {
+    private fun showUserIdDialog(usersId: String) {
         AlertDialog.Builder(this)
             .setTitle("아이디 찾기 결과")
-            .setMessage("회원님의 아이디는 \"$userId\" 입니다.")
+            .setMessage("회원님의 아이디는 \"$usersId\" 입니다.")
             .setPositiveButton("확인") { dialog, _ -> dialog.dismiss() }
             .show()
     }

@@ -51,7 +51,7 @@
             android:textColor="#000" />
 
         <EditText
-            android:id="@+id/et_user_id"
+            android:id="@+id/et_users_id"
             android:hint="아이디"
             android:background="#E0E0E0"
             android:padding="12dp"
@@ -60,7 +60,7 @@
             android:layout_marginBottom="12dp"/>
 
         <EditText
-            android:id="@+id/et_password"
+            android:id="@+id/et_pass"
             android:hint="비밀번호"
             android:inputType="textPassword"
             android:background="#E0E0E0"

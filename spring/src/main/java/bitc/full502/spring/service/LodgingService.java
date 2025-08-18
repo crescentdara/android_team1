@@ -229,7 +229,7 @@ public class LodgingService {
                 .city(l.getCity())
                 .town(l.getTown())
                 .addrRd(addr)
-                .price(price) // ★ 핵심
+                .basePrice(price)
                 .img(l.getImg())
                 .build();
     }

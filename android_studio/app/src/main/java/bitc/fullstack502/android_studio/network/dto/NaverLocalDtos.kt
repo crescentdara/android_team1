@@ -8,9 +8,10 @@ data class NaverLocalItem(
     val telephone: String?,
     val address: String?,
     val roadAddress: String?,
-    val mapx: String?, // TM128 x (문자열로 옴)
-    val mapy: String?  // TM128 y
+    val mapx: String?,  // TM128 x (문자열로 옴)
+    val mapy: String?   // TM128 y
 )
-data class NaverLocalResp(val items: List<NaverLocalItem> = emptyList())
 
-
+data class NaverLocalResp(
+    val items: List<NaverLocalItem> = listOf()
+)
