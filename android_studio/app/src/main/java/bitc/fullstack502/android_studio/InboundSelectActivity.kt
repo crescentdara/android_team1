@@ -1,5 +1,6 @@
 package bitc.fullstack502.android_studio
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
@@ -108,32 +109,20 @@ class InboundSelectActivity : AppCompatActivity() {
     }
 
     private fun openPayment(out: Flight?, `in`: Flight, outP: Int, inP: Int) {
-        // TODO: 결제 화면 이동
+        val intent = Intent(this, ItineraryActivity::class.java).apply {
+            putExtra("EXTRA_OUT_FLIGHT", out)
+            putExtra("EXTRA_IN_FLIGHT", `in`)
+            putExtra("EXTRA_OUT_PRICE", outP)
+            putExtra("EXTRA_IN_PRICE", inP)
+
+            // 인원수도 넘겨주기 (지금은 성인 1명만 예시)
+            putExtra("EXTRA_ADULT", 1)
+            putExtra("EXTRA_CHILD", 0)
+        }
+        startActivity(intent)
     }
 
-/*    // ===== 바텀바(모달) 컨트롤 =====
-    private fun showBottomBar(totalWon: Int, buttonText: String, onClick: () -> Unit) {
-        tvTotal.text = "₩%,d".format(totalWon)
-        btnPay.text  = buttonText
-        btnPay.setOnClickListener { onClick() }
 
-        if (bottomBar.visibility != View.VISIBLE) {
-            bottomBar.visibility = View.VISIBLE
-            // 최초 높이 0일 수 있으니 안전한 기본값 사용
-            bottomBar.translationY = (bottomBar.height.takeIf { it > 0 } ?: dp(120)).toFloat()
-            bottomBar.animate().translationY(0f).setDuration(220).start()
-        }
-    }*/
-
-//    private fun hideBottomBar() {
-//        if (bottomBar.visibility == View.VISIBLE) {
-//            bottomBar.animate()
-//                .translationY(dp(120).toFloat())
-//                .setDuration(180)
-//                .withEndAction { bottomBar.visibility = View.GONE }
-//                .start()
-//        }
-//    }
 
     private fun dp(v: Int) = (v * resources.displayMetrics.density).toInt()
     // === 하단 모달(바텀바) 헬퍼 ===

@@ -30,23 +30,35 @@
             android:name=".FlightReservationActivity"
             android:exported="false" />
 
-        <!-- 오는 편 선택 화면 (신규 등록) -->
+        <!-- 오는 편 선택 화면 -->
         <activity
             android:name=".InboundSelectActivity"
             android:exported="false"
             android:parentActivityName=".FlightReservationActivity">
-            <!-- Up 버튼 동작 위해 (API < 16 호환용은 필요시 추가) -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".FlightReservationActivity" />
         </activity>
 
-        <!-- (선택) 결제 화면 만들 예정이면 미리 등록해 둬도 OK
+        <!-- ✅ 여정 상세 화면 (신규) -->
+        <activity
+            android:name=".ItineraryActivity"
+            android:exported="false"
+            android:parentActivityName=".InboundSelectActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".InboundSelectActivity" />
+        </activity>
+
+        <!-- ✅ 결제 화면 (신규) -->
         <activity
             android:name=".PaymentActivity"
             android:exported="false"
-            android:parentActivityName=".InboundSelectActivity" />
-        -->
-    </application>
+            android:parentActivityName=".ItineraryActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ItineraryActivity" />
+        </activity>
 
+    </application>
 </manifest>

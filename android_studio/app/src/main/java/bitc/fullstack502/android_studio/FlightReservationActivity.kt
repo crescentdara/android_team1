@@ -24,9 +24,16 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
-import kotlin.jvm.java
 
 class FlightReservationActivity : AppCompatActivity() {
+
+    // 고정 운임 상수 (Itinerary/Payment와 동일 기준)
+    private companion object {
+        const val ADULT_PRICE    = 98_700
+        const val CHILD_PRICE    = 78_700
+        const val FUEL_SURCHARGE = 15_400   // 1인당
+        const val FACILITY_FEE   = 8_000    // 1인당
+    }
 
     // ▼▼▼ 스크롤/하단바
     private lateinit var scroll: NestedScrollView
@@ -77,8 +84,8 @@ class FlightReservationActivity : AppCompatActivity() {
         setContentView(R.layout.activity_flight_reservation)
 
         // ----- findViewById -----
-        scroll      = findViewById(R.id.scroll)
-        bottomBar   = findViewById(R.id.bottomBar)
+        scroll       = findViewById(R.id.scroll)
+        bottomBar    = findViewById(R.id.bottomBar)
         tvTotalPrice = findViewById(R.id.tvTotalPrice)
         btnProceed   = findViewById(R.id.btnProceed)
 
@@ -87,12 +94,12 @@ class FlightReservationActivity : AppCompatActivity() {
 
         switchTrip = findViewById(R.id.switchTripType)
         tvDate     = findViewById(R.id.tvDate)
-        tvFrom  = findViewById(R.id.tvFrom)
-        tvTo    = findViewById(R.id.tvTo)
-        btnSwap = findViewById(R.id.btnSwap)
-        tvPax   = findViewById(R.id.tvPax)
-        btnSearch = findViewById(R.id.btnSearch)
-        rvResults = findViewById(R.id.rvResults)
+        tvFrom     = findViewById(R.id.tvFrom)
+        tvTo       = findViewById(R.id.tvTo)
+        btnSwap    = findViewById(R.id.btnSwap)
+        tvPax      = findViewById(R.id.tvPax)
+        btnSearch  = findViewById(R.id.btnSearch)
+        rvResults  = findViewById(R.id.rvResults)
 
         // 초기 출/도착
         setDeparture("김포(서울)", recordNonJeju = true)
@@ -179,9 +186,6 @@ class FlightReservationActivity : AppCompatActivity() {
                 viewModel.searchFlights(dep, arr, outDateYmd!!, null)
             }
         }
-
-        // ⛔️ 기존의 btnProceed.setOnClickListener { Toast… } 는 삭제
-        // CTA는 updateProceedCta()가 항상 세팅함
 
         // 초기 텍스트
         tvPax.text = "총 1명"
@@ -361,7 +365,7 @@ class FlightReservationActivity : AppCompatActivity() {
         val arrInbound = normalizeAirport(tvFrom.text.toString()) // IN arr = 기존 출발
 
         startActivity(Intent(this, InboundSelectActivity::class.java).apply {
-            putExtra(InboundSelectActivity.EXTRA_OUTBOUND, selectedOut)          // Flight: Serializable/Parcelable 적용되어 있어야 함
+            putExtra(InboundSelectActivity.EXTRA_OUTBOUND, selectedOut)          // Flight: Serializable 필요
             putExtra(InboundSelectActivity.EXTRA_OUT_PRICE, selectedOutPrice ?: 0)
             putExtra(InboundSelectActivity.EXTRA_DEP,  depInbound)
             putExtra(InboundSelectActivity.EXTRA_ARR,  arrInbound)
@@ -371,18 +375,31 @@ class FlightReservationActivity : AppCompatActivity() {
         })
     }
 
-
-
-
+    /** 편도일 때 결제 화면으로 직행 */
     private fun openPayment() {
-        if (selectedOut == null) {
+        val out = selectedOut
+        if (out == null) {
             Toast.makeText(this, "먼저 항공편을 선택하세요", Toast.LENGTH_SHORT).show()
             return
         }
-        // TODO: 결제 화면으로 이동
-        // startActivity(Intent(this, PaymentActivity::class.java)
-        //     .putExtra("outbound", selectedOut)
-        //     .putExtra("price", selectedOutPrice))
+
+        val people        = adultCount + childCount
+        val baseFare      = adultCount * ADULT_PRICE + childCount * CHILD_PRICE
+        val fuelTotal     = people * FUEL_SURCHARGE
+        val facilityTotal = people * FACILITY_FEE
+        val total         = baseFare + fuelTotal + facilityTotal
+
+        startActivity(Intent(this, PaymentActivity::class.java).apply {
+            putExtra("EXTRA_TOTAL", total)
+            putExtra("EXTRA_BASE", baseFare)
+            putExtra("EXTRA_FUEL", fuelTotal)
+            putExtra("EXTRA_FACILITY", facilityTotal)
+
+            // 선택 정보(필요 시 Payment 화면에서 활용)
+            putExtra(ItineraryActivity.EXTRA_OUT_FLIGHT, out)           // Flight은 Serializable이어야 함
+            putExtra(ItineraryActivity.EXTRA_ADULT_COUNT, adultCount)
+            putExtra(ItineraryActivity.EXTRA_CHILD_COUNT, childCount)
+        })
     }
 
     // === 하단 고정 바 관련 helper ===
@@ -418,5 +435,4 @@ class FlightReservationActivity : AppCompatActivity() {
         btn.setOnClickListener { onClick() }
         bottomBar.slideUpShow()
     }
-
 }
