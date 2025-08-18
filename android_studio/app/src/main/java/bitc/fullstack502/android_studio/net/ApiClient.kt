@@ -7,7 +7,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 import kotlin.jvm.java
 
 object ApiClient {
-    // 에뮬레이터는 10.0.2.2 / 마지막에 슬래시 필수!
     private const val BASE_URL = "http://10.0.2.2:8080/"
 
     private val http by lazy {

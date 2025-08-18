@@ -1,23 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-    <uses-permission android:name="android.permission.INTERNET" />
-
-=======
-    <!-- 네트워크 & 위치 권한 -->
+    <!-- Permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
->>>>>>> testmerge/LodgingMerge
-=======
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
->>>>>>> testmerge/PostChatMerge
 
     <application
         android:allowBackup="true"
@@ -27,117 +19,63 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-        android:theme="@style/Theme.Android_studio">
-=======
         android:theme="@style/Theme.Android_studio"
-        android:usesCleartextTraffic="true">
->>>>>>> testmerge/PostChatMerge
-
-
-        <!-- ✅ 홈 화면: MainActivity 를 런처로 지정 -->
-        <activity
-<<<<<<< HEAD
-            android:name=".ui.MainActivity"
-=======
-        android:theme="@style/Theme.Android_studio"
+        android:usesCleartextTraffic="true"
         android:networkSecurityConfig="@xml/network_security_config"
-        android:usesCleartextTraffic="true">
+        tools:targetApi="31">
+
+        <!-- Naver Map (앱 전역 메타데이터로 위치 이동) -->
         <meta-data
             android:name="com.naver.maps.map.NCP_KEY_ID"
             android:value="h81w25c1vt" />
+
+        <!-- ✅ 앱 시작 액티비티: MainActivity (런처) -->
         <activity
-            android:name=".ui.lodging.LodgingSearchActivity"
->>>>>>> testmerge/LodgingMerge
-            android:exported="true">
-=======
-        android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
-        <activity android:name=".FindIdPwActivity" />
-
-        <activity android:name=".EditInfoActivity" />
-
-        <!-- 앱 시작 액티비티는 LoginActivity만 -->
-        <activity android:name=".LoginActivity" android:exported="true">
->>>>>>> origin/hsm/UserLogin
+            android:name=".ui.MainActivity"
+            android:exported="true"
+            android:theme="@style/Theme.Android_studio">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-=======
-            android:name=".IdInputActivity"
-            android:exported="false">
->>>>>>> testmerge/PostChatMerge
         </activity>
-<<<<<<< HEAD
-<<<<<<< HEAD
 
-        <!-- IdInputActivity가 런처 -->
-        <activity
-            android:name=".IdInputActivity"
-            android:exported="false"/>
+        <!-- ===== 계정/프로필 관련 ===== -->
+        <activity android:name=".LoginActivity" android:exported="false" />
+        <activity android:name=".SignupActivity" android:exported="false" />
+        <activity android:name=".FindIdPwActivity" android:exported="false" />
+        <activity android:name=".FindIdActivity" android:exported="false" />
+        <activity android:name=".EditInfoActivity" android:exported="false" />
+        <activity android:name=".MyPage" android:exported="false" />
+        <activity android:name=".IdInputActivity" android:exported="false" />
 
-        <!-- ② 채팅 목록 화면 -->
-        <activity
-            android:name=".ui.ChatListActivity"
-            android:exported="false" />
+        <!-- ===== 채팅 ===== -->
+        <activity android:name=".ui.ChatListActivity" android:exported="false" />
+        <activity android:name=".ChatRoomActivity" android:exported="false" />
 
-        <!-- ③ 채팅방 화면 -->
-        <activity
-            android:name=".ChatRoomActivity"
-            android:exported="false" />
-<<<<<<< HEAD
-=======
-        <activity android:name=".FindIdActivity" />
-        <activity android:name=".MyPage" />
-
-        <activity android:name=".SignupActivity" />
-        <activity android:name=".MainActivity" android:exported="true" />
->>>>>>> origin/hsm/UserLogin
-
-    </application>
-
-=======
-
-        <activity android:name=".ui.lodging.LodgingDetailActivity" android:exported="false" />
-        <activity android:name=".ui.lodging.LodgingListActivity" android:exported="false" />
-        <activity android:name=".ui.lodging.LodgingPaymentActivity" android:exported="false" />
-        <activity android:name=".ui.lodging.LodgingPaymentCompleteActivity"
-            android:exported="false" />
-
-        <activity android:name=".MainActivity" android:exported="false" />
-    </application>
->>>>>>> testmerge/LodgingMerge
-=======
-
-
-        <!-- 시작 화면: 게시글 목록 -->
+        <!-- ===== 게시글(Post) ===== -->
         <activity
             android:name="bitc.fullstack502.android_studio.ui.post.PostListActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity>
-
-        <!-- 게시글 상세 -->
+            android:exported="true" />
         <activity
             android:name="bitc.fullstack502.android_studio.ui.post.PostDetailActivity"
             android:exported="false" />
-
-        <!-- 게시글 작성/수정 -->
         <activity
             android:name="bitc.fullstack502.android_studio.ui.post.PostWriteActivity"
             android:exported="false" />
 
-        <!-- uCrop (이미 등록되어 있던 항목) -->
+        <!-- ===== 숙소(Lodging) ===== -->
+        <activity android:name=".ui.lodging.LodgingSearchActivity" android:exported="true" />
+        <activity android:name=".ui.lodging.LodgingListActivity" android:exported="false" />
+        <activity android:name=".ui.lodging.LodgingDetailActivity" android:exported="false" />
+        <activity android:name=".ui.lodging.LodgingPaymentActivity" android:exported="false" />
+        <activity android:name=".ui.lodging.LodgingPaymentCompleteActivity" android:exported="false" />
+
+        <!-- ===== 공통/기타 ===== -->
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"
             android:exported="false"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
     </application>
 
->>>>>>> testmerge/PostChatMerge
 </manifest>
