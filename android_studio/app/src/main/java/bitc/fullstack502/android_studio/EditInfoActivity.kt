@@ -10,6 +10,8 @@ import androidx.appcompat.app.AppCompatActivity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import bitc.fullstack502.android_studio.network.RetrofitClient
+
 
 class EditInfoActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,27 +51,19 @@ class EditInfoActivity : AppCompatActivity() {
                 phone = phone
             )
 
-            val api = RetrofitClient.apiService
+            val api = RetrofitClient.userApiService
+
             api.updateUser(request).enqueue(object : Callback<Map<String, String>> {
-                override fun onResponse(
-                    call: Call<Map<String, String>>,
-                    response: Response<Map<String, String>>
-                ) {
+                override fun onResponse(call: Call<Map<String, String>>, response: Response<Map<String, String>>) {
                     if (response.isSuccessful) {
-                        val resultIntent = Intent().apply {
-                            putExtra("name", name)
-                            putExtra("email", email)
-                            putExtra("phone", phone)
-                        }
-                        setResult(Activity.RESULT_OK, resultIntent)
-                        finish()
+                        // 성공 처리
                     } else {
-                        Toast.makeText(this@EditInfoActivity, "업데이트 실패", Toast.LENGTH_SHORT).show()
+                        // 실패 처리
                     }
                 }
 
                 override fun onFailure(call: Call<Map<String, String>>, t: Throwable) {
-                    Toast.makeText(this@EditInfoActivity, "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
+                    // 실패 처리
                 }
             })
         }

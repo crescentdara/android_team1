@@ -32,5 +32,7 @@ interface ApiService {
 
     @PUT("api/update-user")
     fun updateUser(@Body request: SignupRequest): Call<Map<String, String>>  // 수정됨
+
+
 }
 

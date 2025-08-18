@@ -9,7 +9,7 @@ import androidx.core.content.ContextCompat
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-
+import bitc.fullstack502.android_studio.network.RetrofitClient
 class SignupActivity : AppCompatActivity() {
 
     private lateinit var etName: EditText
@@ -75,7 +75,7 @@ class SignupActivity : AppCompatActivity() {
                 isIdAvailable = false
                 isIdChecked = false
             } else {
-                RetrofitClient.apiService.checkId(inputId).enqueue(object : Callback<CheckIdResponse> {
+                RetrofitClient.userApiService.checkId(inputId).enqueue(object : Callback<CheckIdResponse> {
                     override fun onResponse(call: Call<CheckIdResponse>, response: Response<CheckIdResponse>) {
                         if (response.isSuccessful) {
                             val body = response.body()
@@ -181,7 +181,7 @@ class SignupActivity : AppCompatActivity() {
                 phone = phone
             )
 
-            RetrofitClient.apiService.registerUser(signupRequest).enqueue(object : Callback<Void> {
+            RetrofitClient.userApiService.registerUser(signupRequest).enqueue(object : Callback<Void> {
                 override fun onResponse(call: Call<Void>, response: Response<Void>) {
                     if (response.isSuccessful) {
                         Toast.makeText(this@SignupActivity, "회원가입이 완료되었습니다.", Toast.LENGTH_SHORT).show()

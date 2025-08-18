@@ -1,16 +1,13 @@
 package bitc.full502.spring.dto;
 
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 public class FindIdRequestDto {
     private String email;
-    private String password;
-
-    public FindIdRequestDto() {}
-
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
-
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
+    private String pass; // ✅ 필드명이 'pass' 여야 합니다 (DB 필드와 맞추기)
 }
+
 

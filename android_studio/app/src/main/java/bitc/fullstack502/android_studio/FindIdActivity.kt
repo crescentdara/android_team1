@@ -6,38 +6,60 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import bitc.fullstack502.android_studio.network.RetrofitClient
 
 class FindIdActivity : AppCompatActivity() {
+
+    private lateinit var emailEt: EditText
+    private lateinit var passwordEt: EditText
+    private lateinit var findIdBtn: Button
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_find_id)
 
-        val nameEt = findViewById<EditText>(R.id.et_name)
-        val emailEt = findViewById<EditText>(R.id.et_email)
-        val findIdBtn = findViewById<Button>(R.id.btn_find_id)
+        emailEt = findViewById(R.id.et_email)
+        findIdBtn = findViewById(R.id.btn_find_id)
 
         findIdBtn.setOnClickListener {
-            val name = nameEt.text.toString().trim()
             val email = emailEt.text.toString().trim()
+            val password = passwordEt.text.toString().trim()
 
-            if(name.isEmpty() || email.isEmpty()) {
-                Toast.makeText(this, "이름과 이메일을 모두 입력하세요.", Toast.LENGTH_SHORT).show()
+            if (email.isEmpty() || password.isEmpty()) {
+                Toast.makeText(this, "이메일과 비밀번호를 모두 입력하세요.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            findUserIdByNameAndEmail(name, email)
+            findUserIdByEmailAndPassword(email, password)
         }
     }
 
-    private fun findUserIdByNameAndEmail(name: String, email: String) {
-        // TODO: 서버 API 호출로 이름+이메일에 맞는 아이디 요청
+    private fun findUserIdByEmailAndPassword(email: String, password: String) {
+        val api = RetrofitClient.userApiService  // RetrofitClient에서 UserApi 인스턴스 가져오기
 
-        // 테스트용 임시 예시 (name: 홍길동, email: test@example.com)
-        if(name == "홍길동" && email == "test@example.com") {
-            showUserIdDialog("testUser123")
-        } else {
-            Toast.makeText(this, "일치하는 회원이 없습니다.", Toast.LENGTH_SHORT).show()
-        }
+        val request = FindIdRequest(email, password)
+
+        api.findUserId(request).enqueue(object : Callback<FindIdResponse> {
+            override fun onResponse(call: Call<FindIdResponse>, response: Response<FindIdResponse>) {
+                if (response.isSuccessful) {
+                    val userId = response.body()?.userId
+                    if (!userId.isNullOrEmpty()) {
+                        showUserIdDialog(userId)
+                    } else {
+                        Toast.makeText(this@FindIdActivity, "일치하는 회원이 없습니다.", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    Toast.makeText(this@FindIdActivity, "서버 오류: ${response.code()}", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<FindIdResponse>, t: Throwable) {
+                Toast.makeText(this@FindIdActivity, "네트워크 오류가 발생했습니다.", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
     private fun showUserIdDialog(userId: String) {

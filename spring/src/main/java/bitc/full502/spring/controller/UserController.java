@@ -19,26 +19,6 @@ public class UserController {
     @Autowired
     private UsersRepository usersRepository;
 
-    /**
-     * 🔐 비밀번호 찾기
-     */
-    @PostMapping("/find-password")
-    public ResponseEntity<FindPasswordResponseDto> findPassword(@RequestBody FindPasswordRequestDto dto) {
-        String userId = dto.getUserId().trim();
-        String email = dto.getEmail().trim();
-
-        System.out.println("[find-password] 요청: userId=" + userId + ", email=" + email);
-
-        return usersRepository.findByUsersIdAndEmail(userId, email)
-                .map(user -> {
-                    System.out.println("[find-password] 비밀번호 찾음");
-                    return ResponseEntity.ok(new FindPasswordResponseDto(user.getPass()));
-                })
-                .orElseThrow(() -> {
-                    System.out.println("[find-password] 비밀번호 없음");
-                    return new ResponseStatusException(HttpStatus.NOT_FOUND, "비밀번호를 찾을 수 없습니다.");
-                });
-    }
 
     /**
      * 📝 사용자 정보 수정

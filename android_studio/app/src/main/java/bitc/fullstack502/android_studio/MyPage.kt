@@ -14,6 +14,7 @@ import androidx.core.view.WindowInsetsCompat
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import bitc.fullstack502.android_studio.network.RetrofitClient
 
 class MyPage : AppCompatActivity() {
 
@@ -57,7 +58,7 @@ class MyPage : AppCompatActivity() {
                 pass = pass
             )
 
-            val api = RetrofitClient.apiService
+            val api = RetrofitClient.userApiService
             api.updateUser(request = updatedUser).enqueue(object : Callback<Map<String, String>> {
                 override fun onResponse(call: Call<Map<String, String>>, response: Response<Map<String, String>>) {
                     if (response.isSuccessful) {
@@ -154,7 +155,7 @@ class MyPage : AppCompatActivity() {
     }
 
     private fun loadUserInfoFromServer(userId: String) {
-        val api = RetrofitClient.apiService
+        val api = RetrofitClient.userApiService
         api.getUserInfo(userId).enqueue(object : Callback<SignupRequest> {
             override fun onResponse(call: Call<SignupRequest>, response: Response<SignupRequest>) {
                 if (response.isSuccessful) {
@@ -185,7 +186,7 @@ class MyPage : AppCompatActivity() {
     }
 
     private fun deleteUserAccount() {
-        val api = RetrofitClient.apiService
+        val api = RetrofitClient.userApiService
         api.deleteUser(userId).enqueue(object : Callback<Void> {
             override fun onResponse(call: Call<Void>, response: Response<Void>) {
                 if (response.isSuccessful) {

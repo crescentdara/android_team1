@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import bitc.fullstack502.android_studio.network.RetrofitClient
 
 class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,7 +43,9 @@ class LoginActivity : AppCompatActivity() {
             }
 
             val request = LoginRequest(userId, password)
-            RetrofitClient.apiService.login(request).enqueue(object : Callback<LoginResponse> {
+
+            // RetrofitClient.apiService -> RetrofitClient.userApiService 로 수정
+            RetrofitClient.userApiService.login(request).enqueue(object : Callback<LoginResponse> {
                 override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
                     if (response.isSuccessful) {
                         val user = response.body()
