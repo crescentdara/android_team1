@@ -14,4 +14,9 @@ public class LodCnt {
 
     @ManyToOne(fetch = FetchType.LAZY) @JoinColumn(name = "lod_bk_id", nullable = false)
     private LodBook lodBook;
+
+    /** 이 예약이 점유하는 객실 수(기본 1) */
+    @Column(nullable = false)
+    private Integer rooms = 1;
 }
+

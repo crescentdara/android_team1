@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+<<<<<<< HEAD
     <!-- Brand -->
     <color name="jeju_primary">#206064</color>   <!-- 로고 초록 -->
     <color name="jeju_bg">#FAF9F3</color>        <!-- 오프화이트 배경 -->
@@ -17,3 +18,10 @@
     <color name="white">#FFFFFF</color>
 </resources>
 
+=======
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="blue">#FF2196F3</color>
+    <color name="gray">#FF9E9E9E</color>
+</resources>
+>>>>>>> testmerge/LodgingMerge

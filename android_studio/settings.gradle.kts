@@ -7,8 +7,10 @@ pluginManagement {
                 includeGroupByRegex("androidx.*")
             }
         }
+        google()
         mavenCentral()
         gradlePluginPortal()
+        maven("https://repository.map.naver.com/archive/maven")
     }
 }
 dependencyResolutionManagement {
@@ -16,6 +18,7 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+<<<<<<< HEAD
 <<<<<<< HEAD
         maven(url = "https://jitpack.io")  // 라이브러리 저장소(JitPack) 등록
 =======
@@ -25,5 +28,14 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "Chat"
+=======
+        maven("https://jitpack.io")
+        maven("https://repository.map.naver.com/archive/maven")
+    }
+}
+
+
+rootProject.name = "android_studio"
+>>>>>>> testmerge/LodgingMerge
 include(":app")
  

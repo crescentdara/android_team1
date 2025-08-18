@@ -3,6 +3,7 @@ package bitc.full502.spring.domain.repository;
 import bitc.full502.spring.domain.entity.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+<<<<<<< HEAD
 import java.util.Optional;
 
 public interface UsersRepository extends JpaRepository<Users, Long> {
@@ -15,4 +16,7 @@ public interface UsersRepository extends JpaRepository<Users, Long> {
 
     // 🔽 비밀번호 찾기 (전화번호와 이메일로)
     Optional<Users> findByUsersIdAndEmail(String usersId, String email);
+=======
+public interface UsersRepository extends JpaRepository<Users, Long> {
+>>>>>>> testmerge/LodgingMerge
 }

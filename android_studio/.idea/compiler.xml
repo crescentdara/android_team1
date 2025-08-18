@@ -2,11 +2,15 @@
 <project version="4">
   <component name="CompilerConfiguration">
 <<<<<<< HEAD
+<<<<<<< HEAD
     <bytecodeTargetLevel target="21">
       <module name="android_studio.app" target="21" />
     </bytecodeTargetLevel>
 =======
     <bytecodeTargetLevel target="21" />
 >>>>>>> origin/hsm/UserLogin
+=======
+    <bytecodeTargetLevel target="21" />
+>>>>>>> testmerge/LodgingMerge
   </component>
 </project>

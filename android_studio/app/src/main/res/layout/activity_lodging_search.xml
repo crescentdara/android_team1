@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- City: 라디오 버튼(1개만 선택) -->
+        <RadioGroup
+            android:id="@+id/rgCity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/rbJeju"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="제주시" />
+
+            <RadioButton
+                android:id="@+id/rbSeogwipo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:text="서귀포시" />
+        </RadioGroup>
+
+        <!-- Town: 다중 선택(체크박스) -->
+        <com.google.android.flexbox.FlexboxLayout
+            android:id="@+id/layoutTown"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:visibility="gone"
+            app:flexWrap="wrap"
+            app:justifyContent="flex_start" />
+
+        <!-- Vill: 다중 선택(체크박스) -->
+        <com.google.android.flexbox.FlexboxLayout
+            android:id="@+id/layoutVill"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:visibility="gone"
+            app:flexWrap="wrap"
+            app:justifyContent="flex_start" />
+
+        <!-- 날짜/인원 바텀시트 -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnDateGuest"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="날짜, 인원 선택"
+            android:textSize="16sp"
+            style="@style/Widget.Material3.Button" />
+
+        <!-- 숙소 검색 -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSearch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="숙소 검색"
+            android:textSize="16sp"
+            style="@style/Widget.Material3.Button" />
+    </LinearLayout>
+</ScrollView>

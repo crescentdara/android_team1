@@ -24,13 +24,37 @@ public class DataLoader implements CommandLineRunner {
     private final FlightRepository flightRepository;
     private final LodgingRepository lodgingRepository;
 
+<<<<<<< HEAD
+    @Override
+    public void run(String... args) {
+//        loadFlights("flight_data.csv");
+//        loadLodgings("lodging_data.csv");
+        System.out.println("CSV 데이터 로드 완료 ✅");
+=======
+    private static String trim(String v) {
+        return v == null ? null : v.trim();
+>>>>>>> testmerge/LodgingMerge
+    }
+
+    private static LocalTime parseTime(String s) {
+        if (s == null || s.isBlank()) return null;
+        return LocalTime.parse(s.trim()); // "06:30" 형식
+    }
+
+    private static Double parseDouble(String s) {
+        try {
+            return (s == null || s.isBlank()) ? null : Double.valueOf(s.trim());
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
+
     @Override
     public void run(String... args) {
 //        loadFlights("flight_data.csv");
 //        loadLodgings("lodging_data.csv");
         System.out.println("CSV 데이터 로드 완료 ✅");
     }
-
 
     private void loadFlights(String fileName) {
         try (CSVReader reader = new CSVReader(
@@ -41,7 +65,10 @@ public class DataLoader implements CommandLineRunner {
             String[] row;
             boolean header = true;
             while ((row = reader.readNext()) != null) {
-                if (header) { header = false; continue; }
+                if (header) {
+                    header = false;
+                    continue;
+                }
                 if (row.length < 8) continue;
 
                 Flight f = Flight.builder()
@@ -72,7 +99,10 @@ public class DataLoader implements CommandLineRunner {
             String[] row;
             boolean header = true;
             while ((row = reader.readNext()) != null) {
-                if (header) { header = false; continue; }
+                if (header) {
+                    header = false;
+                    continue;
+                }
                 if (row.length < 11) continue;
 
                 Lodging l = Lodging.builder()
@@ -94,19 +124,5 @@ public class DataLoader implements CommandLineRunner {
         } catch (IOException | CsvValidationException e) {
             throw new RuntimeException("Lodging CSV 로딩 실패: " + fileName, e);
         }
-    }
-
-    private static String trim(String v) {
-        return v == null ? null : v.trim();
-    }
-
-    private static LocalTime parseTime(String s) {
-        if (s == null || s.isBlank()) return null;
-        return LocalTime.parse(s.trim()); // "06:30" 형식
-    }
-
-    private static Double parseDouble(String s) {
-        try { return (s == null || s.isBlank()) ? null : Double.valueOf(s.trim()); }
-        catch (NumberFormatException e) { return null; }
     }
 }
