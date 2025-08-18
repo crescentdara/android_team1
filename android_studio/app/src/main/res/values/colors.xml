@@ -12,6 +12,9 @@
     <color name="accent_ok">#2E7D32</color>
     <color name="accent_warn">#C62828</color>
     <color name="chip_bg">#F0F0EB</color>
+    <color name="ink_800">#1F2E2D</color>
+    <color name="ink_700">#2F4644</color>
+    <color name="ink_500">#6F8583</color>
 
     <!-- ✅ 다이얼로그에서 쓰는 별칭 색상 추가 -->
     <color name="jeju_bg">@color/brand_bg</color>

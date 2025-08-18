@@ -15,18 +15,38 @@
         android:theme="@style/Theme.App"
         android:usesCleartextTraffic="true">
 
-        <activity
-            android:name=".FlightReservationActivity"
-            android:exported="false" />
+        <!-- 메인 (런처) -->
         <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+
+        <!-- 가는 편 선택 화면 -->
+        <activity
+            android:name=".FlightReservationActivity"
+            android:exported="false" />
+
+        <!-- 오는 편 선택 화면 (신규 등록) -->
+        <activity
+            android:name=".InboundSelectActivity"
+            android:exported="false"
+            android:parentActivityName=".FlightReservationActivity">
+            <!-- Up 버튼 동작 위해 (API < 16 호환용은 필요시 추가) -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".FlightReservationActivity" />
+        </activity>
+
+        <!-- (선택) 결제 화면 만들 예정이면 미리 등록해 둬도 OK
+        <activity
+            android:name=".PaymentActivity"
+            android:exported="false"
+            android:parentActivityName=".InboundSelectActivity" />
+        -->
     </application>
 
 </manifest>
