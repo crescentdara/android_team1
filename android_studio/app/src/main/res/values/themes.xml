@@ -1,23 +1,31 @@
-<resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.Android_studio" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
-    </style>
-
-    <style name="Theme.Android_studio" parent="Base.Theme.Android_studio" />
-
-    <!-- DatePicker 테마 -->
-    <style name="CustomDatePicker" parent="ThemeOverlay.MaterialComponents.MaterialCalendar">
-        <!-- 상단 툴바/버튼 색상 -->
+<resources>
+    <style name="Theme.App" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <item name="colorPrimary">@color/jeju_primary</item>
+        <item name="colorPrimaryVariant">@color/jeju_primary</item>
         <item name="colorOnPrimary">@android:color/white</item>
-
-        <!-- 선택된 날짜 배경색 -->
-        <item name="colorSecondary">@color/jeju_primary_dark</item>
-        <item name="colorOnSecondary">@android:color/white</item>
+        <item name="android:statusBarColor">@color/jeju_primary</item>
+        <item name="android:navigationBarColor">@color/brand_bg</item>
+        <item name="android:windowBackground">@color/brand_bg</item>
     </style>
 
+    <!-- 공통 버튼 -->
+    <style name="Widget.App.PrimaryButton" parent="Widget.MaterialComponents.Button">
+        <item name="backgroundTint">@color/jeju_primary</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="cornerRadius">16dp</item>
+        <item name="android:insetLeft">0dp</item>
+        <item name="android:insetRight">0dp</item>
+        <item name="android:paddingLeft">18dp</item>
+        <item name="android:paddingRight">18dp</item>
+        <item name="android:fontFamily">@font/scd_3</item>
+    </style>
 
-
+    <!-- 칩/태그 -->
+    <style name="Widget.App.OutlineChip" parent="Widget.MaterialComponents.Chip.Choice">
+        <item name="chipBackgroundColor">@color/chip_bg</item>
+        <item name="chipStrokeColor">@color/divider</item>
+        <item name="chipStrokeWidth">1dp</item>
+        <item name="android:textColor">@color/ink_900</item>
+        <item name="rippleColor">@color/jeju_tint</item>
+    </style>
 </resources>

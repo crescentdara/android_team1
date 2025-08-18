@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 체크됨: 흰색 -->
+    <item android:state_checked="true" android:color="@android:color/white"/>
+    <!-- 기본: 포인트 글자색 -->
+    <item android:color="@color/jeju_primary"/>
+</selector>
