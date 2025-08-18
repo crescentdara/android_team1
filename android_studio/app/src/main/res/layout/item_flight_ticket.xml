@@ -61,7 +61,7 @@
                 android:id="@+id/tv_dep"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="김포"
+                android:text=""
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:textColor="@color/black" />
@@ -78,7 +78,7 @@
                 android:id="@+id/tv_arr"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="제주"
+                android:text=""
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:textColor="@color/black" />

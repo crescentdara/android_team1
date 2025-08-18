@@ -10,15 +10,13 @@ import retrofit2.http.POST
 import retrofit2.http.Query
 
 interface FlightSearchAPI {
-    @GET("/api/flights/search")
+    @GET("api/flights/search")
     fun searchFlights(
         @Query("dep") dep: String,
         @Query("arr") arr: String,
-        @Query("depTime") depTime: String
+        @Query("date") date: String,              // yyyy-MM-dd
+        @Query("depTime") depTime: String? = null // null이면 쿼리에서 제외
     ): Call<List<Flight>>
-
-    @POST("/api/booking/flight")
-    fun createBooking(@Body req: BookingRequest) : BookingResponse
 
 
 }

@@ -22,4 +22,14 @@ public interface FlightRepository extends JpaRepository<Flight, Long> {
                                @Param("arr") String arr,
                                @Param("depTime") LocalTime depTime);
 
+    @Query("""
+  SELECT f FROM Flight f
+  WHERE REPLACE(UPPER(TRIM(f.dep)),' ','') = REPLACE(UPPER(TRIM(:dep)),' ','')
+    AND REPLACE(UPPER(TRIM(f.arr)),' ','') = REPLACE(UPPER(TRIM(:arr)),' ','')
+    AND f.days LIKE CONCAT('%', :day, '%')
+    AND (:depTime IS NULL OR f.depTime >= :depTime)
+""")
+    List<Flight> searchByDepArrDay(String dep, String arr, String day, LocalTime depTime);
+
+
 }

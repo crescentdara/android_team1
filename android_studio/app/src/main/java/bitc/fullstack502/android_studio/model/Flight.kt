@@ -6,9 +6,10 @@ data class Flight(
     val flNo: String,
     val airline: String?,
     val dep: String,
-    val depTime: String,
+    val depTime: String,   // ✅ String으로
     val arr: String,
-    val arrTime: String,
-    val days: String?,
+    val arrTime: String,   // ✅ String으로
+    val days: String,
     val totalSeat: Int
 )
+
