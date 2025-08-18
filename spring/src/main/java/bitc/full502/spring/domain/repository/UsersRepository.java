@@ -4,6 +4,7 @@ import bitc.full502.spring.domain.entity.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 import java.util.Optional;
 
 public interface UsersRepository extends JpaRepository<Users, Long> {
@@ -19,4 +20,10 @@ public interface UsersRepository extends JpaRepository<Users, Long> {
 =======
 public interface UsersRepository extends JpaRepository<Users, Long> {
 >>>>>>> testmerge/LodgingMerge
+=======
+import java.util.Optional;
+
+public interface UsersRepository extends JpaRepository<Users, Long> {
+    Optional<Users> findByUsersId(String usersId);
+>>>>>>> testmerge/PostChatMerge
 }

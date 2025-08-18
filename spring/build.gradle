@@ -35,19 +35,23 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	implementation 'com.opencsv:opencsv:5.9'
 <<<<<<< HEAD
+<<<<<<< HEAD
 
+=======
+>>>>>>> testmerge/PostChatMerge
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
-
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
-
 	runtimeOnly 'com.h2database:h2'                                          // ✅ H2(로컬 테스트용)
-
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // ✅ JPA(안에 JDBC 포함)
-
 	implementation 'mysql:mysql-connector-java:8.0.33'
+<<<<<<< HEAD
 =======
     implementation 'org.springframework.boot:spring-boot-starter-websocket'
 >>>>>>> testmerge/LodgingMerge
+=======
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'net.coobird:thumbnailator:0.4.20'
+
+>>>>>>> testmerge/PostChatMerge
 }
 
 tasks.named('test') {

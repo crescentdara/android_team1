@@ -3,6 +3,7 @@
   <component name="CompilerConfiguration">
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     <bytecodeTargetLevel target="21">
       <module name="android_studio.app" target="21" />
     </bytecodeTargetLevel>
@@ -12,5 +13,8 @@
 =======
     <bytecodeTargetLevel target="21" />
 >>>>>>> testmerge/LodgingMerge
+=======
+    <bytecodeTargetLevel target="21" />
+>>>>>>> testmerge/PostChatMerge
   </component>
 </project>

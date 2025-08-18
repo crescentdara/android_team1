@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     <uses-permission android:name="android.permission.INTERNET" />
 
 =======
@@ -10,6 +11,13 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 >>>>>>> testmerge/LodgingMerge
+=======
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES"/>
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+>>>>>>> testmerge/PostChatMerge
 
     <application
         android:allowBackup="true"
@@ -21,11 +29,17 @@
         android:supportsRtl="true"
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
         android:theme="@style/Theme.Android_studio">
+=======
+        android:theme="@style/Theme.Android_studio"
+        android:usesCleartextTraffic="true">
+>>>>>>> testmerge/PostChatMerge
 
 
         <!-- ✅ 홈 화면: MainActivity 를 런처로 지정 -->
         <activity
+<<<<<<< HEAD
             android:name=".ui.MainActivity"
 =======
         android:theme="@style/Theme.Android_studio"
@@ -51,6 +65,10 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+=======
+            android:name=".IdInputActivity"
+            android:exported="false">
+>>>>>>> testmerge/PostChatMerge
         </activity>
 <<<<<<< HEAD
 <<<<<<< HEAD
@@ -69,6 +87,7 @@
         <activity
             android:name=".ChatRoomActivity"
             android:exported="false" />
+<<<<<<< HEAD
 =======
         <activity android:name=".FindIdActivity" />
         <activity android:name=".MyPage" />
@@ -90,4 +109,35 @@
         <activity android:name=".MainActivity" android:exported="false" />
     </application>
 >>>>>>> testmerge/LodgingMerge
+=======
+
+
+        <!-- 시작 화면: 게시글 목록 -->
+        <activity
+            android:name="bitc.fullstack502.android_studio.ui.post.PostListActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+        <!-- 게시글 상세 -->
+        <activity
+            android:name="bitc.fullstack502.android_studio.ui.post.PostDetailActivity"
+            android:exported="false" />
+
+        <!-- 게시글 작성/수정 -->
+        <activity
+            android:name="bitc.fullstack502.android_studio.ui.post.PostWriteActivity"
+            android:exported="false" />
+
+        <!-- uCrop (이미 등록되어 있던 항목) -->
+        <activity
+            android:name="com.yalantis.ucrop.UCropActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+    </application>
+
+>>>>>>> testmerge/PostChatMerge
 </manifest>
