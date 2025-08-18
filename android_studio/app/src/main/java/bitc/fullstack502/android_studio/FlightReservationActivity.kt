@@ -3,10 +3,9 @@ package bitc.fullstack502.android_studio
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
-import android.widget.EditText
 import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -78,9 +77,12 @@ class FlightReservationActivity : AppCompatActivity() {
             val dep = binding.tvDeparture.text.toString()
             val arr = binding.tvArrival.text.toString()
             val date = binding.btnDate.text.toString()
+            val passenger = binding.btnPassenger.text.toString()
 
             // ViewModel 호출해서 MySQL(API)에서 데이터 가져오기
-            viewModel.searchFlights(dep, arr, date)
+            viewModel.searchFlights(dep, arr, date, passenger)
+
+            Log.d("*** fullstack ***", "$dep , $arr , $date , $passenger")
         }
 
         // 편도/왕복 토글
@@ -121,15 +123,6 @@ class FlightReservationActivity : AppCompatActivity() {
 
         // ↔ 스왑
         binding.tvSwap.setOnClickListener { swapAirports() }
-
-        // 항공편 검색 버튼 클릭
-        binding.btnSearchFlight.setOnClickListener {
-
-            val dep = binding.tvDeparture.text.toString()
-            val arr = binding.tvArrival.text.toString()
-            val time = binding.btnDate.text.toString()
-            val passenger = binding.btnPassenger.text.toString()
-        }
     }
 
     private fun setDeparture(value: String, recordNonJeju: Boolean) {

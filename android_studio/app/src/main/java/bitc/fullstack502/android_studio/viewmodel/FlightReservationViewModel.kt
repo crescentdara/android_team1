@@ -45,7 +45,7 @@ class FlightReservationViewModel : ViewModel() {
     val flights: LiveData<List<Flight>> get() = _flights
 
     // ✅ 항공권 검색
-    fun searchFlights(dep: String, arr: String, depTime: String) {
+    fun searchFlights(dep: String, arr: String, depTime: String, passenger: String) {
         val api = RetrofitClient.instance.create(FlightSearchAPI::class.java)
         api.searchFlights(dep, arr, depTime).enqueue(object : Callback<List<Flight>> {
             override fun onResponse(

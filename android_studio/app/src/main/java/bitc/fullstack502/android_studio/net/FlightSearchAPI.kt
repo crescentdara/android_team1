@@ -17,7 +17,7 @@ interface FlightSearchAPI {
         @Query("depTime") depTime: String
     ): Call<List<Flight>>
 
-    @POST("/api/booking/flight")
+    @POST("/api/bookings/flight")
     fun createBooking(@Body req: BookingRequest) : BookingResponse
 
 
