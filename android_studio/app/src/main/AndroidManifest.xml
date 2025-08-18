@@ -60,5 +60,9 @@
                 android:value=".ItineraryActivity" />
         </activity>
 
+        <activity android:name=".TicketSuccessActivity"
+            android:exported="false"
+            android:theme="@style/Theme.App"/>
+
     </application>
 </manifest>

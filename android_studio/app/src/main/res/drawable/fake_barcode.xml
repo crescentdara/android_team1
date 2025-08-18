@@ -1,0 +1,14 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="400dp" android:height="80dp" android:viewportWidth="400" android:viewportHeight="80">
+    <!-- 간단한 줄무늬 (실제 스캔용 아님) -->
+    <path android:fillColor="#000" android:pathData="M5,0h3v80h-3z" />
+    <path android:fillColor="#000" android:pathData="M12,0h1v80h-1z" />
+    <path android:fillColor="#000" android:pathData="M16,0h4v80h-4z" />
+    <path android:fillColor="#000" android:pathData="M24,0h2v80h-2z" />
+    <path android:fillColor="#000" android:pathData="M29,0h6v80h-6z" />
+    <!-- … 간격 주며 몇 줄 더 -->
+    <path android:fillColor="#000" android:pathData="M60,0h2v80h-2z" />
+    <path android:fillColor="#000" android:pathData="M66,0h1v80h-1z" />
+    <path android:fillColor="#000" android:pathData="M70,0h5v80h-5z" />
+    <path android:fillColor="#000" android:pathData="M80,0h2v80h-2z" />
+</vector>
