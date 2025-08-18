@@ -40,6 +40,14 @@ android {
 }
 
 dependencies {
+    implementation("com.squareup.retrofit2:converter-scalars:2.9.0")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.9.3")
+    implementation("com.google.android.material:material:1.8.0")
+// TabLayout
+    implementation("androidx.viewpager2:viewpager2:1.0.0")
+// ViewPager2
+
+
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

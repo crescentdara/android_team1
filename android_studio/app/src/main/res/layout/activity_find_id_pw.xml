@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- 탭 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingTop="60dp">
+
+        <TextView
+            android:id="@+id/tab_id"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="아이디 찾기"
+            android:gravity="center"
+            android:padding="12dp"
+            android:background="#CCCCCC"
+            android:enabled="false" />
+
+        <TextView
+            android:id="@+id/tab_pw"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="비밀번호 찾기"
+            android:gravity="center"
+            android:padding="12dp"
+            android:background="#EEEEEE" />
+    </LinearLayout>
+
+    <!-- 아이디 찾기 레이아웃 -->
+    <LinearLayout
+        android:id="@+id/layout_id_find"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="16dp">
+
+        <TextView
+            android:text="이메일"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <EditText
+            android:id="@+id/et_email_for_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="가입한 이메일을 입력하세요"
+            android:inputType="textEmailAddress" />
+
+        <TextView
+            android:text="비밀번호"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"/>
+
+        <EditText
+            android:id="@+id/et_pass_for_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="비밀번호를 입력하세요"
+            android:inputType="textPassword" />
+
+        <Button
+            android:id="@+id/btn_find_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="아이디 찾기"
+            android:layout_marginTop="20dp"
+            android:background="#FFDD00"
+            android:textColor="#000000" />
+    </LinearLayout>
+
+    <!-- 비밀번호 찾기 레이아웃 -->
+    <LinearLayout
+        android:id="@+id/layout_pw_find"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="16dp"
+        android:visibility="gone">
+
+        <TextView
+            android:text="아이디"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <EditText
+            android:id="@+id/et_userid_for_pw"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="가입한 아이디를 입력하세요"
+            android:inputType="text" />
+
+        <TextView
+            android:text="이메일"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"/>
+
+        <EditText
+            android:id="@+id/et_email_for_pw"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="가입한 이메일을 입력하세요"
+            android:inputType="textEmailAddress" />
+
+        <Button
+            android:id="@+id/btn_find_pw"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="비밀번호 찾기"
+            android:layout_marginTop="20dp"
+            android:background="#FFDD00"
+            android:textColor="#000000" />
+    </LinearLayout>
+
+</LinearLayout>

@@ -16,7 +16,11 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+<<<<<<< HEAD
         maven(url = "https://jitpack.io")  // 라이브러리 저장소(JitPack) 등록
+=======
+        maven(url = "https://jitpack.io") // ✅ 이 줄 추가!
+>>>>>>> origin/hsm/UserLogin
     }
 }
 
