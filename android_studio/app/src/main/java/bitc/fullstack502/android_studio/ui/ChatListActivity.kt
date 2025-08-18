@@ -9,7 +9,7 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import bitc.fullstack502.android_studio.ChatRoomActivity
+import bitc.fullstack502.android_studio.ui.ChatRoomActivity
 import bitc.fullstack502.android_studio.IdInputActivity
 import bitc.fullstack502.android_studio.R
 import bitc.fullstack502.android_studio.model.ChatMessage

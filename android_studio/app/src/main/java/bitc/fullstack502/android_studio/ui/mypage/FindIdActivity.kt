@@ -1,4 +1,4 @@
-package bitc.fullstack502.android_studio
+package bitc.fullstack502.android_studio.ui.mypage
 
 import android.os.Bundle
 import android.widget.Button

@@ -1,14 +1,11 @@
 package bitc.full502.spring.dto;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class FindPasswordRequestDto {
-    private String userId;
+    private String usersId; // ✅ usersId 맞춤
     private String email;
-
-    public FindPasswordRequestDto() {}
-
-    public String getUserId() { return userId; }
-    public void setUserId(String userId) { this.userId = userId; }
-
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
 }

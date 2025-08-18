@@ -1,4 +1,4 @@
-package bitc.fullstack502.android_studio
+package bitc.fullstack502.android_studio.ui.mypage
 
 import android.app.Activity
 import android.content.Intent
@@ -7,6 +7,8 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import bitc.fullstack502.android_studio.RetrofitClient
+import bitc.fullstack502.android_studio.SignupRequest
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

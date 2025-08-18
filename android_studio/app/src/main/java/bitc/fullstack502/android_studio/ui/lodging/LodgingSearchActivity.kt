@@ -11,7 +11,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.core.view.children
 import bitc.fullstack502.android_studio.R
 import bitc.fullstack502.android_studio.network.RetrofitProvider
-import bitc.fullstack502.android_studio.ui.LodgingFilterBottomSheet
+import bitc.fullstack502.android_studio.ui.lodging.LodgingFilterBottomSheet
 import com.google.android.flexbox.FlexboxLayout
 import com.google.android.material.button.MaterialButton
 import kotlinx.coroutines.Dispatchers

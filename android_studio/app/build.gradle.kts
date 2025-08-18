@@ -38,6 +38,10 @@ android {
     kotlinOptions { jvmTarget = "11" }
 }
 
+//viewbinding {
+//    enable = true
+//}
+
 dependencies {
     // ====== 네트워크 ======
     implementation("com.squareup.retrofit2:retrofit:2.11.0")
@@ -81,7 +85,6 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 
-    // ====== Glide Compiler ======
     kapt("com.github.bumptech.glide:compiler:4.16.0")
 }
 

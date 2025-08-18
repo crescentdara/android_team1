@@ -21,7 +21,6 @@
     <!-- Actual app theme -->
     <style name="Theme.Android_studio" parent="Base.Theme.Android_studio"/>
 
-<<<<<<< HEAD
     <style name="Jeu.MenuCardLabel.SCD7" parent="TextAppearance.Material3.BodyLarge">
         <!-- 호환성 위해 둘 다 지정 -->
         <item name="fontFamily">@font/scd_7</item>
@@ -32,8 +31,5 @@
         <item name="android:textSize">@dimen/menu_label_size</item> <!-- ex. 16sp -->
         <item name="android:textStyle">bold</item>
     </style>
-=======
-
->>>>>>> testmerge/PostChatMerge
 
 </resources>

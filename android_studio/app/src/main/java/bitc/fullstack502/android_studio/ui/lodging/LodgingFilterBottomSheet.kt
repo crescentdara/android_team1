@@ -1,4 +1,4 @@
-package bitc.fullstack502.android_studio.ui
+package bitc.fullstack502.android_studio.ui.lodging
 
 import android.os.Bundle
 import android.view.LayoutInflater

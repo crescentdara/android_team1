@@ -1,6 +1,6 @@
 package bitc.fullstack502.android_studio
 
 data class FindPasswordRequest(
-    val userId: String,
+    val usersId: String,
     val email: String
 )

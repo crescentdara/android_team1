@@ -24,16 +24,16 @@ public class DataLoader implements CommandLineRunner {
     private final FlightRepository flightRepository;
     private final LodgingRepository lodgingRepository;
 
-<<<<<<< HEAD
     @Override
     public void run(String... args) {
 //        loadFlights("flight_data.csv");
 //        loadLodgings("lodging_data.csv");
         System.out.println("CSV 데이터 로드 완료 ✅");
-=======
+
+    }
+
     private static String trim(String v) {
         return v == null ? null : v.trim();
->>>>>>> testmerge/LodgingMerge
     }
 
     private static LocalTime parseTime(String s) {
@@ -47,13 +47,6 @@ public class DataLoader implements CommandLineRunner {
         } catch (NumberFormatException e) {
             return null;
         }
-    }
-
-    @Override
-    public void run(String... args) {
-//        loadFlights("flight_data.csv");
-//        loadLodgings("lodging_data.csv");
-        System.out.println("CSV 데이터 로드 완료 ✅");
     }
 
     private void loadFlights(String fileName) {

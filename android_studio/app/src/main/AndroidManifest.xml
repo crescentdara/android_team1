@@ -2,7 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -24,12 +23,11 @@
         android:networkSecurityConfig="@xml/network_security_config"
         tools:targetApi="31">
 
-        <!-- Naver Map (앱 전역 메타데이터로 위치 이동) -->
         <meta-data
             android:name="com.naver.maps.map.NCP_KEY_ID"
             android:value="h81w25c1vt" />
 
-        <!-- ✅ 앱 시작 액티비티: MainActivity (런처) -->
+        <!-- 런처 -->
         <activity
             android:name=".ui.MainActivity"
             android:exported="true"
@@ -40,23 +38,22 @@
             </intent-filter>
         </activity>
 
-        <!-- ===== 계정/프로필 관련 ===== -->
-        <activity android:name=".LoginActivity" android:exported="false" />
-        <activity android:name=".SignupActivity" android:exported="false" />
-        <activity android:name=".FindIdPwActivity" android:exported="false" />
-        <activity android:name=".FindIdActivity" android:exported="false" />
-        <activity android:name=".EditInfoActivity" android:exported="false" />
-        <activity android:name=".MyPage" android:exported="false" />
-        <activity android:name=".IdInputActivity" android:exported="false" />
+        <!-- 마이페이지 -->
+        <activity android:name=".ui.mypage.EditInfoActivity" android:exported="false" />
+        <activity android:name=".ui.mypage.FindIdActivity" android:exported="false" />
+        <activity android:name=".ui.mypage.LoginActivity" android:exported="false" />
+        <activity android:name=".ui.mypage.MyPage" android:exported="false" />
+        <activity android:name=".ui.mypage.SignupActivity" android:exported="false" />
+        <activity android:name=".ui.mypage.FindIdPwActivity" android:exported="false" />
 
-        <!-- ===== 채팅 ===== -->
+        <!-- 채팅 -->
         <activity android:name=".ui.ChatListActivity" android:exported="false" />
-        <activity android:name=".ChatRoomActivity" android:exported="false" />
+        <activity android:name=".ui.ChatRoomActivity" android:exported="false" />
 
-        <!-- ===== 게시글(Post) ===== -->
+        <!-- 게시글 -->
         <activity
             android:name="bitc.fullstack502.android_studio.ui.post.PostListActivity"
-            android:exported="true" />
+            android:exported="false" />
         <activity
             android:name="bitc.fullstack502.android_studio.ui.post.PostDetailActivity"
             android:exported="false" />
@@ -64,18 +61,17 @@
             android:name="bitc.fullstack502.android_studio.ui.post.PostWriteActivity"
             android:exported="false" />
 
-        <!-- ===== 숙소(Lodging) ===== -->
-        <activity android:name=".ui.lodging.LodgingSearchActivity" android:exported="true" />
+        <!-- 숙소 -->
+        <activity android:name=".ui.lodging.LodgingSearchActivity" android:exported="false" />
         <activity android:name=".ui.lodging.LodgingListActivity" android:exported="false" />
         <activity android:name=".ui.lodging.LodgingDetailActivity" android:exported="false" />
         <activity android:name=".ui.lodging.LodgingPaymentActivity" android:exported="false" />
         <activity android:name=".ui.lodging.LodgingPaymentCompleteActivity" android:exported="false" />
 
-        <!-- ===== 공통/기타 ===== -->
+        <!-- 공통/기타 -->
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"
             android:exported="false"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
     </application>
-
 </manifest>

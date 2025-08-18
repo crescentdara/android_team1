@@ -1,4 +1,4 @@
-package bitc.fullstack502.android_studio
+package bitc.fullstack502.android_studio.ui.mypage
 
 import android.content.Intent
 import android.os.Bundle
@@ -11,6 +11,8 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import bitc.fullstack502.android_studio.RetrofitClient
+import bitc.fullstack502.android_studio.SignupRequest
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

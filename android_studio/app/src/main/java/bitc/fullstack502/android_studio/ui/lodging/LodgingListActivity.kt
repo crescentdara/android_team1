@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import bitc.fullstack502.android_studio.R
 import bitc.fullstack502.android_studio.model.LodgingItem
 import bitc.fullstack502.android_studio.network.RetrofitProvider
-import bitc.fullstack502.android_studio.ui.LodgingFilterBottomSheet
+import bitc.fullstack502.android_studio.ui.lodging.LodgingFilterBottomSheet
 import coil.load
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

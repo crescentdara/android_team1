@@ -1,12 +1,15 @@
 package bitc.full502.spring.controller;
 
-import bitc.full502.spring.domain.repository.UsersRepository;
 import bitc.full502.spring.domain.entity.Users;
-import bitc.full502.spring.dto.LoginRequestDto;
-import bitc.full502.spring.dto.LoginResponseDto;
+import bitc.full502.spring.domain.repository.UsersRepository;
+import bitc.full502.spring.dto.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api")
@@ -18,11 +21,13 @@ public class LoginController {
         this.usersRepository = usersRepository;
     }
 
+    // ✅ 로그인
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequestDto request) {
-        Users user = usersRepository.findByUsersId(request.getUserId());
+        Optional<Users> userOpt = usersRepository.findByUsersId(request.getUserId());
 
-        if (user != null && user.getPass().equals(request.getPassword())) {
+        if (userOpt.isPresent() && userOpt.get().getPass().equals(request.getPassword())) {
+            Users user = userOpt.get();
             LoginResponseDto response = new LoginResponseDto(
                     user.getUsersId(),
                     user.getName(),
@@ -31,21 +36,37 @@ public class LoginController {
             );
             return ResponseEntity.ok(response);
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("아이디 또는 비밀번호가 잘못되었습니다.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("아이디 또는 비밀번호가 잘못되었습니다.");
         }
     }
 
-    // 회원가입 API 추가
+    // ✅ 회원가입
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody Users user) {
-        // 아이디 중복 확인
-        if (usersRepository.findByUsersId(user.getUsersId()) != null) {
+        if (usersRepository.existsByUsersId(user.getUsersId())) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("이미 존재하는 아이디입니다.");
         }
-        // 패스워드 등 추가 유효성 검사는 필요 시 추가하세요.
-
         usersRepository.save(user);
         return ResponseEntity.ok("회원가입 완료");
     }
-}
 
+    // ✅ 비밀번호 찾기 (아이디 + 이메일)
+    @PostMapping("/find-password")
+    public ResponseEntity<?> findUserPassword(@RequestBody FindPasswordRequestDto request) {
+        return usersRepository.findByUsersIdAndEmail(request.getUsersId(), request.getEmail())
+                .<ResponseEntity<?>>map(u -> ResponseEntity.ok(Map.of("password", u.getPass())))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("일치하는 사용자 정보를 찾을 수 없습니다."));
+    }
+
+    // ✅ 아이디 찾기 (이메일 + 비밀번호)
+    @PostMapping("/find-id")
+    public ResponseEntity<?> findUserId(@RequestBody FindIdRequestDto request) {
+        return usersRepository.findByEmailAndPass(request.getEmail(), request.getPass())
+                .<ResponseEntity<?>>map(u -> ResponseEntity.ok(Map.of("userId", u.getUsersId())))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body("일치하는 사용자 정보를 찾을 수 없습니다."));
+    }
+
+}

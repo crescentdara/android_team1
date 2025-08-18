@@ -1,4 +1,4 @@
-package bitc.fullstack502.android_studio
+package bitc.fullstack502.android_studio.ui
 
 import android.os.Bundle
 import android.util.Log
@@ -10,17 +10,20 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
+import bitc.fullstack502.android_studio.IdInputActivity
+import bitc.fullstack502.android_studio.R
+import bitc.fullstack502.android_studio.StompManager
 import bitc.fullstack502.android_studio.model.ChatMessage
 import bitc.fullstack502.android_studio.model.ReadReceiptDTO
 import bitc.fullstack502.android_studio.net.ApiClient
-import bitc.fullstack502.android_studio.ui.ChatListActivity
-import bitc.fullstack502.android_studio.ui.ChatMessagesAdapter
-import com.google.gson.Gson
-import kotlinx.coroutines.*
-
 import bitc.fullstack502.android_studio.util.ForegroundRoom
-import bitc.fullstack502.android_studio.StompManager // ← 실제 StompManager 패키지에 맞춰 수정
-
+import com.google.gson.Gson
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class ChatRoomActivity : AppCompatActivity() {
 
@@ -70,11 +73,11 @@ class ChatRoomActivity : AppCompatActivity() {
         setContentView(R.layout.activity_chat_room)
 
         // 1) 인텐트 파라미터 수신 (IdInputActivity / ChatListActivity 양쪽 호환)
-        myUserId = intent.getStringExtra(IdInputActivity.EXTRA_MY_ID) ?: "android1"
-        partnerId = intent.getStringExtra(IdInputActivity.EXTRA_PARTNER_ID)
+        myUserId = intent.getStringExtra(IdInputActivity.Companion.EXTRA_MY_ID) ?: "android1"
+        partnerId = intent.getStringExtra(IdInputActivity.Companion.EXTRA_PARTNER_ID)
             ?: intent.getStringExtra(ChatListActivity.EXTRA_PARTNER_ID)
                     ?: "android2"
-        roomId = intent.getStringExtra(IdInputActivity.EXTRA_ROOM_ID)
+        roomId = intent.getStringExtra(IdInputActivity.Companion.EXTRA_ROOM_ID)
             ?: intent.getStringExtra(ChatListActivity.EXTRA_ROOM_ID)
                     ?: "testroom"
 

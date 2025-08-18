@@ -1,4 +1,4 @@
-package bitc.fullstack502.android_studio
+package bitc.fullstack502.android_studio.ui.mypage
 
 import android.os.Bundle
 import android.text.Editable
@@ -6,6 +6,9 @@ import android.text.TextWatcher
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import bitc.fullstack502.android_studio.CheckIdResponse
+import bitc.fullstack502.android_studio.RetrofitClient
+import bitc.fullstack502.android_studio.SignupRequest
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

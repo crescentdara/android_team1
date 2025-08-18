@@ -1,10 +1,14 @@
-package bitc.fullstack502.android_studio
+package bitc.fullstack502.android_studio.ui.mypage
 
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import bitc.fullstack502.android_studio.LoginRequest
+import bitc.fullstack502.android_studio.LoginResponse
+import bitc.fullstack502.android_studio.RetrofitClient
+import bitc.fullstack502.android_studio.ui.mypage.ui.mypage.FindIdPwActivity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

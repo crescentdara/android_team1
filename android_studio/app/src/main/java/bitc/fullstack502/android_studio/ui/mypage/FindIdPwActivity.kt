@@ -1,9 +1,14 @@
-package bitc.fullstack502.android_studio
+package bitc.fullstack502.android_studio.ui.mypage
 
 import android.os.Bundle
 import android.util.Log
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import bitc.fullstack502.android_studio.FindIdResponse
+import bitc.fullstack502.android_studio.FindPasswordRequest
+import bitc.fullstack502.android_studio.FindPasswordResponse
+import bitc.fullstack502.android_studio.RetrofitClient
+import bitc.fullstack502.android_studio.FindIdRequest
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -49,7 +54,7 @@ class FindIdPwActivity : AppCompatActivity() {
 
             val request = FindIdRequest(email, password)
 
-            RetrofitClient.apiService.findUserId(request).enqueue(object : Callback<FindIdResponse> {
+            RetrofitClient.userApiService.findUserId(request).enqueue(object : Callback<FindIdResponse> {
                 override fun onResponse(call: Call<FindIdResponse>, response: Response<FindIdResponse>) {
                     if (response.isSuccessful) {
                         val userId = response.body()?.userId
@@ -88,7 +93,7 @@ class FindIdPwActivity : AppCompatActivity() {
 
             val request = FindPasswordRequest(userId, email)
 
-            RetrofitClient.apiService.findUserPassword(request).enqueue(object : Callback<FindPasswordResponse> {
+            RetrofitClient.userApiService.findUserPassword(request).enqueue(object : Callback<FindPasswordResponse> {
                 override fun onResponse(call: Call<FindPasswordResponse>, response: Response<FindPasswordResponse>) {
                     if (response.isSuccessful) {
                         val password = response.body()?.password

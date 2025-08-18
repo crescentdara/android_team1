@@ -370,7 +370,6 @@
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/navigationView"
         android:layout_width="wrap_content"
-<<<<<<< HEAD
         android:layout_height="match_parent"
         android:layout_gravity="end"
         app:headerLayout="@layout/nav_header_jeu"
@@ -378,12 +377,4 @@
         app:itemBackground="@drawable/nav_item_bg_jeu" />
 
 </androidx.drawerlayout.widget.DrawerLayout>
-=======
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-</androidx.constraintlayout.widget.ConstraintLayout>
->>>>>>> testmerge/LodgingMerge
+
