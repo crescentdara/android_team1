@@ -160,4 +160,10 @@ class ChatListActivity : AppCompatActivity() {
             putExtra("partnerId", item.partnerId)
         })
     }
+
+    override fun onResume() {
+        super.onResume()
+        loadData()   // 복귀할 때 최신 unread/미리보기 반영
+    }
+
 }

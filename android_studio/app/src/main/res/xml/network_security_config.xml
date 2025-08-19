@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <network-security-config>
+    <!-- 에뮬레이터 → PC localhost -->
     <domain-config cleartextTrafficPermitted="true">
-        <!-- 에뮬레이터에서 PC localhost -->
         <domain includeSubdomains="true">10.0.2.2</domain>
+    </domain-config>
+
+    <!-- 기기/다른 PC → PC의 LAN IP -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="true">10.100.202.31</domain>
     </domain-config>
 </network-security-config>

@@ -25,10 +25,15 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+import androidx.activity.addCallback
+
 class ChatRoomActivity : AppCompatActivity() {
 
     // 기존 하드코딩 제거 → BuildConfig 사용
     private val serverUrl = BuildConfig.WS_BASE   // ✅ ws://<공용서버IP>:8080/ws
+
+    // 클래스 필드
+    private var isFinishingByBack = false
 
     private lateinit var myUserId: String
     private lateinit var partnerId: String
@@ -135,7 +140,29 @@ class ChatRoomActivity : AppCompatActivity() {
                 debounceMarkRead()                                                // 내가 보고 있으니 읽음 갱신
             }
         }
+
+        onBackPressedDispatcher.addCallback(this) {
+            if (isFinishingByBack) return@addCallback
+            isFinishingByBack = true
+
+            lifecycleScope.launch {
+                // 현재 방 보고 있던 내용 전부 읽음으로 확정
+                runCatching { ApiProvider.api.markRead(roomId, myUserId) }
+                // 이제 방을 떠났다고 표시 (목록 배지 증가 방지)
+                ForegroundRoom.current = null
+                finish()
+            }
+        }
+
     }
+
+    override fun onPause() {
+        super.onPause()
+        lifecycleScope.launch {
+            runCatching { ApiProvider.api.markRead(roomId, myUserId) }
+        }
+    }
+
 
     override fun onStart() {
         super.onStart()
