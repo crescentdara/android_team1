@@ -17,6 +17,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import bitc.fullstack502.android_studio.ui.ChatRoomActivity
+import bitc.fullstack502.android_studio.util.ChatIds
 import kotlin.jvm.java
 
 class PostDetailActivity : AppCompatActivity() {
@@ -47,15 +48,13 @@ class PostDetailActivity : AppCompatActivity() {
     }
 
     // ====== 채팅 유틸 ======
-    private fun roomIdOf(a: String, b: String): String = if (a <= b) "$a|$b" else "$b|$a"
     private fun openChatWith(other: String) {
         if (other.isBlank() || other == myUsersId) return
-        val intent = Intent(this, ChatRoomActivity::class.java).apply {
-            putExtra("me", myUsersId)
-            putExtra("other", other)
-            putExtra("roomId", roomIdOf(myUsersId, other)) // 서버/앱 공통 규칙
-        }
-        startActivity(intent)
+        val rid = ChatIds.roomIdFor(myUsersId, other)
+        startActivity(Intent(this, ChatRoomActivity::class.java).apply {
+            putExtra("roomId", rid)
+            putExtra("partnerId", other)
+        })
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

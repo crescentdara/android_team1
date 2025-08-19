@@ -21,7 +21,7 @@ import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
+
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -72,16 +72,24 @@ class ChatRoomActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat_room)
 
-        // 1) 인텐트 파라미터 수신 (IdInputActivity / ChatListActivity 양쪽 호환)
-        myUserId = intent.getStringExtra(IdInputActivity.Companion.EXTRA_MY_ID) ?: "android1"
-        partnerId = intent.getStringExtra(IdInputActivity.Companion.EXTRA_PARTNER_ID)
-            ?: intent.getStringExtra(ChatListActivity.EXTRA_PARTNER_ID)
-                    ?: "android2"
-        roomId = intent.getStringExtra(IdInputActivity.Companion.EXTRA_ROOM_ID)
-            ?: intent.getStringExtra(ChatListActivity.EXTRA_ROOM_ID)
-                    ?: "testroom"
+        // 1) 인텐트 파라미터 수신 (전역 규격: roomId, partnerId)
+        val r = intent.getStringExtra("roomId")
+        val p = intent.getStringExtra("partnerId")
+        if (r.isNullOrBlank() || p.isNullOrBlank()) {
+            finish()
+            return
+        }
+        roomId = r
+        partnerId = p
 
-        // 2) 뷰 바인딩
+        // 2) 로그인 사용자(ID는 전역 AuthManager에서만)
+        myUserId = bitc.fullstack502.android_studio.util.AuthManager.usersId()
+        if (myUserId.isBlank()) {
+            finish()
+            return
+        }
+
+        // 3) 뷰 바인딩
         tvTitle = findViewById(R.id.tvTitle)
         rvChat  = findViewById(R.id.rvChat)
         etMsg   = findViewById(R.id.etMsg)
@@ -90,7 +98,7 @@ class ChatRoomActivity : AppCompatActivity() {
 
         Log.d("CHAT", "room=$roomId partner=$partnerId me=$myUserId")
 
-        // 3) 리스트 + 레이아웃 매니저
+        // 4) 리스트 + 레이아웃 매니저
         messageAdapter = ChatMessagesAdapter(myUserId)
         layoutManager = LinearLayoutManager(this).apply {
             stackFromEnd = true
@@ -102,7 +110,7 @@ class ChatRoomActivity : AppCompatActivity() {
         // 🔥 변경 애니메이션으로 인한 고스트/점프 방지
         (rvChat.itemAnimator as? SimpleItemAnimator)?.supportsChangeAnimations = false
 
-        // 3-1) 위로 스크롤 시 과거 더 불러오기 + 바닥 근처면 읽음 갱신
+        // 5) 위로 스크롤 시 과거 더 불러오기 + 바닥 근처면 읽음 갱신
         rvChat.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(rv: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(rv, dx, dy)
@@ -116,7 +124,7 @@ class ChatRoomActivity : AppCompatActivity() {
             }
         })
 
-        // 4) 전송: 로컬 에코 → 실제 전송 → 읽음 포인터 갱신
+        // 6) 전송: 로컬 에코 → 실제 전송 → 읽음 포인터 갱신
         btnSend.setOnClickListener {
             val content = etMsg.text.toString().trim()
             if (content.isNotEmpty()) {
@@ -128,6 +136,7 @@ class ChatRoomActivity : AppCompatActivity() {
             }
         }
     }
+
 
     override fun onStart() {
         super.onStart()
@@ -160,6 +169,7 @@ class ChatRoomActivity : AppCompatActivity() {
 
 
     // STOMP 연결: 방 토픽 + 개인 인박스 + 읽음 영수증
+// STOMP 연결: 방 토픽 + 개인 인박스 + 읽음 영수증
     private fun connectStomp() {
         stomp.connectGlobal(
             userId = myUserId,
@@ -176,31 +186,32 @@ class ChatRoomActivity : AppCompatActivity() {
                     onError = { err -> Log.e("CHAT", "room topic err: $err") }
                 )
 
-                // 2) 읽음 영수증 구독
-                stomp.subscribeTopic(
+                // 2) 읽음 영수증 구독 (/user/queue/read-receipt)
+                stomp.subscribeUserQueue(
                     "/user/queue/read-receipt",
                     onMessage = { payload ->
                         val rc = runCatching { gson.fromJson(payload, ReadReceiptDTO::class.java) }.getOrNull()
                         if (rc != null && rc.roomId == roomId) {
-                            // 내가 읽은 영수증은 무시, 상대가 읽은 것만 반영
-                            if (rc.readerId != myUserId) {
-                                // 최신값 저장 (경쟁조건 대비, 큰 값 유지)
+                            if (rc.readerId != myUserId) { // 내가 읽은 건 무시
                                 if (rc.lastReadId > lastReadByOtherId) lastReadByOtherId = rc.lastReadId
-                                runOnUiThread {
-                                    messageAdapter.markReadByOtherUpTo(lastReadByOtherId)
-                                }
+                                runOnUiThread { messageAdapter.markReadByOtherUpTo(lastReadByOtherId) }
                             }
                         }
                     },
                     onError = { err -> Log.e("CHAT", "read-receipt err: $err") }
                 )
-            },
-            // 3) 개인 인박스 (/user/queue/inbox)
-            onMessage = { payload ->
-                val m = runCatching { gson.fromJson(payload, ChatMessage::class.java) }.getOrNull()
-                if (m != null && m.roomId == roomId) {
-                    runOnUiThread { onIncoming(m) }
-                }
+
+                // 3) 개인 인박스 구독 (/user/queue/inbox)
+                stomp.subscribeUserQueue(
+                    "/user/queue/inbox",
+                    onMessage = { payload ->
+                        val m = runCatching { gson.fromJson(payload, ChatMessage::class.java) }.getOrNull()
+                        if (m != null && m.roomId == roomId) {
+                            runOnUiThread { onIncoming(m) }
+                        }
+                    },
+                    onError = { err -> Log.e("CHAT", "inbox err: $err") }
+                )
             },
             onError = { err ->
                 Log.e("CHAT", "STOMP err: $err")
@@ -211,6 +222,7 @@ class ChatRoomActivity : AppCompatActivity() {
             }
         )
     }
+
 
     /** 서버 수신 공통 처리 */
     private fun onIncoming(m: ChatMessage) {
