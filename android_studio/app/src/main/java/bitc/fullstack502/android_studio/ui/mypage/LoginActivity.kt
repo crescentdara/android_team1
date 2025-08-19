@@ -13,7 +13,6 @@ import bitc.fullstack502.android_studio.util.AuthManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import kotlin.jvm.java
 
 class LoginActivity : AppCompatActivity() {
 
@@ -24,6 +23,19 @@ class LoginActivity : AppCompatActivity() {
         b = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(b.root)
 
+        // ✅ 회원가입 이동
+        b.tvSignup.setOnClickListener {
+            startActivity(Intent(this, SignupActivity::class.java))
+        }
+
+        // ✅ 아이디/비번 찾기 이동 (통합 화면 쓰는 경우)
+        b.tvFindInfo.setOnClickListener {
+            startActivity(Intent(this, FindIdPwActivity::class.java))
+            // 만약 화면을 따로 쓰면 다음처럼 분기해서 사용:
+            // startActivity(Intent(this, FindIdActivity::class.java))
+            // startActivity(Intent(this, FindPwActivity::class.java))
+        }
+
         b.btnLogin.setOnClickListener {
             val usersId = b.etUsersId.text.toString()
             val pass = b.etPass.text.toString()
@@ -31,14 +43,9 @@ class LoginActivity : AppCompatActivity() {
             val req = LoginRequest(usersId, pass)
 
             ApiProvider.api.login(req).enqueue(object : Callback<LoginResponse> {
-                override fun onResponse(
-                    call: Call<LoginResponse>,
-                    response: Response<LoginResponse>
-                ) {
+                override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
                     if (response.isSuccessful && response.body() != null) {
                         val data = response.body()!!
-
-                        // ✅ 로그인 정보 저장
                         AuthManager.saveLogin(
                             userPk = data.id,
                             usersId = data.usersId,
@@ -47,15 +54,12 @@ class LoginActivity : AppCompatActivity() {
                             phone = data.phone,
                             accessToken = "dummy"
                         )
-
-                        // ✅ 메인으로 이동
                         startActivity(Intent(this@LoginActivity, MainActivity::class.java))
                         finish()
                     } else {
                         Toast.makeText(this@LoginActivity, "아이디/비밀번호 오류", Toast.LENGTH_SHORT).show()
                     }
                 }
-
                 override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
                     Toast.makeText(this@LoginActivity, "네트워크 오류", Toast.LENGTH_SHORT).show()
                 }
