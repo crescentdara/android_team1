@@ -1,6 +1,7 @@
 package bitc.fullstack502.android_studio.network.dto
 
 data class LodgingBookingDto(
+    val id: Long? = null,
     val userId: Long,
     val lodId: Long,
     val ckIn: String,

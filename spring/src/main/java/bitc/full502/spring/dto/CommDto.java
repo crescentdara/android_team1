@@ -7,8 +7,8 @@ import java.time.LocalDateTime;
 public class CommDto {
     private Long id;
     private Long postId;
-    private Long parentId;      // null 이면 상위 댓글
-    private String author;      // usersId
+    private Long parentId;    // null 이면 상위 댓글
+    private String author;    // usersId
     private String content;
     private LocalDateTime createdAt;
 }

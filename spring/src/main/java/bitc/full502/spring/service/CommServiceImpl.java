@@ -26,6 +26,7 @@ public class CommServiceImpl implements CommService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<CommDto> list(Long postId) {
         Post post = postRepository.findById(postId).orElseThrow();
         return commRepository.findByPostOrderByCreatedAtAsc(post).stream()
@@ -45,7 +46,12 @@ public class CommServiceImpl implements CommService {
         Post post = postRepository.findById(postId).orElseThrow();
         Users user = getUserOrThrow(usersId);
         Comm parent = (parentId == null) ? null : commRepository.findById(parentId).orElse(null);
-        Comm c = Comm.builder().post(post).user(user).parent(parent).content(content).build();
+        Comm c = Comm.builder()
+                .post(post)
+                .user(user)
+                .parent(parent)
+                .content(content)
+                .build();
         return commRepository.save(c).getId();
     }
 

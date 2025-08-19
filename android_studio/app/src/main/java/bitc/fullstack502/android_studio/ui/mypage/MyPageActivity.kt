@@ -1,6 +1,4 @@
-// MyPageActivity.kt
 package bitc.fullstack502.android_studio.ui.mypage
-
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -16,6 +14,9 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import bitc.fullstack502.android_studio.R
+import bitc.fullstack502.android_studio.ui.mypage.LoginActivity
+import bitc.fullstack502.android_studio.util.AuthManager
+import kotlin.jvm.java
 
 class MyPageActivity : AppCompatActivity() {
 
@@ -128,6 +129,29 @@ class MyPageActivity : AppCompatActivity() {
                 .setNegativeButton("취소") { d, _ -> d.dismiss() }
                 .show()
         }
+
+        findViewById<View>(R.id.row_my_posts).setOnClickListener {
+            startActivity(Intent(this, MyPostsActivity::class.java))
+        }
+        findViewById<View>(R.id.row_my_comments).setOnClickListener {
+            startActivity(Intent(this, MyCommentsActivity::class.java))
+        }
+        findViewById<View>(R.id.row_liked_posts).setOnClickListener {
+            startActivity(Intent(this, LikedPostsActivity::class.java))
+        }
+        findViewById<View>(R.id.row_flight_wishlist).setOnClickListener {
+            startActivity(Intent(this, FlightWishlistActivity::class.java))
+        }
+        findViewById<View>(R.id.row_lodging_wishlist).setOnClickListener {
+            startActivity(Intent(this, LodgingWishlistActivity::class.java))
+        }
+        findViewById<View>(R.id.row_flight_bookings).setOnClickListener {
+            startActivity(Intent(this, FlightBookingsActivity::class.java))
+        }
+        findViewById<View>(R.id.row_lodging_bookings).setOnClickListener {
+            startActivity(Intent(this, LodgingBookingsActivity::class.java))
+        }
+
     }
 
     private fun loadUserInfo(userId: String) {

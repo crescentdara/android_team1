@@ -123,8 +123,8 @@ class LodgingListActivity : AppCompatActivity() {
             h.tvName.text = item.name
             h.tvAddr.text = listOfNotNull(item.city, item.town).joinToString(" ")
 
-            val won = NumberFormat.getNumberInstance(Locale.KOREA).format(item.basePrice)
-            h.tvPrice.text = "${won}원"
+            // ⚡ 가격을 고정된 값으로 표시
+            h.tvPrice.text = "￦100,000~"
 
             val url = fullUrl(item.img)
             if (url == null) h.iv.setImageResource(R.drawable.ic_launcher_foreground)
@@ -132,6 +132,7 @@ class LodgingListActivity : AppCompatActivity() {
 
             h.itemView.setOnClickListener { onItemClick(item) }
         }
+
 
         override fun getItemCount(): Int = items.size
     }

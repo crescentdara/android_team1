@@ -11,6 +11,7 @@
         android:maxSdkVersion="32" />
 
     <application
+        android:name=".App"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -67,6 +68,16 @@
         <activity android:name=".ui.lodging.LodgingDetailActivity" android:exported="false" />
         <activity android:name=".ui.lodging.LodgingPaymentActivity" android:exported="false" />
         <activity android:name=".ui.lodging.LodgingPaymentCompleteActivity" android:exported="false" />
+
+<!--        마이페이지 -->
+        <activity android:name=".ui.mypage.MyPostsActivity" />
+        <activity android:name=".ui.mypage.MyCommentsActivity" />
+        <activity android:name=".ui.mypage.LikedPostsActivity" />
+        <activity android:name=".ui.mypage.FlightWishlistActivity" />
+        <activity android:name=".ui.mypage.LodgingWishlistActivity" />
+        <activity android:name=".ui.mypage.FlightBookingsActivity" />
+        <activity android:name=".ui.mypage.LodgingBookingsActivity" />
+
 
         <!-- 공통/기타 -->
         <activity

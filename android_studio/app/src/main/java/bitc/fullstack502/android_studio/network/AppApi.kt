@@ -227,4 +227,32 @@ interface AppApi {
     // 회원 삭제 (신규 엔드포인트: DELETE /api/users/{usersId})
     @DELETE("/api/users/{usersId}")
     fun deleteUserV2(@Path("usersId") usersId: String): Call<Void>
+
+    // 1. 내가 쓴 글
+    @GET("api/mypage/posts")
+    suspend fun getMyPosts(@Query("userPk") userPk: Long): List<PostDto>
+
+    // 2. 내가 쓴 댓글
+    @GET("api/mypage/comments")
+    suspend fun getMyComments(@Query("userPk") userPk: Long): List<CommentDto>
+
+    // 3. 좋아요 한 게시글
+    @GET("api/mypage/liked-posts")
+    suspend fun getLikedPosts(@Query("userPk") userPk: Long): List<PostDto>
+
+    // 4. 항공 즐겨찾기
+    @GET("api/mypage/flight-wishlist")
+    suspend fun getFlightWishlist(@Query("userPk") userPk: Long): List<FlightWishDto>
+
+    // 5. 숙소 즐겨찾기
+    @GET("api/mypage/lodging-wishlist")
+    suspend fun getLodgingWishlist(@Query("userPk") userPk: Long): List<LodgingWishDto>
+
+    // 6. 항공 예매내역
+    @GET("api/mypage/flight-bookings")
+    suspend fun getFlightBookings(@Query("userPk") userPk: Long): List<FlightBookingDto>
+
+    // 7. 숙박 예약내역 (이미 기존 DTO 있으면 그거 재사용)
+    @GET("api/mypage/lodging-bookings")
+    suspend fun getLodgingBookings(@Query("userPk") userPk: Long): List<LodgingBookingDto>
 }

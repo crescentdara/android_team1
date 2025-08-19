@@ -9,9 +9,8 @@ import bitc.fullstack502.android_studio.network.ApiProvider
 import bitc.fullstack502.android_studio.network.dto.AvailabilityDto
 import bitc.fullstack502.android_studio.network.dto.LodgingDetailDto
 import bitc.fullstack502.android_studio.network.dto.LodgingWishStatusDto
+import bitc.fullstack502.android_studio.util.AuthManager
 import bitc.fullstack502.android_studio.util.fullUrl
-import bitc.fullstack502.android_studio.util.isLoggedIn
-import bitc.fullstack502.android_studio.util.userPkOrZero
 import com.bumptech.glide.Glide
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraUpdate
@@ -61,6 +60,9 @@ class LodgingDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_lodging_detail)
 
+        // ✅ AuthManager 초기화
+        AuthManager.init(this)
+
         mapView = findViewById(R.id.mapView)
         mapView.onCreate(savedInstanceState)
         mapView.getMapAsync(this)
@@ -97,8 +99,7 @@ class LodgingDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         rgRoom.setOnCheckedChangeListener { _, _ -> updateSelectionAndTotal() }
 
         btnReserve.setOnClickListener {
-            // ✅ 액티비티 컨텍스트 사용
-            if (!isLoggedIn() || userPkOrZero() == 0L) {
+            if (!AuthManager.isLoggedIn()) {
                 Toast.makeText(this, "로그인 후 이용해주세요.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
@@ -109,18 +110,17 @@ class LodgingDetailActivity : AppCompatActivity(), OnMapReadyCallback {
                 else -> ""
             }
             val total = pricePerNight() * selectedNights
-            val intent = Intent(this, LodgingPaymentActivity::class.java).apply {
+            startActivity(Intent(this, LodgingPaymentActivity::class.java).apply {
                 putExtra("lodgingId", lodgingId)
                 putExtra("checkIn", checkIn)
                 putExtra("checkOut", checkOut)
                 putExtra("roomType", roomType)
                 putExtra("totalPrice", total.toLong())
-            }
-            startActivity(intent)
+            })
         }
 
         btnWish.setOnClickListener {
-            if (!isLoggedIn() || userPkOrZero() == 0L) {
+            if (!AuthManager.isLoggedIn()) {
                 Toast.makeText(this, "로그인 후 이용해주세요.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
@@ -136,7 +136,6 @@ class LodgingDetailActivity : AppCompatActivity(), OnMapReadyCallback {
             isCompassEnabled = false
             isScaleBarEnabled = true
         }
-        nMap.moveCamera(CameraUpdate.scrollTo(LatLng(37.5666102, 126.9783881)))
         updateMapMarkerIfReady()
     }
 
@@ -151,8 +150,7 @@ class LodgingDetailActivity : AppCompatActivity(), OnMapReadyCallback {
                 tvAddr.text = listOfNotNull(d.addrRd, d.addrJb).joinToString(" / ")
                 tvPhone.text = d.phone ?: ""
 
-                val url = fullUrl(d.img)
-                if (url != null) Glide.with(this@LodgingDetailActivity).load(url).into(imgCover)
+                fullUrl(d.img)?.let { Glide.with(this@LodgingDetailActivity).load(it).into(imgCover) }
 
                 updateMapMarkerIfReady()
                 refreshWish()
@@ -171,15 +169,20 @@ class LodgingDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun refreshWish() {
-        // 로그인 안 되어 있으면 서버 호출 안 함
-        if (!isLoggedIn() || userPkOrZero() == 0L) {
+        if (!AuthManager.isLoggedIn()) {
             wished = false
             tvWishCount.text = "0"
             updateWishIcon()
             return
         }
-        val uid = userPkOrZero()
-        ApiProvider.api.wishStatus(lodgingId, uid)
+        val userPk = AuthManager.id()
+        if (userPk <= 0L) {
+            wished = false
+            tvWishCount.text = "0"
+            updateWishIcon()
+            return
+        }
+        ApiProvider.api.wishStatus(lodgingId, userPk)
             .enqueue(object : Callback<LodgingWishStatusDto> {
                 override fun onResponse(call: Call<LodgingWishStatusDto>, res: Response<LodgingWishStatusDto>) {
                     res.body()?.let { s ->
@@ -193,12 +196,12 @@ class LodgingDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun toggleWish() {
-        val uid = userPkOrZero()
-        if (uid == 0L) {
+        val userPk = AuthManager.id()
+        if (userPk <= 0L) {
             Toast.makeText(this, "로그인 후 이용해주세요.", Toast.LENGTH_SHORT).show()
             return
         }
-        ApiProvider.api.wishToggle(lodgingId, uid)
+        ApiProvider.api.wishToggle(lodgingId, userPk)
             .enqueue(object : Callback<LodgingWishStatusDto> {
                 override fun onResponse(call: Call<LodgingWishStatusDto>, res: Response<LodgingWishStatusDto>) {
                     res.body()?.let { s ->
@@ -263,7 +266,7 @@ class LodgingDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     override fun onStart() { super.onStart(); mapView.onStart() }
-    override fun onResume() { super.onResume(); mapView.onResume() }
+    override fun onResume() { super.onResume(); mapView.onResume(); refreshWish() }
     override fun onPause() { mapView.onPause(); super.onPause() }
     override fun onStop() { mapView.onStop(); super.onStop() }
     override fun onLowMemory() { super.onLowMemory(); mapView.onLowMemory() }

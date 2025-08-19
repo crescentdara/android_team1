@@ -1,5 +1,6 @@
 package bitc.fullstack502.android_studio.network
 
+import bitc.fullstack502.android_studio.util.AuthManager
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -16,6 +17,17 @@ object ApiProvider {
             level = HttpLoggingInterceptor.Level.BODY
         }
         OkHttpClient.Builder()
+            // 🔐 토큰 자동 첨부 인터셉터
+            .addInterceptor { chain ->
+                val req = chain.request()
+                val token = AuthManager.accessToken()
+                val newReq = if (!token.isNullOrBlank()) {
+                    req.newBuilder()
+                        .addHeader("Authorization", "Bearer $token")
+                        .build()
+                } else req
+                chain.proceed(newReq)
+            }
             .addInterceptor(log)
             .connectTimeout(15, TimeUnit.SECONDS)
             .readTimeout(20, TimeUnit.SECONDS)
