@@ -1,11 +1,20 @@
 package bitc.fullstack502.android_studio
-
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.button.MaterialButton
+import com.google.zxing.BarcodeFormat
+import com.google.zxing.EncodeHintType
+import com.google.zxing.MultiFormatWriter
+import com.google.zxing.common.BitMatrix
+import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
+import bitc.fullstack502.android_studio.R
+
+import bitc.fullstack502.android_studio.model.Passenger   // ✅ 추가
+import bitc.fullstack502.android_studio.model.PassengerType   // ✅ 추가
 
 class TicketSuccessActivity : AppCompatActivity() {
 
@@ -13,49 +22,63 @@ class TicketSuccessActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_ticket_success)
 
-        // 뒤로가기 / 완료 버튼
         findViewById<ImageView>(R.id.btnBack).setOnClickListener { finish() }
         findViewById<MaterialButton>(R.id.btnDone).setOnClickListener { finish() }
 
         val container = findViewById<LinearLayout>(R.id.ticketContainer)
+        container.removeAllViews()
 
-        // 공통 데이터
-        val passenger = intent.getStringExtra("EXTRA_PASSENGER") ?: "정보 없음"
         val isRoundTrip = intent.getBooleanExtra("EXTRA_ROUNDTRIP", false)
 
-        // --- 가는 편 ---
-        addTicket(
-            container = container,
-            badge = "가는 편",
-            routeDep = intent.getStringExtra("EXTRA_DEP") ?: "출발지 미정",
-            routeArr = intent.getStringExtra("EXTRA_ARR") ?: "도착지 미정",
-            dateTime = intent.getStringExtra("EXTRA_DATETIME") ?: "시간 정보 없음",
-            flightNo = intent.getStringExtra("EXTRA_FLIGHT_NO") ?: "편명 없음",
-            gate = intent.getStringExtra("EXTRA_GATE") ?: "-",
-            seat = intent.getStringExtra("EXTRA_SEAT") ?: "-",
-            seatClass = intent.getStringExtra("EXTRA_CLASS") ?: "이코노미",
-            passenger = passenger,
-            status = "결제 완료"
-        )
+        // 가는 편 공통 데이터
+        val dep      = intent.getStringExtra("EXTRA_DEP") ?: "출발지 미정"
+        val arr      = intent.getStringExtra("EXTRA_ARR") ?: "도착지 미정"
+        val dt       = intent.getStringExtra("EXTRA_DATETIME") ?: "시간 정보 없음"
+        val flightNo = intent.getStringExtra("EXTRA_FLIGHT_NO") ?: "편명 없음"
+        val seatCls  = intent.getStringExtra("EXTRA_CLASS") ?: "이코노미"
 
-        // --- 오는 편 (왕복일 경우만) ---
-        if (isRoundTrip) {
-            addTicket(
-                container = container,
-                badge = "오는 편",
-                routeDep = intent.getStringExtra("EXTRA_DEP_RETURN") ?: "출발지 미정",
-                routeArr = intent.getStringExtra("EXTRA_ARR_RETURN") ?: "도착지 미정",
-                dateTime = intent.getStringExtra("EXTRA_DATETIME_RETURN") ?: "시간 정보 없음",
-                flightNo = intent.getStringExtra("EXTRA_FLIGHT_NO_RETURN") ?: "편명 없음",
-                gate = intent.getStringExtra("EXTRA_GATE_RETURN") ?: "-",
-                seat = intent.getStringExtra("EXTRA_SEAT_RETURN") ?: "-",
-                seatClass = intent.getStringExtra("EXTRA_CLASS_RETURN") ?: "이코노미",
-                passenger = passenger,
-                status = "결제 완료"
-            )
+        // 오는 편
+        val depR      = intent.getStringExtra("EXTRA_DEP_RETURN") ?: ""
+        val arrR      = intent.getStringExtra("EXTRA_ARR_RETURN") ?: ""
+        val dtR       = intent.getStringExtra("EXTRA_DATETIME_RETURN") ?: ""
+        val flightNoR = intent.getStringExtra("EXTRA_FLIGHT_NO_RETURN") ?: ""
+        val seatClsR  = intent.getStringExtra("EXTRA_CLASS_RETURN") ?: "이코노미"
+
+        @Suppress("UNCHECKED_CAST")
+        val passengers = intent.getSerializableExtra("PASSENGERS") as? ArrayList<Passenger> ?: arrayListOf()
+
+        val paxNameFallback  = intent.getStringExtra("EXTRA_PASSENGER")
+        val paxCountFallback = intent.getIntExtra("EXTRA_PAX_COUNT", if (passengers.isEmpty()) 1 else passengers.size)
+
+        if (passengers.isEmpty()) {
+            // 단일 이름만 받은 경우
+            val display = if (paxCountFallback > 1 && !paxNameFallback.isNullOrBlank())
+                "$paxNameFallback 외 ${paxCountFallback - 1}명" else (paxNameFallback ?: "승객")
+            // 가는 편
+            addTicket(container, "가는 편", dep, arr, dt, flightNo,
+                randomGate(), randomSeat(), seatCls, display, "결제 완료")
+            // 오는 편
+            if (isRoundTrip) {
+                addTicket(container, "오는 편", depR, arrR, dtR, flightNoR,
+                    randomGate(), randomSeat(), seatClsR, display, "결제 완료")
+            }
+        } else {
+            // 다인원: 승객별
+            passengers.forEach { p ->
+                val name = p.displayName().ifBlank { "승객 ${p.index + 1}" }
+                // 가는 편
+                addTicket(container, "가는 편", dep, arr, dt, flightNo,
+                    randomGate(), randomSeat(), seatCls, name, "결제 완료")
+                // 오는 편
+                if (isRoundTrip) {
+                    addTicket(container, "오는 편", depR, arrR, dtR, flightNoR,
+                        randomGate(), randomSeat(), seatClsR, name, "결제 완료")
+                }
+            }
         }
     }
 
+    // 위치 인자 기준 시그니처
     private fun addTicket(
         container: LinearLayout,
         badge: String,
@@ -70,15 +93,61 @@ class TicketSuccessActivity : AppCompatActivity() {
         status: String
     ) {
         val v = layoutInflater.inflate(R.layout.item_ticket, container, false)
-        v.findViewById<TextView>(R.id.tvBadge).text = badge
-        v.findViewById<TextView>(R.id.tvStatus).text = status
-        v.findViewById<TextView>(R.id.tvRoute).text = "$routeDep  →  $routeArr"
+
+        v.findViewById<TextView>(R.id.tvBadge).text     = badge
+        v.findViewById<TextView>(R.id.tvStatus).text    = status
+        v.findViewById<TextView>(R.id.tvRoute).text     = "$routeDep  →  $routeArr"
         v.findViewById<TextView>(R.id.tvPassenger).text = passenger
-        v.findViewById<TextView>(R.id.tvDateTime).text = dateTime
-        v.findViewById<TextView>(R.id.tvFlightNo).text = flightNo
-        v.findViewById<TextView>(R.id.tvGate).text = gate
-        v.findViewById<TextView>(R.id.tvClass).text = seatClass
-        v.findViewById<TextView>(R.id.tvSeat).text = seat
+        v.findViewById<TextView>(R.id.tvDateTime).text  = dateTime
+        v.findViewById<TextView>(R.id.tvFlightNo).text  = flightNo
+        v.findViewById<TextView>(R.id.tvGate).text      = gate
+        v.findViewById<TextView>(R.id.tvClass).text     = seatClass
+        v.findViewById<TextView>(R.id.tvSeat).text      = seat
+
+        // QR payload
+        val payload = listOf(
+            routeDep, routeArr, flightNo, dateTime.replace(" ", "T"), seat, passenger
+        ).joinToString("|")
+
+        v.findViewById<ImageView?>(R.id.ivQr)?.apply {
+            setImageBitmap(makeQrCode(payload))
+        }
+
         container.addView(v)
+    }
+
+    private fun randomSeat(): String {
+        val row = (10..45).random()
+        val col = ('A'..'F').random()
+        return "$row$col"
+    }
+    private fun randomGate(): String {
+        val n = (1..40).random()
+        val wing = listOf("A","B","C").random()
+        return "${n}${wing}"
+    }
+
+    // ZXing 사용 (build.gradle에 의존성 필요)
+    private fun makeQrCode(data: String, size: Int = 600): Bitmap {
+        val hints = hashMapOf<_root_ide_package_.com.google.zxing.EncodeHintType, Any>(
+            EncodeHintType.CHARACTER_SET to "UTF-8",
+            EncodeHintType.ERROR_CORRECTION to ErrorCorrectionLevel.M,
+            EncodeHintType.MARGIN to 1
+        )
+        val matrix: BitMatrix =
+            MultiFormatWriter().encode(data, BarcodeFormat.QR_CODE, size, size, hints)
+        val w = matrix.width
+        val h = matrix.height
+        val pixels = IntArray(w * h)
+        val black = 0xFF000000.toInt()
+        val white = 0xFFFFFFFF.toInt()
+        var off = 0
+        for (y in 0 until h) {
+            for (x in 0 until w) pixels[off + x] = if (matrix[x, y]) black else white
+            off += w
+        }
+        return Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888).apply {
+            setPixels(pixels, 0, w, 0, 0, w, h)
+        }
     }
 }

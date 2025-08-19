@@ -231,12 +231,14 @@
             android:background="@color/divider" />
 
         <ImageView
-            android:id="@+id/imgBarcode"
-            android:layout_width="match_parent"
-            android:layout_height="82dp"
-            android:layout_marginTop="12dp"
-            android:scaleType="fitXY"
-            android:contentDescription="바코드"
-            android:src="@drawable/fake_barcode" />
+            android:id="@+id/ivQr"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_marginTop="8dp"
+            android:background="@android:color/white"
+            android:scaleType="centerInside"
+            android:layout_gravity="center_horizontal"
+            android:contentDescription="@string/qr_code" />
+
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

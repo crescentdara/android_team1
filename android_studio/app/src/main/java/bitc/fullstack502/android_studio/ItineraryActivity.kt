@@ -8,6 +8,8 @@ import android.widget.CheckBox
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import bitc.fullstack502.android_studio.model.Flight
+import bitc.fullstack502.android_studio.FlightReservationActivity
+import bitc.fullstack502.android_studio.model.Passenger
 
 class ItineraryActivity : AppCompatActivity() {
 
@@ -17,26 +19,24 @@ class ItineraryActivity : AppCompatActivity() {
         const val EXTRA_IN_FLIGHT    = "EXTRA_IN_FLIGHT"
         const val EXTRA_ADULT_COUNT  = "EXTRA_ADULT_COUNT"
         const val EXTRA_CHILD_COUNT  = "EXTRA_CHILD_COUNT"
-        const val EXTRA_OUT_DATE     = "EXTRA_OUT_DATE"   // optional: "2025.08.19(화)" 같은 문자열
+        const val EXTRA_OUT_DATE     = "EXTRA_OUT_DATE"
         const val EXTRA_IN_DATE      = "EXTRA_IN_DATE"
 
-        // ✅ 고정 운임 상수
-        private const val ADULT_PRICE     = 98_700
-        private const val CHILD_PRICE     = 78_700
-        private const val FUEL_SURCHARGE  = 15_400   // per person
-        private const val FACILITY_FEE    = 8_000    // per person
+        // ✅ 고정 운임 상수(1인)
+        private const val ADULT_PRICE     = 98_700               // 항공운임(성인)
+        private const val CHILD_PRICE     = ADULT_PRICE - 20_000 // 항공운임(아동)
+        private const val FUEL_SURCHARGE  = 15_400               // 유류할증료(연령무관 1인)
+        private const val FACILITY_FEE    = 8_000                // 공항시설사용료(연령무관 1인)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // include 2개가 들어있는 레이아웃
         setContentView(R.layout.activity_itinerary_detail)
 
-        // ========== include 카드 참조 ==========
+        // ===== include 카드 참조 =====
         val outCard = findViewById<View>(R.id.includeOutbound)
         val inCard  = findViewById<View>(R.id.includeInbound)
 
-        // 가는 편 카드 내부
         val tvOutFlightNo = outCard.findViewById<TextView>(R.id.tvFlightNo)
         val tvOutFareType = outCard.findViewById<TextView>(R.id.tvFareType)
         val tvOutDepInfo  = outCard.findViewById<TextView>(R.id.tvDepInfo)
@@ -44,7 +44,6 @@ class ItineraryActivity : AppCompatActivity() {
         val tvOutDepCity  = outCard.findViewById<TextView>(R.id.tvDepCity)
         val tvOutArrCity  = outCard.findViewById<TextView>(R.id.tvArrCity)
 
-        // 오는 편 카드 내부
         val tvInFlightNo = inCard.findViewById<TextView>(R.id.tvFlightNo)
         val tvInFareType = inCard.findViewById<TextView>(R.id.tvFareType)
         val tvInDepInfo  = inCard.findViewById<TextView>(R.id.tvDepInfo)
@@ -70,62 +69,79 @@ class ItineraryActivity : AppCompatActivity() {
 
         val btnNext = findViewById<Button>(R.id.btnNext)
 
-        // ========== 전달값 ==========
-        val outFlight = intent.getSerializableExtra(EXTRA_OUT_FLIGHT) as? Flight
-        val inFlight  = intent.getSerializableExtra(EXTRA_IN_FLIGHT)  as? Flight
+        // ===== PassengerInputActivity에서 넘어온 값들 (키 통일!) =====
+        val outFlight = intent.getSerializableExtra(FlightReservationActivity.EXTRA_OUTBOUND) as? Flight
+        val inFlight  = intent.getSerializableExtra(FlightReservationActivity.EXTRA_INBOUND)  as? Flight
+        val outPrice  = intent.getIntExtra(FlightReservationActivity.EXTRA_OUT_PRICE, 0)
+        val inPrice   = intent.getIntExtra(FlightReservationActivity.EXTRA_IN_PRICE, 0)
 
-        val adultCount = intent.getIntExtra(EXTRA_ADULT_COUNT, 1)
-        val childCount = intent.getIntExtra(EXTRA_CHILD_COUNT, 0)
-        val outDate    = intent.getStringExtra(EXTRA_OUT_DATE).orEmpty()
-        val inDate     = intent.getStringExtra(EXTRA_IN_DATE).orEmpty()
+        val adultCount = intent.getIntExtra(FlightReservationActivity.EXTRA_ADULT, 1)
+        val childCount = intent.getIntExtra(FlightReservationActivity.EXTRA_CHILD, 0)
+        val infantCount= intent.getIntExtra(FlightReservationActivity.EXTRA_INFANT, 0)
 
-        // ========== 카드 바인딩 ==========
+        // (옵션) 승객 리스트 – 다음 화면에서도 필요할 수 있음
+        @Suppress("UNCHECKED_CAST")
+        val passengers = intent.getSerializableExtra("PASSENGERS") as? ArrayList<Passenger>
+
+        // ===== 카드 바인딩 =====
         outFlight?.let { f ->
-            // 좌상단 편명 / 우상단 요금제
-            // 가는 편
-            tvOutFlightNo.text = outFlight?.flNo ?: ""
+            tvOutFlightNo.text = f.flNo
             tvOutFareType.text = "이코노미"
-
-            // 날짜가 넘어오면 "날짜 시간", 없으면 시간만
-            tvOutDepInfo.text  = listOf(outDate, f.depTime).filter { it.isNotBlank() }.joinToString(" ")
-            tvOutArrInfo.text  = listOf(outDate, f.arrTime).filter { it.isNotBlank() }.joinToString(" ")
-
+            tvOutDepInfo.text  = f.depTime
+            tvOutArrInfo.text  = f.arrTime
             tvOutDepCity.text  = f.dep
             tvOutArrCity.text  = f.arr
         }
 
-        inFlight?.let { f ->
-            tvInFlightNo.text = inFlight?.flNo ?: ""
-            tvInFareType.text = "이코노미"
-
-            tvInDepInfo.text  = listOf(inDate, f.depTime).filter { it.isNotBlank() }.joinToString(" ")
-            tvInArrInfo.text  = listOf(inDate, f.arrTime).filter { it.isNotBlank() }.joinToString(" ")
-
-            tvInDepCity.text  = f.dep
-            tvInArrCity.text  = f.arr
+        if (inFlight == null) {
+            inCard.visibility = View.GONE // 편도면 숨김
+        } else {
+            inCard.visibility = View.VISIBLE
+            inFlight.let { f ->
+                tvInFlightNo.text = f.flNo
+                tvInFareType.text = "이코노미"
+                tvInDepInfo.text  = f.depTime
+                tvInArrInfo.text  = f.arrTime
+                tvInDepCity.text  = f.dep
+                tvInArrCity.text  = f.arr
+            }
         }
 
-        // ========== 운임 계산(고정요금) ==========
-        val people        = adultCount + childCount
+        // ===== 운임 계산(성인/아동 부과, 유아 0원) =====
+        val segments = if (inFlight == null) 1 else 2                // 편도=1, 왕복=2
+        val chargeable = adultCount + childCount                      // 유아는 0원
+
+        // 1인 총액(연령별)
+        val perAdultTotal = ADULT_PRICE + FUEL_SURCHARGE + FACILITY_FEE   // 122,100
+        val perChildTotal = CHILD_PRICE + FUEL_SURCHARGE + FACILITY_FEE   // 102,100
+        val perInfantTotal = 0
+
+        // 항목별 합계(구간수 적용 전)
         val baseFare      = adultCount * ADULT_PRICE + childCount * CHILD_PRICE
-        val fuelTotal     = people * FUEL_SURCHARGE
-        val facilityTotal = people * FACILITY_FEE
-        val total         = baseFare + fuelTotal + facilityTotal
+        val fuelTotal     = chargeable * FUEL_SURCHARGE
+        val facilityTotal = chargeable * FACILITY_FEE
 
-        tvFareBase.text     = "%,d원".format(baseFare)
-        tvFareFuel.text     = "%,d원".format(fuelTotal)
-        tvFareFacility.text = "%,d원".format(facilityTotal)
-        tvTotal.text        = "%,d원".format(total)
+        // 화면 표시는 '구간수 적용 후' 금액으로
+        val baseFareX      = baseFare * segments
+        val fuelTotalX     = fuelTotal * segments
+        val facilityTotalX = facilityTotal * segments
+        val totalX         = (adultCount * perAdultTotal +
+                childCount * perChildTotal +
+                infantCount * perInfantTotal) * segments
 
-        // ========== 전체 동의 ↔ 하위 동의 연동 ==========
+        // 표시
+        tvFareBase.text     = "%,d원".format(baseFareX)
+        tvFareFuel.text     = "%,d원".format(fuelTotalX)
+        tvFareFacility.text = "%,d원".format(facilityTotalX)
+        tvTotal.text        = "%,d원".format(totalX)
+
+        // ===== 전체 동의 연동 =====
         fun syncAllFromChildren() {
             val allChecked = childCbs.all { it.isChecked }
             if (cbAll.isChecked != allChecked) cbAll.isChecked = allChecked
             btnNext.isEnabled = allChecked
         }
-
         cbAll.setOnCheckedChangeListener { _, checked ->
-            // 리스너 일시 해제 후 일괄 반영 → 다시 연결
             childCbs.forEach { it.setOnCheckedChangeListener(null) }
             childCbs.forEach { it.isChecked = checked }
             childCbs.forEach { child ->
@@ -133,29 +149,30 @@ class ItineraryActivity : AppCompatActivity() {
             }
             btnNext.isEnabled = checked
         }
-
         childCbs.forEach { child ->
             child.setOnCheckedChangeListener { _, _ -> syncAllFromChildren() }
         }
-        // 초기 상태 반영
         syncAllFromChildren()
 
-        // ========== 다음 ==========
+        // ===== 다음(결제) =====
         btnNext.setOnClickListener {
             if (!btnNext.isEnabled) return@setOnClickListener
+            startActivity(Intent(this, PaymentActivity::class.java).apply {
+                // 👉 결제 화면으로는 '구간 반영 후' 금액 전달
+                putExtra("EXTRA_TOTAL", totalX)
+                putExtra("EXTRA_BASE", baseFareX)
+                putExtra("EXTRA_FUEL", fuelTotalX)
+                putExtra("EXTRA_FACILITY", facilityTotalX)
 
-            startActivity(
-                Intent(this, PaymentActivity::class.java).apply {
-                    putExtra("EXTRA_TOTAL", total)
-                    putExtra("EXTRA_BASE", baseFare)
-                    putExtra("EXTRA_FUEL", fuelTotal)
-                    putExtra("EXTRA_FACILITY", facilityTotal)
-                    putExtra(EXTRA_OUT_FLIGHT, outFlight)
-                    putExtra(EXTRA_IN_FLIGHT, inFlight)
-                    putExtra(EXTRA_ADULT_COUNT, adultCount)
-                    putExtra(EXTRA_CHILD_COUNT, childCount)
-                }
-            )
+                putExtra(FlightReservationActivity.EXTRA_OUTBOUND, outFlight)
+                putExtra(FlightReservationActivity.EXTRA_INBOUND, inFlight)
+                intent.putExtra(FlightReservationActivity.EXTRA_ADULT, adultCount)
+                intent.putExtra(FlightReservationActivity.EXTRA_CHILD, childCount)
+                intent.putExtra(FlightReservationActivity.EXTRA_INFANT, infantCount)
+
+                // 필요 시 승객 리스트도 넘김
+                putExtra("PASSENGERS", passengers)
+            })
         }
     }
 }

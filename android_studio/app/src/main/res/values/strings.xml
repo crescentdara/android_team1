@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">android_studio</string>
+    <string name="qr_code">탑승권 QR 코드</string>
 </resources>
