@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
+<<<<<<< HEAD
     <!-- Brand -->
     <color name="jeju_primary">#206064</color>   <!-- 로고 초록 -->
     <color name="jeju_bg">#FAF9F3</color>        <!-- 오프화이트 배경 -->
@@ -19,4 +19,35 @@
     <color name="white">#FFFFFFFF</color>
     <color name="blue">#FF2196F3</color>
     <color name="gray">#FF9E9E9E</color>
+=======
+    <color name="jeju_primary">#206064</color>        <!-- 포인트 -->
+    <color name="jeju_primary_dark">#206064</color>  <!-- 동일 포인트 -->
+    <color name="jeju_tint">#E6F0EF</color>          <!-- 살짝 틴트 -->
+    <color name="brand_bg">#FAF9F3</color>
+
+    <color name="ink_900">#0F1B1A</color>
+    <color name="ink_600">#556B69</color>
+    <color name="ink_400">#8AA09E</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="divider">#E6E6E6</color>
+    <color name="accent_ok">#2E7D32</color>
+    <color name="accent_warn">#C62828</color>
+    <color name="chip_bg">#F0F0EB</color>
+    <color name="ink_800">#1F2E2D</color>
+    <color name="ink_700">#2F4644</color>
+    <color name="ink_500">#6F8583</color>
+
+    <!-- ✅ 다이얼로그에서 쓰는 별칭 색상 추가 -->
+    <color name="jeju_bg">@color/brand_bg</color>
+    <color name="jeju_text_primary">@color/ink_900</color>
+
+    <!-- (선택) 추후 대비용 -->
+    <color name="jeju_text_secondary">@color/ink_600</color>
+    <color name="jeju_surface">@color/surface</color>
+    <color name="jeju_divider">@color/divider</color>
+
+    <!-- 프로젝트 공통 -->
+    <color name="text_primary">#222222</color>
+    <color name="text_secondary">#7A7A7A</color>
+>>>>>>> origin/jgy/Flight
 </resources>

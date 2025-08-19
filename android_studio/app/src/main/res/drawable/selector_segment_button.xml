@@ -1,0 +1,16 @@
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="@color/jeju_tint">
+    <item android:state_checked="true">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/jeju_primary"/>
+            <corners android:radius="22dp"/>
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/transparent"/>
+            <corners android:radius="22dp"/>
+            <stroke android:width="0dp" android:color="@android:color/transparent"/>
+        </shape>
+    </item>
+</ripple>

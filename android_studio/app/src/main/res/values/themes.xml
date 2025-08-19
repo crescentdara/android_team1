@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!-- res/values/themes.xml -->
 <resources xmlns:tools="http://schemas.android.com/tools">
 
@@ -32,4 +33,44 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+=======
+<resources>
+    <!-- 앱 전체 테마 -->
+    <style name="Theme.App" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/jeju_primary</item>
+        <item name="colorPrimaryVariant">@color/jeju_primary</item>
+        <item name="colorOnPrimary">@android:color/white</item>
+        <item name="android:statusBarColor">@color/jeju_primary</item>
+        <item name="android:navigationBarColor">@color/brand_bg</item>
+        <item name="android:windowBackground">@color/brand_bg</item>
+
+        <!-- ✅ 전체 폰트 적용 -->
+        <item name="android:fontFamily">@font/scd_4</item>
+        <item name="fontFamily">@font/scd_3</item>
+    </style>
+
+    <!-- 공통 버튼 -->
+    <style name="Widget.App.PrimaryButton" parent="Widget.MaterialComponents.Button">
+        <item name="backgroundTint">@color/jeju_primary</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="cornerRadius">16dp</item>
+        <item name="android:insetLeft">0dp</item>
+        <item name="android:insetRight">0dp</item>
+        <item name="android:paddingLeft">18dp</item>
+        <item name="android:paddingRight">18dp</item>
+        <!-- 이 부분은 없어도 됨 (전체 테마에서 이미 적용됨) -->
+        <item name="android:fontFamily">@font/scd_3</item>
+    </style>
+
+    <!-- 칩/태그 -->
+    <style name="Widget.App.OutlineChip" parent="Widget.MaterialComponents.Chip.Choice">
+        <item name="chipBackgroundColor">@color/chip_bg</item>
+        <item name="chipStrokeColor">@color/divider</item>
+        <item name="chipStrokeWidth">1dp</item>
+        <item name="android:textColor">@color/ink_900</item>
+        <item name="rippleColor">@color/jeju_tint</item>
+        <!-- 필요하다면 칩에도 폰트 적용 -->
+        <item name="android:fontFamily">@font/scd_4</item>
+    </style>
+>>>>>>> origin/jgy/Flight
 </resources>

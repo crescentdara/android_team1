@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="12dp"
+    android:layout_marginVertical="8dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="2dp"
+    app:strokeWidth="1dp"
+    app:strokeColor="@color/divider"
+    app:cardBackgroundColor="#FFFFFF">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- 상단: 편명 / 요금제 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvFlightNo"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="7C501"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#000000" />
+
+            <TextView
+                android:id="@+id/tvFareType"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="스탠다드"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="@color/jeju_primary" />
+        </LinearLayout>
+
+        <!-- 날짜/시간 행 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp">
+
+            <TextView
+                android:id="@+id/tvDepInfo"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="2025.08.19(화) 08:00"
+                android:textSize="14sp"
+                android:textColor="#282828" />
+
+            <TextView
+                android:id="@+id/tvArrInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="2025.08.19(화) 09:05"
+                android:textSize="14sp"
+                android:textColor="#282828" />
+        </LinearLayout>
+
+        <!-- 도시명: 부산  →  제주 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="8dp"
+            android:paddingTop="4dp"
+            android:paddingBottom="2dp">
+
+            <TextView
+                android:id="@+id/tvDepCity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="부산"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="#000000" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="  →  "
+                android:textSize="18sp"
+                android:layout_marginHorizontal="6dp"
+                android:textColor="#000000" />
+
+            <TextView
+                android:id="@+id/tvArrCity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="제주"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="#000000" />
+        </LinearLayout>
+
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

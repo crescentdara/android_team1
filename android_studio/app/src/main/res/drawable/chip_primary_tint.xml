@@ -1,0 +1,4 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="#E6F0EF"/> <!-- jeju_tint 요청 컬러 -->
+    <corners android:radius="16dp"/>
+</shape>

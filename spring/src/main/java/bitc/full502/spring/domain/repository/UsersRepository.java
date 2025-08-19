@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface UsersRepository extends JpaRepository<Users, Long> {
+<<<<<<< HEAD
 
     Optional<Users> findByUsersId(String usersId);
 
@@ -16,4 +17,8 @@ public interface UsersRepository extends JpaRepository<Users, Long> {
     Optional<Users> findByUsersIdAndEmail(String usersId, String email);
 
     boolean existsByEmail(String email);
+=======
+    Optional<Users> findByUsersId(String usersId);
+    Optional<Users> findByEmail(String email);
+>>>>>>> origin/jgy/Flight
 }

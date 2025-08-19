@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.INTERNET" />
+<<<<<<< HEAD
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
@@ -12,6 +13,10 @@
 
     <application
         android:name=".App"
+=======
+
+    <application
+>>>>>>> origin/jgy/Flight
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -19,6 +24,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+<<<<<<< HEAD
         android:theme="@style/Theme.Android_studio"
         android:usesCleartextTraffic="true"
         android:networkSecurityConfig="@xml/network_security_config"
@@ -27,6 +33,10 @@
         <meta-data
             android:name="com.naver.maps.map.NCP_KEY_ID"
             android:value="h81w25c1vt" />
+=======
+        android:theme="@style/Theme.App"
+        android:usesCleartextTraffic="true">
+>>>>>>> origin/jgy/Flight
 
         <!-- 런처 -->
         <activity
@@ -34,6 +44,7 @@
             android:exported="true"
             android:theme="@style/Theme.Android_studio">
             <intent-filter>
+<<<<<<< HEAD
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
@@ -84,5 +95,69 @@
             android:name="com.yalantis.ucrop.UCropActivity"
             android:exported="false"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+=======
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
+        <!-- 여정 선택(가는 편) -->
+        <activity
+            android:name=".FlightReservationActivity"
+            android:exported="false" />
+
+        <!-- 오는 편 선택 -->
+        <activity
+            android:name=".InboundSelectActivity"
+            android:exported="false"
+            android:parentActivityName=".FlightReservationActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".FlightReservationActivity" />
+        </activity>
+
+        <!-- 승객 정보 입력 -->
+        <activity
+            android:name=".PassengerInputActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize"
+            android:parentActivityName=".FlightReservationActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".FlightReservationActivity" />
+        </activity>
+
+        <!-- 여정 상세 -->
+        <activity
+            android:name=".ItineraryActivity"
+            android:exported="false"
+            android:parentActivityName=".PassengerInputActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".PassengerInputActivity" />
+        </activity>
+
+        <!-- 결제 -->
+        <activity
+            android:name=".PaymentActivity"
+            android:exported="false"
+            android:parentActivityName=".ItineraryActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ItineraryActivity" />
+        </activity>
+
+        <!-- 결제 완료(모바일 탑승권) -->
+        <activity
+            android:name=".TicketSuccessActivity"
+            android:exported="false"
+            android:theme="@style/Theme.App"
+            android:parentActivityName=".PaymentActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".PaymentActivity" />
+        </activity>
+
+>>>>>>> origin/jgy/Flight
     </application>
 </manifest>

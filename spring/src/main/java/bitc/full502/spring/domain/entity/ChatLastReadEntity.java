@@ -11,7 +11,11 @@ import java.time.Instant;
 @Builder
 @Entity
 @Table(name = "chat_last_read",
+<<<<<<< HEAD
         uniqueConstraints = @UniqueConstraint(columnNames = {"room_id", "user_id"}))
+=======
+        uniqueConstraints = @UniqueConstraint(columnNames = {"room_id","user_id"}))
+>>>>>>> origin/jgy/Flight
 public class ChatLastReadEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,7 +24,11 @@ public class ChatLastReadEntity {
     @Column(name = "room_id", nullable = false, length = 100)
     private String roomId;
 
+<<<<<<< HEAD
     @Column(name = "user_id", nullable = false, length = 100)
+=======
+    @Column(name="user_id", nullable=false, length=100)
+>>>>>>> origin/jgy/Flight
     private String userId;
 
     @Column(name = "last_read_at", nullable = false)
@@ -31,7 +39,11 @@ public class ChatLastReadEntity {
         if (lastReadAt == null) lastReadAt = Instant.EPOCH.plusSeconds(1); // 1970-01-01 00:00:01
     }
 
+<<<<<<< HEAD
     @Column(name="last_read_id", nullable=false)
     private Long lastReadId = 0L;
 
 }
+=======
+}
+>>>>>>> origin/jgy/Flight

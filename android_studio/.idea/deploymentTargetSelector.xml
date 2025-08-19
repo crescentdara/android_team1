@@ -4,6 +4,7 @@
     <selectionStates>
       <SelectionState runConfigName="app">
         <option name="selectionMode" value="DROPDOWN" />
+<<<<<<< HEAD
         <DialogSelection>
           <targets>
             <Target type="DEFAULT_BOOT">
@@ -13,6 +14,16 @@
             </Target>
           </targets>
         </DialogSelection>
+=======
+        <DropdownSelection timestamp="2025-08-12T11:38:07.633530700Z">
+          <Target type="DEFAULT_BOOT">
+            <handle>
+              <DeviceId pluginId="LocalEmulator" identifier="path=C:\Users\xmrtn\.android\avd\Pixel_2.avd" />
+            </handle>
+          </Target>
+        </DropdownSelection>
+        <DialogSelection />
+>>>>>>> origin/jgy/Flight
       </SelectionState>
     </selectionStates>
   </component>

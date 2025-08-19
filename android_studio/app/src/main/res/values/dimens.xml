@@ -1,6 +1,13 @@
+<<<<<<< HEAD
 <resources>
     <dimen name="menu_icon_size">64dp</dimen>        <!-- ← 아이콘 크기 (원하면 72dp/80dp로) -->
     <dimen name="menu_card_height">156dp</dimen>     <!-- 카드 높이 -->
     <dimen name="menu_item_margin">16dp</dimen>      <!-- 안쪽 마진 -->
     <dimen name="menu_label_size">16sp</dimen>       <!-- 텍스트 크기 -->
+=======
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="card_stroke_selected">2dp</dimen>
+    <dimen name="card_stroke_normal">1dp</dimen>
+>>>>>>> origin/jgy/Flight
 </resources>
