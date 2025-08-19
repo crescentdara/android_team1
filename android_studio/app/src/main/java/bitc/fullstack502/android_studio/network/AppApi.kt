@@ -13,11 +13,10 @@ import bitc.fullstack502.android_studio.UsersResponse
 import bitc.fullstack502.android_studio.model.ChatMessage
 import bitc.fullstack502.android_studio.model.ConversationSummary
 import bitc.fullstack502.android_studio.model.LodgingItem
+import bitc.fullstack502.android_studio.model.Flight
+import bitc.fullstack502.android_studio.model.BookingRequest
+import bitc.fullstack502.android_studio.model.BookingResponse
 import bitc.fullstack502.android_studio.network.dto.*
-import bitc.fullstack502.android_studio.network.dto.AvailabilityDto
-import bitc.fullstack502.android_studio.network.dto.NaverLocalResp
-import bitc.fullstack502.android_studio.network.dto.PagePostDto
-import bitc.fullstack502.android_studio.network.dto.PostDto
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Call
@@ -44,7 +43,7 @@ interface AppApi {
     suspend fun markRead(
         @Query("roomId") roomId: String,
         @Query("userId") userId: String
-    ): Response<Unit>   // body 없는 200
+    ): Response<Unit>
 
     // ---------- Naver Local (서버 프록시) ----------
     @GET("/api/naver/local/nearby")
@@ -60,7 +59,6 @@ interface AppApi {
     @GET("/api/posts")
     fun list(@Query("page") page: Int = 0, @Query("size") size: Int = 20): Call<PagePostDto>
 
-    // ✅ detail: 로그인 필수 → 헤더로 사용자 전달
     @GET("/api/posts/{id}")
     fun detail(
         @Path("id") id: Long,
@@ -86,7 +84,6 @@ interface AppApi {
         @Header("X-USER-ID") usersId: String? = null
     ): Call<Void>
 
-    // ✅ 좋아요: 로그인 필수
     @POST("/api/posts/{id}/like")
     fun toggleLike(
         @Path("id") id: Long,
@@ -96,7 +93,6 @@ interface AppApi {
     @GET("/api/comments/{postId}")
     fun comments(@Path("postId") postId: Long): Call<List<CommDto>>
 
-    // ✅ 댓글 쓰기/수정/삭제: 로그인 필수
     @FormUrlEncoded
     @POST("/api/comments")
     fun writeComment(
@@ -133,7 +129,6 @@ interface AppApi {
         @Query("page") page: Int = 0,
         @Query("size") size: Int = 20
     ): Call<PagePostDto>
-
 
     // ---------- 지역 ----------
     @GET("/api/locations/cities")
@@ -176,7 +171,6 @@ interface AppApi {
     fun prepay(@Path("id") id: Long, @Body body: Map<String, Any>): Call<Map<String, Any>>
 
     // ---------- 숙소 찜 ----------
-
     @GET("/api/lodging/{id}/wish")
     fun wishStatus(@Path("id") lodgingId: Long, @Query("userId") userId: Long): Call<LodgingWishStatusDto>
 
@@ -208,65 +202,54 @@ interface AppApi {
     @PUT("/api/update-user")
     fun updateUser(@Body request: SignupRequest): Call<Map<String, String>>
 
-    // 회원가입 (신규 엔드포인트: /api/users/register)
+    // 신규 V2
     @POST("/api/users/register")
     fun registerUserV2(@Body request: SignupRequest): Call<Void>
 
-    // 아이디 중복 체크 (신규 엔드포인트: /api/users/check-id?usersId=)
     @GET("/api/users/check-id")
     fun checkIdV2(@Query("usersId") usersId: String): Call<CheckIdResponse>
 
-    // 사용자 조회 (신규 엔드포인트: /api/users/{usersId})
     @GET("/api/users/{usersId}")
     fun getUserInfoV2(@Path("usersId") usersId: String): Call<UsersResponse>
 
-    // 사용자 업데이트 (신규 엔드포인트: PUT /api/users) – 비밀번호 제외
     @PUT("/api/users")
     fun updateUserV2(@Body request: UpdateUserRequest): Call<UsersResponse>
 
-    // 회원 삭제 (신규 엔드포인트: DELETE /api/users/{usersId})
     @DELETE("/api/users/{usersId}")
     fun deleteUserV2(@Path("usersId") usersId: String): Call<Void>
 
-    // 1. 내가 쓴 글
-    @GET("api/mypage/posts")
+    // ---------- 마이페이지 ----------
+    @GET("/api/mypage/posts")
     suspend fun getMyPosts(@Query("userPk") userPk: Long): List<PostDto>
 
-    // 2. 내가 쓴 댓글
-    @GET("api/mypage/comments")
+    @GET("/api/mypage/comments")
     suspend fun getMyComments(@Query("userPk") userPk: Long): List<CommentDto>
 
-    // 3. 좋아요 한 게시글
-    @GET("api/mypage/liked-posts")
+    @GET("/api/mypage/liked-posts")
     suspend fun getLikedPosts(@Query("userPk") userPk: Long): List<PostDto>
 
-    // 4. 항공 즐겨찾기
-    @GET("api/mypage/flight-wishlist")
+    @GET("/api/mypage/flight-wishlist")
     suspend fun getFlightWishlist(@Query("userPk") userPk: Long): List<FlightWishDto>
 
-    // 5. 숙소 즐겨찾기
-    @GET("api/mypage/lodging-wishlist")
+    @GET("/api/mypage/lodging-wishlist")
     suspend fun getLodgingWishlist(@Query("userPk") userPk: Long): List<LodgingWishDto>
 
-    // 6. 항공 예매내역
-    @GET("api/mypage/flight-bookings")
+    @GET("/api/mypage/flight-bookings")
     suspend fun getFlightBookings(@Query("userPk") userPk: Long): List<FlightBookingDto>
 
-    // 7. 숙박 예약내역 (이미 기존 DTO 있으면 그거 재사용)
-    @GET("api/mypage/lodging-bookings")
+    @GET("/api/mypage/lodging-bookings")
     suspend fun getLodgingBookings(@Query("userPk") userPk: Long): List<LodgingBookingDto>
 
-//항공
-    @GET("api/flights/search")
+    // ---------- 항공 ----------
+    @GET("/api/flights/search")
     fun searchFlights(
         @Query("dep") dep: String,
         @Query("arr") arr: String,
         @Query("date") date: String,              // yyyy-MM-dd
-        @Query("depTime") depTime: String? = null // null이면 쿼리에서 제외
+        @Query("depTime") depTime: String? = null
     ): Call<List<Flight>>
 
-    // POST /api/booking/flight  ->  Response<BookingResponse> (suspend)
-    @POST("api/booking/flight")
+    @POST("/api/booking/flight")
     suspend fun createBooking(
         @Body req: BookingRequest
     ): Response<BookingResponse>

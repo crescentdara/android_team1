@@ -16,6 +16,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.viewpager2.widget.ViewPager2
+import bitc.fullstack502.android_studio.FlightReservationActivity
 import bitc.fullstack502.android_studio.R
 import bitc.fullstack502.android_studio.ui.lodging.LodgingListActivity
 import bitc.fullstack502.android_studio.ui.lodging.LodgingSearchActivity
@@ -99,8 +100,7 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, ChatListActivity::class.java))
         }
         findViewById<MaterialCardView>(R.id.cardFlight).setOnClickListener {
-            // 항공은 아직 미구현 → 토스트만
-            Toast.makeText(this, "항공권은 준비 중입니다.", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, FlightReservationActivity::class.java))
         }
 
         // --- 드로어 메뉴 연결 ---
@@ -116,7 +116,7 @@ class MainActivity : AppCompatActivity() {
                     startActivity(Intent(this, ChatListActivity::class.java)); true
                 }
                 R.id.nav_flight -> {
-                    Toast.makeText(this, "항공권은 준비 중입니다.", Toast.LENGTH_SHORT).show(); true
+                    startActivity(Intent(this, FlightReservationActivity::class.java)); true
                 }
                 else -> false
             }.also { drawer.closeDrawers() }

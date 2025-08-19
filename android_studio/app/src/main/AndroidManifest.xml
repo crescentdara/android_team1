@@ -17,24 +17,21 @@
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/network_security_config"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Android_studio"
-        android:usesCleartextTraffic="true"
         android:theme="@style/Theme.App"
-        android:networkSecurityConfig="@xml/network_security_config"
+        android:usesCleartextTraffic="true"
         tools:targetApi="31">
 
         <meta-data
             android:name="com.naver.maps.map.NCP_KEY_ID"
             android:value="h81w25c1vt" />
-        
 
         <!-- 런처 -->
         <activity
             android:name=".ui.MainActivity"
-            android:exported="true"
-            android:theme="@style/Theme.Android_studio">
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -42,16 +39,32 @@
         </activity>
 
         <!-- 마이페이지 -->
-        <activity android:name=".ui.mypage.EditInfoActivity" android:exported="false" />
-        <activity android:name=".ui.mypage.FindIdActivity" android:exported="false" />
-        <activity android:name=".ui.mypage.LoginActivity" android:exported="false" />
-        <activity android:name=".ui.mypage.MyPageActivity" android:exported="false" />
-        <activity android:name=".ui.mypage.SignupActivity" android:exported="false" />
-        <activity android:name=".ui.mypage.FindIdPwActivity" android:exported="false" />
+        <activity
+            android:name=".ui.mypage.EditInfoActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.mypage.FindIdActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.mypage.LoginActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.mypage.MyPageActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.mypage.SignupActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.mypage.FindIdPwActivity"
+            android:exported="false" />
 
         <!-- 채팅 -->
-        <activity android:name=".ui.ChatListActivity" android:exported="false" />
-        <activity android:name=".ui.ChatRoomActivity" android:exported="false" />
+        <activity
+            android:name=".ui.ChatListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.ChatRoomActivity"
+            android:exported="false" />
 
         <!-- 게시글 -->
         <activity
@@ -65,13 +78,23 @@
             android:exported="false" />
 
         <!-- 숙소 -->
-        <activity android:name=".ui.lodging.LodgingSearchActivity" android:exported="false" />
-        <activity android:name=".ui.lodging.LodgingListActivity" android:exported="false" />
-        <activity android:name=".ui.lodging.LodgingDetailActivity" android:exported="false" />
-        <activity android:name=".ui.lodging.LodgingPaymentActivity" android:exported="false" />
-        <activity android:name=".ui.lodging.LodgingPaymentCompleteActivity" android:exported="false" />
+        <activity
+            android:name=".ui.lodging.LodgingSearchActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.lodging.LodgingListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.lodging.LodgingDetailActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.lodging.LodgingPaymentActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.lodging.LodgingPaymentCompleteActivity"
+            android:exported="false" />
 
-<!--        마이페이지 -->
+        <!--        마이페이지 -->
         <activity android:name=".ui.mypage.MyPostsActivity" />
         <activity android:name=".ui.mypage.MyCommentsActivity" />
         <activity android:name=".ui.mypage.LikedPostsActivity" />
@@ -86,10 +109,7 @@
             android:name="com.yalantis.ucrop.UCropActivity"
             android:exported="false"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity>
+
 
         <!-- 여정 선택(가는 편) -->
         <activity
@@ -110,8 +130,8 @@
         <activity
             android:name=".PassengerInputActivity"
             android:exported="false"
-            android:windowSoftInputMode="adjustResize"
-            android:parentActivityName=".FlightReservationActivity">
+            android:parentActivityName=".FlightReservationActivity"
+            android:windowSoftInputMode="adjustResize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".FlightReservationActivity" />
@@ -141,8 +161,8 @@
         <activity
             android:name=".TicketSuccessActivity"
             android:exported="false"
-            android:theme="@style/Theme.App"
-            android:parentActivityName=".PaymentActivity">
+            android:parentActivityName=".PaymentActivity"
+            android:theme="@style/Theme.App">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".PaymentActivity" />

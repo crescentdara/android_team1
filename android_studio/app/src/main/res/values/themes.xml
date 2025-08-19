@@ -1,50 +1,39 @@
-<!-- res/values/themes.xml -->
+<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- Base application theme -->
-    <style name="Base.Theme.Android_studio" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- ✅ 앱 전역 기본 폰트 = S-CoreDream Light -->
-        <item name="android:fontFamily">@font/scd_3</item>
-        <item name="fontFamily">@font/scd_3</item>
-
-        <!-- ✅ 배경/포인트 컬러(브랜드 톤) -->
-        <item name="android:colorBackground">@color/jeju_bg</item>
-        <item name="colorSurface">@color/jeju_bg</item>
-        <item name="colorPrimary">@color/jeju_primary</item>
-        <item name="colorSecondary">@color/jeju_primary</item>
-
-        <!-- (선택) 기본 텍스트 색 살짝 보정 -->
-        <item name="android:textColorPrimary">@color/jeju_text_primary</item>
-        <item name="android:textColorHint">@color/jeju_text_muted</item>
-    </style>
-
-    <!-- Actual app theme -->
-    <style name="Theme.Android_studio" parent="Base.Theme.Android_studio"/>
-
+    <!-- 메뉴 카드 라벨 -->
     <style name="Jeu.MenuCardLabel.SCD7" parent="TextAppearance.Material3.BodyLarge">
-        <!-- 호환성 위해 둘 다 지정 -->
         <item name="fontFamily">@font/scd_7</item>
         <item name="android:fontFamily">@font/scd_7</item>
-
-        <!-- 기존 톤 유지(원하면 삭제 가능) -->
         <item name="android:textColor">@color/colorTextDark</item>
-        <item name="android:textSize">@dimen/menu_label_size</item> <!-- ex. 16sp -->
+        <item name="android:textSize">@dimen/menu_label_size</item>
         <item name="android:textStyle">bold</item>
     </style>
 
-
     <!-- 앱 전체 테마 -->
     <style name="Theme.App" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- 브랜드 컬러 -->
         <item name="colorPrimary">@color/jeju_primary</item>
         <item name="colorPrimaryVariant">@color/jeju_primary</item>
         <item name="colorOnPrimary">@android:color/white</item>
+
+        <!-- 시스템 바 색상 -->
         <item name="android:statusBarColor">@color/jeju_primary</item>
         <item name="android:navigationBarColor">@color/brand_bg</item>
         <item name="android:windowBackground">@color/brand_bg</item>
 
-        <!-- ✅ 전체 폰트 적용 -->
+        <!-- 폰트 -->
         <item name="android:fontFamily">@font/scd_4</item>
         <item name="fontFamily">@font/scd_3</item>
+
+        <!-- 배경/포인트 컬러 -->
+        <item name="android:colorBackground">@color/jeju_bg</item>
+        <item name="colorSurface">@color/jeju_bg</item>
+        <item name="colorSecondary">@color/jeju_primary</item>
+
+        <!-- 텍스트 색상 -->
+        <item name="android:textColorPrimary">@color/jeju_text_primary</item>
+        <item name="android:textColorHint">@color/jeju_text_muted</item>
     </style>
 
     <!-- 공통 버튼 -->
@@ -56,7 +45,6 @@
         <item name="android:insetRight">0dp</item>
         <item name="android:paddingLeft">18dp</item>
         <item name="android:paddingRight">18dp</item>
-        <!-- 이 부분은 없어도 됨 (전체 테마에서 이미 적용됨) -->
         <item name="android:fontFamily">@font/scd_3</item>
     </style>
 
@@ -67,7 +55,7 @@
         <item name="chipStrokeWidth">1dp</item>
         <item name="android:textColor">@color/ink_900</item>
         <item name="rippleColor">@color/jeju_tint</item>
-        <!-- 필요하다면 칩에도 폰트 적용 -->
         <item name="android:fontFamily">@font/scd_4</item>
     </style>
+
 </resources>
