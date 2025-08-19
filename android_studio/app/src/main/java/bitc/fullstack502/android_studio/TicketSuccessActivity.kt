@@ -1,4 +1,5 @@
 package bitc.fullstack502.android_studio
+import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.widget.ImageView
@@ -15,6 +16,7 @@ import bitc.fullstack502.android_studio.R
 
 import bitc.fullstack502.android_studio.model.Passenger   // ✅ 추가
 import bitc.fullstack502.android_studio.model.PassengerType   // ✅ 추가
+import bitc.fullstack502.android_studio.ui.MainActivity
 
 class TicketSuccessActivity : AppCompatActivity() {
 
@@ -23,7 +25,13 @@ class TicketSuccessActivity : AppCompatActivity() {
         setContentView(R.layout.activity_ticket_success)
 
         findViewById<ImageView>(R.id.btnBack).setOnClickListener { finish() }
-        findViewById<MaterialButton>(R.id.btnDone).setOnClickListener { finish() }
+        findViewById<MaterialButton>(R.id.btnDone).setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
+            // 스택에 TicketSuccessActivity 포함된 이전 화면들 다 날리고 메인으로
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(intent)
+            finish()
+        }
 
         val container = findViewById<LinearLayout>(R.id.ticketContainer)
         container.removeAllViews()

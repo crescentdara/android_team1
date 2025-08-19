@@ -1,6 +1,5 @@
 package bitc.fullstack502.android_studio
 
-import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -9,22 +8,17 @@ import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
 import androidx.core.widget.NestedScrollView
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import bitc.fullstack502.android_studio.FlightReservationActivity.Companion.EXTRA_INBOUND
-import bitc.fullstack502.android_studio.FlightReservationActivity.Companion.EXTRA_INFANT
-import bitc.fullstack502.android_studio.FlightReservationActivity.Companion.EXTRA_IN_PRICE
-import bitc.fullstack502.android_studio.FlightReservationActivity.Companion.EXTRA_TRIP_TYPE
-import bitc.fullstack502.android_studio.InboundSelectActivity.Companion.EXTRA_ADULT
-import bitc.fullstack502.android_studio.InboundSelectActivity.Companion.EXTRA_CHILD
-import bitc.fullstack502.android_studio.InboundSelectActivity.Companion.EXTRA_OUTBOUND
-import bitc.fullstack502.android_studio.InboundSelectActivity.Companion.EXTRA_OUT_PRICE
-import bitc.fullstack502.android_studio.adapter.FlightAdapter
+import bitc.fullstack502.android_studio.databinding.ActivityFlightReservationBinding
 import bitc.fullstack502.android_studio.model.Flight
+import bitc.fullstack502.android_studio.adapter.FlightAdapter
+import bitc.fullstack502.android_studio.util.AuthManager
 import bitc.fullstack502.android_studio.viewmodel.FlightReservationViewModel
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.datepicker.MaterialDatePicker
@@ -35,29 +29,29 @@ import java.util.TimeZone
 
 class FlightReservationActivity : AppCompatActivity() {
 
-    // 고정 요금 상수 (1인 기준)
-    companion object {
-        const val ADULT_PRICE    = 98_700      // 항공운임 - 성인
-        const val CHILD_PRICE    = ADULT_PRICE - 20_000  // 항공운임 - 아동 (요청 반영)
-        const val FUEL_SURCHARGE = 15_400      // 1인당 고정
-        const val FACILITY_FEE   = 8_000       // 1인당 고정
+    private val binding by lazy { ActivityFlightReservationBinding.inflate(layoutInflater) }
 
-        const val EXTRA_TRIP_TYPE   = "EXTRA_TRIP_TYPE"
-        const val EXTRA_OUTBOUND    = "EXTRA_OUTBOUND"
-        const val EXTRA_OUT_PRICE   = "EXTRA_OUT_PRICE"
-        const val EXTRA_INBOUND     = "EXTRA_INBOUND"
-        const val EXTRA_IN_PRICE    = "EXTRA_IN_PRICE"
-        const val EXTRA_ADULT       = "EXTRA_ADULT"
-        const val EXTRA_CHILD       = "EXTRA_CHILD"
-        const val EXTRA_INFANT      = "EXTRA_INFANT"
+    companion object {
+        const val ADULT_PRICE    = 98_700
+        const val CHILD_PRICE    = ADULT_PRICE - 20_000
+        const val FUEL_SURCHARGE = 15_400
+        const val FACILITY_FEE   = 8_000
+
+        const val EXTRA_TRIP_TYPE = "EXTRA_TRIP_TYPE"
+        const val EXTRA_OUTBOUND  = "EXTRA_OUTBOUND"
+        const val EXTRA_OUT_PRICE = "EXTRA_OUT_PRICE"
+        const val EXTRA_INBOUND   = "EXTRA_INBOUND"
+        const val EXTRA_IN_PRICE  = "EXTRA_IN_PRICE"
+        const val EXTRA_ADULT     = "EXTRA_ADULT"
+        const val EXTRA_CHILD     = "EXTRA_CHILD"
+        const val EXTRA_INFANT    = "EXTRA_INFANT"
     }
 
-    // ==== 상태 ====
     private var adultCount: Int = 1
     private var childCount: Int = 0
     private var infantCount: Int = 0
 
-    private var isRoundTrip = true
+    private var isRoundTrip: Boolean = true
 
     private var selectedOut: Flight? = null
     private var selectedOutPrice: Int = 0
@@ -65,7 +59,6 @@ class FlightReservationActivity : AppCompatActivity() {
     private var selectedIn: Flight? = null
     private var selectedInPrice: Int = 0
 
-    // ==== 뷰 ====
     private lateinit var scroll: NestedScrollView
     private lateinit var bottomBar: View
     private lateinit var tvTotalPrice: TextView
@@ -87,7 +80,6 @@ class FlightReservationActivity : AppCompatActivity() {
     private var outDateYmd: String? = null
     private var inDateYmd: String? = null
 
-    // 제주↔제주 방지
     private var lastNonJejuForDeparture: String = "김포(서울)"
     private var lastNonJejuForArrival: String = "김포(서울)"
 
@@ -96,10 +88,9 @@ class FlightReservationActivity : AppCompatActivity() {
         "여수", "울산", "원주", "양양", "사천(진주)", "포항", "군산", "제주"
     )
 
-    // ===== 요금 계산 보조 =====
     private fun unitTotalAdult()  = ADULT_PRICE + FUEL_SURCHARGE + FACILITY_FEE
     private fun unitTotalChild()  = CHILD_PRICE + FUEL_SURCHARGE + FACILITY_FEE
-    private fun unitTotalInfant() = 0 // 좌석 미점유로 가정
+    private fun unitTotalInfant() = 0
 
     private fun calcTotal(adults: Int, children: Int, infants: Int): Int {
         return adults * unitTotalAdult() + children * unitTotalChild() + infants * unitTotalInfant()
@@ -110,7 +101,7 @@ class FlightReservationActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_flight_reservation)
+        setContentView(binding.root)
 
         // findViewById
         scroll       = findViewById(R.id.scroll)
@@ -130,7 +121,7 @@ class FlightReservationActivity : AppCompatActivity() {
         btnSearch  = findViewById(R.id.btnSearch)
         rvResults  = findViewById(R.id.rvResults)
 
-        // 인원수 초기화 (앞 화면에서 전달 가능)
+        // 인원수 초기값
         adultCount  = intent.getIntExtra(EXTRA_ADULT, 1)
         childCount  = intent.getIntExtra(EXTRA_CHILD, 0)
         infantCount = intent.getIntExtra(EXTRA_INFANT, 0)
@@ -140,13 +131,11 @@ class FlightReservationActivity : AppCompatActivity() {
         setDeparture("김포(서울)", recordNonJeju = true)
         setArrival("제주", recordNonJeju = false)
 
-        // 리스트 + 콜백
+        // 리스트 + 어댑터
         flightAdapter = FlightAdapter(
             mutableListOf(),
-            onSelect = { flight, position, price ->
-                onFlightSelected(flight, position, price)
-            },
-            priceOf = { ADULT_PRICE } // 카드 우측에 노출할 1인 운임(성인 기준)
+            onSelect = { flight, _, price -> onFlightSelected(flight, price) },
+            priceOf = { ADULT_PRICE }
         )
         rvResults.apply {
             layoutManager = LinearLayoutManager(this@FlightReservationActivity)
@@ -154,7 +143,7 @@ class FlightReservationActivity : AppCompatActivity() {
             adapter       = flightAdapter
         }
 
-        // 뷰모델 옵저버
+        // ViewModel
         viewModel.flights.observe(this) { list ->
             Log.d("FLIGHT_UI", "observe size=${list?.size ?: 0}")
             flightAdapter.update(list ?: emptyList())
@@ -167,17 +156,14 @@ class FlightReservationActivity : AppCompatActivity() {
             btnSearch.text = if (loading) "검색 중…" else "항공편 검색"
         }
 
-        // 편도/왕복 스위치
+        // 편도/왕복 토글
         isRoundTrip = switchTrip.isChecked
-        tvDate.text = if (isRoundTrip) "가는 날 ~ 오는 날 선택" else "출발 날짜 선택"
-        updateProceedCta()
-
+        applyTripTypeText()
         switchTrip.setOnCheckedChangeListener { _, checked ->
             isRoundTrip = checked
-            tvDate.text = if (checked) "가는 날 ~ 오는 날 선택" else "출발 날짜 선택"
             outDateYmd = null
             inDateYmd  = null
-            updateProceedCta()
+            applyTripTypeText()
         }
 
         // 날짜 선택
@@ -187,22 +173,20 @@ class FlightReservationActivity : AppCompatActivity() {
         rowDateView?.setOnClickListener(dateClicker)
         tvDate.setOnClickListener(dateClicker)
 
-        // 인원수 선택
+        // 인원수
         val paxClicker = View.OnClickListener { showPassengerPickerDialog() }
         rowPaxView?.setOnClickListener(paxClicker)
         tvPax.setOnClickListener(paxClicker)
 
-        // 출/도착 선택 & 스왑
+        // 출/도착 & 스왑
         tvFrom.setOnClickListener { showAirportModalAll(true) }
         tvTo.setOnClickListener   { showAirportModalAll(false) }
         btnSwap.setOnClickListener { swapAirports() }
 
         // 검색
         btnSearch.setOnClickListener {
-            val depDisplay = tvFrom.text.toString()
-            val arrDisplay = tvTo.text.toString()
-            val dep = normalizeAirport(depDisplay)
-            val arr = normalizeAirport(arrDisplay)
+            val dep = normalizeAirport(tvFrom.text.toString())
+            val arr = normalizeAirport(tvTo.text.toString())
 
             Log.d("FLIGHT_BTN", "dep=$dep, arr=$arr, outDate=$outDateYmd, inDate=$inDateYmd, round=$isRoundTrip")
 
@@ -211,8 +195,8 @@ class FlightReservationActivity : AppCompatActivity() {
                     Toast.makeText(this, "가는 날과 오는 날을 선택하세요", Toast.LENGTH_SHORT).show()
                     return@setOnClickListener
                 }
-                viewModel.searchFlights(dep, arr, outDateYmd!!, null)       // 가는편
-                viewModel.searchInboundFlights(arr, dep, inDateYmd!!, null) // 오는편
+                viewModel.searchFlights(dep, arr, outDateYmd!!, null)
+                viewModel.searchInboundFlights(arr, dep, inDateYmd!!, null)
             } else {
                 if (outDateYmd == null) {
                     Toast.makeText(this, "출발 날짜를 선택하세요", Toast.LENGTH_SHORT).show()
@@ -221,38 +205,46 @@ class FlightReservationActivity : AppCompatActivity() {
                 viewModel.searchFlights(dep, arr, outDateYmd!!, null)
             }
         }
+
+        btnProceed.setOnClickListener { guardAndProceed() }
     }
 
-    /** 항공편 선택 시: 하단바 금액 = 인원 반영 총액(편도 1구간) */
-    private fun onFlightSelected(item: Flight, position: Int, price: Int) {
+    private fun guardAndProceed() {
+        val loggedIn = AuthManager.isLoggedIn()
+        val userPk = AuthManager.id()
+        if (!loggedIn || userPk <= 0L) {
+            Toast.makeText(this, "로그인 후 이용해주세요", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (isRoundTrip) {
+            openInboundSelection()
+        } else {
+            val out = selectedOut
+            if (out == null) {
+                Toast.makeText(this, "먼저 가는 편을 선택하세요", Toast.LENGTH_SHORT).show()
+                return
+            }
+            if (outDateYmd.isNullOrBlank()) {
+                Toast.makeText(this, "출발 날짜를 선택하세요", Toast.LENGTH_SHORT).show()
+                return
+            }
+            openPassengerInput(out, null, selectedOutPrice, 0)
+        }
+    }
+
+    private fun onFlightSelected(item: Flight, price: Int) {
         selectedOut = item
         selectedOutPrice = price
 
         val totalAmountOneWay = calcTotal(adultCount, childCount, infantCount)
-
-        showBottomBarSimple(
-            bottomBar = bottomBar,
-            tvTotal   = tvTotalPrice,
-            btn       = btnProceed,
-            amount    = totalAmountOneWay, // 인원 반영 총액
+        showBottomBar(
+            amount = totalAmountOneWay,
             buttonText = if (isRoundTrip) "오는 편 선택하기" else "승객 정보 입력"
-        ) {
-            if (isRoundTrip) {
-                openInboundSelection()
-            } else {
-                openPassengerInput(
-                    outFlight = selectedOut!!,
-                    inFlight  = null,
-                    outPrice  = selectedOutPrice,
-                    inPrice   = 0
-                )
-            }
-        }
-
+        )
         scroll.post { scroll.smoothScrollBy(0, dp(56)) }
     }
 
-    /* ---------------------- 출/도착/스왑 ---------------------- */
     private fun setDeparture(value: String, recordNonJeju: Boolean) {
         tvFrom.text = value
         if (value != "제주" && recordNonJeju) lastNonJejuForDeparture = value
@@ -274,7 +266,6 @@ class FlightReservationActivity : AppCompatActivity() {
         val arr = tvTo.text.toString()
         setDeparture(arr, arr != "제주")
         setArrival(dep, dep != "제주")
-
         btnSwap.animate().cancel()
         btnSwap.rotation = 0f
     }
@@ -288,10 +279,10 @@ class FlightReservationActivity : AppCompatActivity() {
                 if (forDeparture) setDeparture(chosen, chosen != "제주")
                 else setArrival(chosen, chosen != "제주")
                 dialog.dismiss()
-            }.show()
+            }
+            .show()
     }
 
-    /* ---------------------- 날짜 선택 ---------------------- */
     private fun showSingleDatePicker() {
         val picker = MaterialDatePicker.Builder.datePicker()
             .setTitleText("출발 날짜")
@@ -332,7 +323,6 @@ class FlightReservationActivity : AppCompatActivity() {
         picker.show(supportFragmentManager, "range_date")
     }
 
-    /* ---------------------- 승객 수 ---------------------- */
     private fun showPassengerPickerDialog() {
         val dialogView = layoutInflater.inflate(R.layout.dialog_passenger_picker, null)
         val tvAdultCount = dialogView.findViewById<TextView>(R.id.tv_adult_count)
@@ -368,7 +358,6 @@ class FlightReservationActivity : AppCompatActivity() {
             val total = adultCount + childCount + infantCount
             tvPax.text = "총 $total 명"
             dialog.dismiss()
-            // 필요 시 하단바 금액도 즉시 재계산해 반영하고 싶다면:
             if (selectedOut != null) {
                 val totalAmountOneWay = calcTotal(adultCount, childCount, infantCount)
                 tvTotalPrice.text = totalAmountOneWay.asWon()
@@ -377,70 +366,62 @@ class FlightReservationActivity : AppCompatActivity() {
         dialog.show()
     }
 
-    /* ---------------------- 매핑/유틸 ---------------------- */
     private fun normalizeAirport(display: String): String {
         val s = display.trim()
         return when {
-            s.contains("김포")     -> "서울/김포"
-            s.contains("인천")     -> "서울/인천"
+            s.contains("김포") -> "서울/김포"
+            s.contains("인천") -> "서울/인천"
             s.contains("김해") || s.contains("부산") -> "부산/김해"
             s.contains("사천") || s.contains("진주") -> "사천"
             else -> s
         }
     }
 
-    /** 편도/왕복에 따라 하단 버튼 문구/동작 세팅 */
-    private fun updateProceedCta() {
-        if (isRoundTrip) {
-            btnProceed.text = "오는 편 선택하기"
-            btnProceed.setOnClickListener { openInboundSelection() }
-        } else {
-            btnProceed.text = "승객 정보 입력"
-            btnProceed.setOnClickListener {
-                val out = selectedOut
-                if (out == null) {
-                    Toast.makeText(this, "먼저 가는 편을 선택하세요", Toast.LENGTH_SHORT).show()
-                    return@setOnClickListener
-                }
-                openPassengerInput(
-                    outFlight = out,
-                    inFlight  = null,
-                    outPrice  = selectedOutPrice,
-                    inPrice   = 0
-                )
-            }
+    private fun applyTripTypeText() {
+        tvDate.text = if (isRoundTrip) "가는 날 ~ 오는 날 선택" else "출발 날짜 선택"
+        if (selectedOut == null) {
+            btnProceed.text = if (isRoundTrip) "오는 편 선택하기" else "승객 정보 입력"
         }
     }
 
     private fun openInboundSelection() {
         if (selectedOut == null) {
-            Toast.makeText(this, "먼저 가는 편을 선택하세요", Toast.LENGTH_SHORT).show(); return
+            Toast.makeText(this, "먼저 가는 편을 선택하세요", Toast.LENGTH_SHORT).show()
+            return
         }
-        if (inDateYmd.isNullOrBlank()) {
-            Toast.makeText(this, "오는 날을 선택하세요", Toast.LENGTH_SHORT).show(); return
+        if (outDateYmd.isNullOrBlank() || inDateYmd.isNullOrBlank()) {
+            Toast.makeText(this, "가는 날/오는 날을 선택하세요", Toast.LENGTH_SHORT).show()
+            return
         }
 
         val depInbound = normalizeAirport(tvTo.text.toString())   // IN dep = 기존 도착
         val arrInbound = normalizeAirport(tvFrom.text.toString()) // IN arr = 기존 출발
 
         startActivity(Intent(this, InboundSelectActivity::class.java).apply {
-            putExtra(InboundSelectActivity.EXTRA_OUTBOUND, selectedOut) // Flight: Serializable 필요
-            putExtra(InboundSelectActivity.EXTRA_OUT_PRICE, selectedOutPrice) // 🔧 Int로 고정
+            putExtra(InboundSelectActivity.EXTRA_OUTBOUND, selectedOut)
+            putExtra(InboundSelectActivity.EXTRA_OUT_PRICE, selectedOutPrice)
             putExtra(InboundSelectActivity.EXTRA_DEP,  depInbound)
             putExtra(InboundSelectActivity.EXTRA_ARR,  arrInbound)
-            putExtra(InboundSelectActivity.EXTRA_DATE, inDateYmd)        // yyyy-MM-dd
+            putExtra(InboundSelectActivity.EXTRA_DATE, inDateYmd)     // yyyy-MM-dd
             putExtra(InboundSelectActivity.EXTRA_ADULT, adultCount)
             putExtra(InboundSelectActivity.EXTRA_CHILD, childCount)
+
+            // 🔥 PassengerInputActivity가 읽을 날짜를 미리 넘겨둠(오는편 화면에서 그대로 전달)
+            putExtra(PassengerInputActivity.EXTRA_OUT_DATE, outDateYmd)
+            putExtra(PassengerInputActivity.EXTRA_IN_DATE,  inDateYmd)
         })
     }
 
-    /** 편도일 때 승객 입력으로 직행 */
     private fun openPassengerInput(
         outFlight: Flight,
         inFlight: Flight?,
         outPrice: Int,
         inPrice: Int
     ) {
+        if (outDateYmd.isNullOrBlank()) {
+            Toast.makeText(this, "출발 날짜를 선택하세요", Toast.LENGTH_SHORT).show()
+            return
+        }
         val intent = Intent(this, PassengerInputActivity::class.java).apply {
             putExtra(EXTRA_TRIP_TYPE, if (isRoundTrip) "ROUND_TRIP" else "ONE_WAY")
             putExtra(EXTRA_OUTBOUND, outFlight)
@@ -450,11 +431,21 @@ class FlightReservationActivity : AppCompatActivity() {
             putExtra(EXTRA_ADULT, adultCount)
             putExtra(EXTRA_CHILD, childCount)
             putExtra(EXTRA_INFANT, infantCount)
+
+            // 🔥 핵심: 승객 입력 화면으로 날짜 전달
+            putExtra(PassengerInputActivity.EXTRA_OUT_DATE, outDateYmd)
+            putExtra(PassengerInputActivity.EXTRA_IN_DATE,  inDateYmd) // 편도면 null이어도 OK
         }
         startActivity(intent)
     }
 
-    // === 하단 고정 바 애니메이션 ===
+    private fun showBottomBar(amount: Int, buttonText: String) {
+        tvTotalPrice.text = amount.asWon()
+        btnProceed.text = buttonText
+        btnProceed.setOnClickListener { guardAndProceed() }
+        bottomBar.slideUpShow()
+    }
+
     private fun View.slideUpShow(offsetPxIfUnknown: Int = 160, duration: Long = 220) {
         if (visibility != View.VISIBLE) {
             visibility = View.VISIBLE
@@ -470,19 +461,5 @@ class FlightReservationActivity : AppCompatActivity() {
                 .withEndAction { visibility = View.GONE; translationY = 0f }
                 .start()
         }
-    }
-
-    private fun showBottomBarSimple(
-        bottomBar: View,
-        tvTotal: TextView,
-        btn: MaterialButton,
-        amount: Int,
-        buttonText: String,
-        onClick: () -> Unit
-    ) {
-        tvTotal.text = amount.asWon()
-        btn.text = buttonText
-        btn.setOnClickListener { onClick() }
-        bottomBar.slideUpShow()
     }
 }

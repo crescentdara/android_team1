@@ -1,5 +1,6 @@
 package bitc.full502.spring.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
@@ -28,6 +29,7 @@ public class BookingRequestDto {
     private Integer child;
 
     @Column(nullable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate tripDate;
 
     @Column(nullable = false)

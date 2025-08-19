@@ -75,6 +75,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="성(영문)"
+                    android:layout_marginBottom="12dp"
                     app:boxStrokeColor="@color/jeju_primary">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -95,6 +96,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="이름(영문)"
+                    android:layout_marginBottom="12dp"
                     app:boxStrokeColor="@color/jeju_primary">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -121,7 +123,8 @@
                     android:id="@+id/rgGender"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:layout_marginBottom="12dp">
 
                     <com.google.android.material.radiobutton.MaterialRadioButton
                         android:id="@+id/rbMale"
@@ -143,6 +146,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="생년월일 (YYYY-MM-DD)"
+                    android:layout_marginBottom="12dp"
                     app:boxStrokeColor="@color/jeju_primary"
                     app:endIconDrawable="@drawable/ic_calendar"
                     app:endIconMode="custom">
@@ -164,6 +168,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="여권번호"
+                    android:layout_marginBottom="12dp"
                     app:boxStrokeColor="@color/jeju_primary">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -184,6 +189,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="여권 만료일 (YYYY-MM-DD)"
+                    android:layout_marginBottom="12dp"
                     app:boxStrokeColor="@color/jeju_primary"
                     app:endIconDrawable="@drawable/ic_calendar"
                     app:endIconMode="custom">
@@ -205,6 +211,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="국적 (예: KOR)"
+                    android:layout_marginBottom="12dp"
                     app:boxStrokeColor="@color/jeju_primary">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -225,6 +232,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="연락처 (숫자만)"
+                    android:layout_marginBottom="12dp"
                     app:boxStrokeColor="@color/jeju_primary">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -245,6 +253,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="이메일"
+                    android:layout_marginBottom="12dp"
                     app:boxStrokeColor="@color/jeju_primary">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -273,6 +282,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="이름(선택)"
+                    android:layout_marginBottom="12dp"
                     app:boxStrokeColor="@color/jeju_primary">
 
                     <com.google.android.material.textfield.TextInputEditText
@@ -291,6 +301,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="연락처(선택)"
+                    android:layout_marginBottom="12dp"
                     app:boxStrokeColor="@color/jeju_primary">
 
                     <com.google.android.material.textfield.TextInputEditText

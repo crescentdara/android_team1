@@ -46,9 +46,4 @@ public class FlBookController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/flight")
-    public ResponseEntity<BookingResponseDto> book(@RequestBody BookingRequestDto req) {
-        return ResponseEntity.ok(flBookService.createBooking(req));
-    }
-
 }

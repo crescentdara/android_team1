@@ -1,5 +1,6 @@
 package bitc.full502.spring.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,5 +19,6 @@ public class BookingResponseDto {
     private Integer child;
     private Long totalPrice;
     private String status;
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate tripDate;
 }
