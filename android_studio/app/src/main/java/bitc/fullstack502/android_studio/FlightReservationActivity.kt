@@ -274,7 +274,9 @@ class FlightReservationActivity : AppCompatActivity() {
         val arr = tvTo.text.toString()
         setDeparture(arr, arr != "제주")
         setArrival(dep, dep != "제주")
-        btnSwap.animate().rotationBy(180f).setDuration(200).start()
+
+        btnSwap.animate().cancel()
+        btnSwap.rotation = 0f
     }
 
     private fun showAirportModalAll(forDeparture: Boolean) {

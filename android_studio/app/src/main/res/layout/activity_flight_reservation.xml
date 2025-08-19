@@ -122,8 +122,11 @@
                         android:layout_width="48dp"
                         android:layout_height="48dp"
                         android:layout_centerHorizontal="true"
+                        android:layoutDirection="ltr"
                         app:backgroundTint="@color/jeju_tint"
+                        android:scaleType="center"
                         app:tint="@color/jeju_primary"
+                        app:maxImageSize="24dp"
                         app:srcCompat="@drawable/ic_swap_rounded_24" />
 
                     <!-- 도착 -->
