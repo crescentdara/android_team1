@@ -174,7 +174,7 @@ class ChatRoomActivity : AppCompatActivity() {
         stomp.connectGlobal(
             userId = myUserId,
             onConnected = {
-                // 1) 방 토픽 구독
+                // 1) 방 토픽
                 stomp.subscribeTopic(
                     "/topic/room.$roomId",
                     onMessage = { payload ->
@@ -186,22 +186,20 @@ class ChatRoomActivity : AppCompatActivity() {
                     onError = { err -> Log.e("CHAT", "room topic err: $err") }
                 )
 
-                // 2) 읽음 영수증 구독 (/user/queue/read-receipt)
+                // 2) 읽음 영수증
                 stomp.subscribeUserQueue(
                     "/user/queue/read-receipt",
                     onMessage = { payload ->
                         val rc = runCatching { gson.fromJson(payload, ReadReceiptDTO::class.java) }.getOrNull()
-                        if (rc != null && rc.roomId == roomId) {
-                            if (rc.readerId != myUserId) { // 내가 읽은 건 무시
-                                if (rc.lastReadId > lastReadByOtherId) lastReadByOtherId = rc.lastReadId
-                                runOnUiThread { messageAdapter.markReadByOtherUpTo(lastReadByOtherId) }
-                            }
+                        if (rc != null && rc.roomId == roomId && rc.readerId != myUserId) {
+                            if (rc.lastReadId > lastReadByOtherId) lastReadByOtherId = rc.lastReadId
+                            runOnUiThread { messageAdapter.markReadByOtherUpTo(lastReadByOtherId) }
                         }
                     },
                     onError = { err -> Log.e("CHAT", "read-receipt err: $err") }
                 )
 
-                // 3) 개인 인박스 구독 (/user/queue/inbox)
+                // 3) 🔥 개인 인박스 (상대가 보낸 새 메시지)
                 stomp.subscribeUserQueue(
                     "/user/queue/inbox",
                     onMessage = { payload ->
@@ -224,26 +222,26 @@ class ChatRoomActivity : AppCompatActivity() {
     }
 
 
+
     /** 서버 수신 공통 처리 */
     private fun onIncoming(m: ChatMessage) {
-        // ✅ 중복 차단 (방 토픽/인박스 양쪽 수신)
         m.id?.let { if (!seenIds.add(it)) return }
 
-        // 로컬 에코를 교체하거나, 없으면 추가
         messageAdapter.reconcileIncoming(m)
 
-        // ▼ 추가: 로컬 에코가 방금 '진짜 id'로 바뀐 경우도 커버
         if (lastReadByOtherId > 0) {
             messageAdapter.markReadByOtherUpTo(lastReadByOtherId)
         }
 
-        // 바닥 근처면 자동 스크롤 + 읽음 갱신
+        // ✅ 새 메시지 도착 시 항상 읽음 디바운스 → 방 안에 있으면 즉시 읽음 처리
+        debounceMarkRead()
+
         val atBottom = layoutManager.findLastVisibleItemPosition() >= (messageAdapter.itemCount - 3)
         if (atBottom) {
             rvChat.scrollToPosition(messageAdapter.itemCount - 1)
-            debounceMarkRead()
         }
     }
+
 
     private fun loadHistoryAndMarkRead() {
         val rid = roomId
@@ -272,6 +270,7 @@ class ChatRoomActivity : AppCompatActivity() {
 
                 rvChat.post {
                     rvChat.scrollToPosition((messageAdapter.itemCount - 1).coerceAtLeast(0))
+                    debounceMarkRead() // ✅ 입장 직후 읽음도 보장
                 }
             } catch (e: Exception) {
                 Log.e("CHAT", "history/read error: ${e.message}", e)
