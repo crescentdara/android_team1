@@ -170,11 +170,12 @@ class ChatRoomActivity : AppCompatActivity() {
 
     // STOMP 연결: 방 토픽 + 개인 인박스 + 읽음 영수증
 // STOMP 연결: 방 토픽 + 개인 인박스 + 읽음 영수증
+    // STOMP 연결: 방 토픽(메시지) + 방 토픽(읽음 영수증)
     private fun connectStomp() {
         stomp.connectGlobal(
             userId = myUserId,
             onConnected = {
-                // 1) 방 토픽
+                // 1) 방 토픽 (새 메시지 수신)
                 stomp.subscribeTopic(
                     "/topic/room.$roomId",
                     onMessage = { payload ->
@@ -186,9 +187,9 @@ class ChatRoomActivity : AppCompatActivity() {
                     onError = { err -> Log.e("CHAT", "room topic err: $err") }
                 )
 
-                // 2) 읽음 영수증
-                stomp.subscribeUserQueue(
-                    "/user/queue/read-receipt",
+                // 2) 방 토픽(읽음 영수증) — 서버에서 /topic/room.{roomId}.read 로 브로드캐스트
+                stomp.subscribeTopic(
+                    "/topic/room.$roomId.read",
                     onMessage = { payload ->
                         val rc = runCatching { gson.fromJson(payload, ReadReceiptDTO::class.java) }.getOrNull()
                         if (rc != null && rc.roomId == roomId && rc.readerId != myUserId) {
@@ -196,20 +197,11 @@ class ChatRoomActivity : AppCompatActivity() {
                             runOnUiThread { messageAdapter.markReadByOtherUpTo(lastReadByOtherId) }
                         }
                     },
-                    onError = { err -> Log.e("CHAT", "read-receipt err: $err") }
+                    onError = { err -> Log.e("CHAT", "read-receipt topic err: $err") }
                 )
 
-                // 3) 🔥 개인 인박스 (상대가 보낸 새 메시지)
-                stomp.subscribeUserQueue(
-                    "/user/queue/inbox",
-                    onMessage = { payload ->
-                        val m = runCatching { gson.fromJson(payload, ChatMessage::class.java) }.getOrNull()
-                        if (m != null && m.roomId == roomId) {
-                            runOnUiThread { onIncoming(m) }
-                        }
-                    },
-                    onError = { err -> Log.e("CHAT", "inbox err: $err") }
-                )
+                // (선택) 이제 토픽만 사용하므로 인박스 구독은 제거해도 됩니다.
+                // stomp.subscribeUserQueue("/user/queue/inbox", onMessage = { ... })
             },
             onError = { err ->
                 Log.e("CHAT", "STOMP err: $err")
@@ -220,6 +212,7 @@ class ChatRoomActivity : AppCompatActivity() {
             }
         )
     }
+
 
 
 
