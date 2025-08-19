@@ -20,12 +20,12 @@ public class BookingRequestDto {
     private Long flId;
 
     @Column(nullable = false)
-    private Integer seatCnt = 1;
+    private Integer seatCnt;
 
     @Column(nullable = false)
-    private Integer adult = 1;
+    private Integer adult;
 
-    private Integer child = 0;
+    private Integer child;
 
     @Column(nullable = false)
     private LocalDate tripDate;

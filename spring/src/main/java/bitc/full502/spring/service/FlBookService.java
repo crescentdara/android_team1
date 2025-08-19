@@ -10,4 +10,5 @@ public interface FlBookService {
     BookingResponseDto getBooking(Long bookingId);
     List<BookingResponseDto> getBookingsByUser(Long userId);
     void cancelBooking(Long bookingId);
+
 }

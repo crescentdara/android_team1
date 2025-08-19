@@ -249,8 +249,7 @@ interface AppApi {
         @Query("depTime") depTime: String? = null
     ): Call<List<Flight>>
 
-    @POST("/api/booking/flight")
-    suspend fun createBooking(
-        @Body req: BookingRequest
-    ): Response<BookingResponse>
+    @POST("/api/bookings/flight")
+    suspend fun createBooking(@Body req: BookingRequest): Response<BookingResponse>
+
 }

@@ -25,32 +25,29 @@ public class FlBookServiceImpl implements FlBookService {
 
     @Override
     public BookingResponseDto createBooking(BookingRequestDto req) {
-        // 1) 사용자 확인
         Users user = usersRepository.findById(req.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        // 2) 항공편 확인
         Flight flight = flightRepository.findById(req.getFlId())
                 .orElseThrow(() -> new IllegalArgumentException("Flight not found"));
 
-        // 3) (선택) 좌석/중복 검사 — 현재 스키마에 재고 정보가 없으므로 간단 검증만 수행
-        if (req.getSeatCnt() <= 0) {
-            throw new IllegalArgumentException("Invalid seat count");
-        }
+        int adult = req.getAdult() == null ? 0 : req.getAdult();
+        int child = req.getChild() == null ? 0 : req.getChild();
+        if (adult + child <= 0) throw new IllegalArgumentException("No passengers");
+        if (req.getTripDate() == null) throw new IllegalArgumentException("tripDate required");
+        if (req.getTotalPrice() == null || req.getTotalPrice() < 0) throw new IllegalArgumentException("Invalid totalPrice");
 
-        // 4) 예약 엔티티 생성
         FlBook booking = FlBook.builder()
                 .user(user)
                 .flight(flight)
-                .adult(req.getAdult())
-                .child(req.getChild())
+                .adult(adult)
+                .child(child)
                 .totalPrice(req.getTotalPrice())
                 .status("BOOKED")
                 .tripDate(req.getTripDate())
                 .build();
 
         FlBook saved = flBookRepository.save(booking);
-
         return mapToDto(saved);
     }
 
@@ -88,6 +85,9 @@ public class FlBookServiceImpl implements FlBookService {
         dto.setFlightId(b.getFlight().getId());
         dto.setAdult(b.getAdult());
         dto.setChild(b.getChild());
+        int seatCnt = (b.getAdult() == null ? 0 : b.getAdult())
+                + (b.getChild() == null ? 0 : b.getChild());
+        dto.setSeatCnt(seatCnt); // ★ adult + child
         dto.setTotalPrice(b.getTotalPrice());
         dto.setStatus(b.getStatus());
         dto.setTripDate(b.getTripDate());
