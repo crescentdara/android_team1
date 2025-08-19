@@ -255,4 +255,19 @@ interface AppApi {
     // 7. 숙박 예약내역 (이미 기존 DTO 있으면 그거 재사용)
     @GET("api/mypage/lodging-bookings")
     suspend fun getLodgingBookings(@Query("userPk") userPk: Long): List<LodgingBookingDto>
+
+//항공
+    @GET("api/flights/search")
+    fun searchFlights(
+        @Query("dep") dep: String,
+        @Query("arr") arr: String,
+        @Query("date") date: String,              // yyyy-MM-dd
+        @Query("depTime") depTime: String? = null // null이면 쿼리에서 제외
+    ): Call<List<Flight>>
+
+    // POST /api/booking/flight  ->  Response<BookingResponse> (suspend)
+    @POST("api/booking/flight")
+    suspend fun createBooking(
+        @Body req: BookingRequest
+    ): Response<BookingResponse>
 }

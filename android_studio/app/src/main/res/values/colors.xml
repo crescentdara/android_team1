@@ -1,5 +1,4 @@
 <resources>
-<<<<<<< HEAD
     <!-- Brand -->
     <color name="jeju_primary">#206064</color>   <!-- 로고 초록 -->
     <color name="jeju_bg">#FAF9F3</color>        <!-- 오프화이트 배경 -->
@@ -19,7 +18,6 @@
     <color name="white">#FFFFFFFF</color>
     <color name="blue">#FF2196F3</color>
     <color name="gray">#FF9E9E9E</color>
-=======
     <color name="jeju_primary">#206064</color>        <!-- 포인트 -->
     <color name="jeju_primary_dark">#206064</color>  <!-- 동일 포인트 -->
     <color name="jeju_tint">#E6F0EF</color>          <!-- 살짝 틴트 -->
@@ -49,5 +47,4 @@
     <!-- 프로젝트 공통 -->
     <color name="text_primary">#222222</color>
     <color name="text_secondary">#7A7A7A</color>
->>>>>>> origin/jgy/Flight
 </resources>

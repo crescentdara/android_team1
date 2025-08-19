@@ -38,26 +38,6 @@ public class ConversationController {
         return conversationService.listConversations(userId);
     }
 
-//    // 방 히스토리
-//    @GetMapping("/history")
-//    @Transactional(readOnly = true)
-//    public List<ChatMessageDTO> history(@RequestParam String roomId,
-//                                        @RequestParam String me,                            // 내 아이디
-//                                        @RequestParam(required = false) String other,       // 상대 (옵션)
-//                                        @RequestParam(defaultValue = "50") int size,
-//                                        @RequestParam(required = false) Long beforeId) {
-//
-//        if (size <= 0) size = 50;
-//        if (size > 200) size = 200;
-//
-//        // ✅ other 없으면 서비스로 상대 추정 (정적 호출 X)
-//        if (other == null || other.isBlank()) {
-//            other = chatMessageService.findPartnerId(roomId, me);
-//        }
-//
-//        // ✅ 서비스가 ASC 정렬 + readByOther 계산까지 처리
-//        return chatMessageService.history(roomId, size, beforeId, me, other);
-//    }
 
     @GetMapping("/history")
     @Transactional(readOnly = true)

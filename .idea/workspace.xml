@@ -5,19 +5,28 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8890695d-c440-4cea-a527-6b26fbfd67c7" name="변경" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/bitc/full502/android_team1/controller/FlightReservationController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/bitc/full502/android_team1/domain/entity/FlightBookEntity.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/bitc/full502/android_team1/domain/entity/FlightEntity.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/bitc/full502/android_team1/domain/entity/UsersEntity.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/bitc/full502/android_team1/domain/repository/FlightRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/bitc/full502/android_team1/domain/repository/UsersRepository.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/bitc/full502/android_team1/dto/BookingRequestDTO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/bitc/full502/android_team1/dto/BookingResponseDTO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/bitc/full502/android_team1/dto/FlightSearchDTO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/bitc/full502/android_team1/service/flight/FlightBookService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/bitc/full502/android_team1/service/flight/FlightBookServiceImpl.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/bitc/full502/android_team1/service/flight/FlightService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/bitc/full502/android_team1/service/flight/FlightServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android_studio/app/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/android_studio/app/build.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android_studio/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/android_studio/app/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android_studio/app/src/main/java/bitc/fullstack502/android_studio/IdInputActivity.kt" beforeDir="false" afterPath="$PROJECT_DIR$/android_studio/app/src/main/java/bitc/fullstack502/android_studio/IdInputActivity.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android_studio/app/src/main/java/bitc/fullstack502/android_studio/MainActivity.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android_studio/app/src/main/java/bitc/fullstack502/android_studio/net/Apis.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android_studio/app/src/main/java/bitc/fullstack502/android_studio/net/FlightReservationAPI.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android_studio/app/src/main/java/bitc/fullstack502/android_studio/net/FlightSearchAPI.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android_studio/app/src/main/java/bitc/fullstack502/android_studio/net/RetrofitProvider.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/android_studio/app/src/main/java/bitc/fullstack502/android_studio/network/ApiProvider.kt" beforeDir="false" afterPath="$PROJECT_DIR$/android_studio/app/src/main/java/bitc/fullstack502/android_studio/network/ApiProvider.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android_studio/app/src/main/java/bitc/fullstack502/android_studio/network/AppApi.kt" beforeDir="false" afterPath="$PROJECT_DIR$/android_studio/app/src/main/java/bitc/fullstack502/android_studio/network/AppApi.kt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android_studio/app/src/main/res/layout/activity_main.xml" beforeDir="false" afterPath="$PROJECT_DIR$/android_studio/app/src/main/res/layout/activity_main.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android_studio/app/src/main/res/values/colors.xml" beforeDir="false" afterPath="$PROJECT_DIR$/android_studio/app/src/main/res/values/colors.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android_studio/app/src/main/res/values/dimens.xml" beforeDir="false" afterPath="$PROJECT_DIR$/android_studio/app/src/main/res/values/dimens.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android_studio/app/src/main/res/values/strings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/android_studio/app/src/main/res/values/strings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android_studio/app/src/main/res/values/themes.xml" beforeDir="false" afterPath="$PROJECT_DIR$/android_studio/app/src/main/res/values/themes.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/android_studio/settings.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/android_studio/settings.gradle.kts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/spring/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/bitc/full502/spring/config/WebSocketConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/bitc/full502/spring/config/WebSocketConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/bitc/full502/spring/controller/ConversationController.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/bitc/full502/spring/controller/ConversationController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/bitc/full502/spring/domain/entity/ChatLastReadEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/bitc/full502/spring/domain/entity/ChatLastReadEntity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/bitc/full502/spring/domain/entity/ChatMessageEntity.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/bitc/full502/spring/domain/entity/ChatMessageEntity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spring/src/main/java/bitc/full502/spring/domain/repository/UsersRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/spring/src/main/java/bitc/full502/spring/domain/repository/UsersRepository.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,6 +49,18 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "crescentdara"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/crescentdara/android_team1.git",
+    "accountId": "ea208abe-0bab-4040-92b7-fc9a7a806a2d"
+  }
+}]]></component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 7
 }</component>
@@ -52,9 +73,9 @@
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "testmerge/EveryMerge",
     "ignore.virus.scanning.warn.message": "true",
-    "last_opened_file_path": "C:/study/android_team1",
+    "last_opened_file_path": "C:/Users/it/Desktop/android_team1",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -91,6 +112,7 @@
       <workItem from="1754981227354" duration="1780000" />
       <workItem from="1754984236678" duration="291000" />
       <workItem from="1754985850427" duration="1488000" />
+      <workItem from="1755586347630" duration="16000" />
     </task>
     <servers />
   </component>

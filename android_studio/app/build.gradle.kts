@@ -36,17 +36,7 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-<<<<<<< HEAD
     kotlinOptions { jvmTarget = "11" }
-=======
-    kotlinOptions {
-        jvmTarget = "11"
-    }
-
-    buildFeatures {
-        viewBinding = true
-    }
->>>>>>> origin/jgy/Flight
 }
 
 //viewbinding {
@@ -79,13 +69,10 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
-<<<<<<< HEAD
-=======
     implementation(libs.androidx.material3)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
->>>>>>> origin/jgy/Flight
 
     // ====== 네이버 지도 ======
     implementation("com.naver.maps:map-sdk:3.22.1")
@@ -104,11 +91,9 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 
     kapt("com.github.bumptech.glide:compiler:4.16.0")
-}
 
 
-<<<<<<< HEAD
-=======
+
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.1")
     implementation("org.webjars:bootstrap-daterangepicker:3.1")
     implementation("com.google.android.material:material:1.12.0")
@@ -117,4 +102,3 @@ dependencies {
     implementation("com.journeyapps:zxing-android-embedded:4.3.0")
     implementation("com.google.zxing:core:3.5.3")
 }
->>>>>>> origin/jgy/Flight

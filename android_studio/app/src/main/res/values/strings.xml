@@ -1,5 +1,4 @@
 <resources>
-<<<<<<< HEAD
     <string name="app_name">JE:U</string>
     <string name="nav_open">메뉴 열기</string>
     <string name="nav_close">메뉴 닫기</string>
@@ -19,8 +18,6 @@
     </string-array>
 </resources>
 
-=======
     <string name="app_name">android_studio</string>
     <string name="qr_code">탑승권 QR 코드</string>
 </resources>
->>>>>>> origin/jgy/Flight

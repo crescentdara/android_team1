@@ -80,4 +80,3 @@ class IdInputActivity : AppCompatActivity() {
             startActivity(i)
         }
     }
-}

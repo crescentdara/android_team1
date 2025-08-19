@@ -1,11 +1,6 @@
 package bitc.full502.spring.config;
 
 import org.springframework.context.annotation.Configuration;
-<<<<<<< HEAD
-
-import org.springframework.context.annotation.Configuration;
-=======
->>>>>>> origin/jgy/Flight
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
@@ -15,7 +10,6 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-<<<<<<< HEAD
     // 클라이언트가 메시지를 보낼 경로 prefix (예: /app/chat.send)
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
@@ -39,19 +33,4 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 .withSockJS();
     }
 
-=======
-    @Override
-    public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws")
-                .setAllowedOriginPatterns("*");  // 개발중이면 허용
-        // SockJS 쓰면 .withSockJS(); 추가
-    }
-
-    @Override
-    public void configureMessageBroker(MessageBrokerRegistry registry) {
-        registry.enableSimpleBroker("/topic", "/queue"); // 구독 prefix
-        registry.setApplicationDestinationPrefixes("/app"); // 클라이언트 send prefix
-        registry.setUserDestinationPrefix("/user"); // convertAndSendToUser 용
-    }
->>>>>>> origin/jgy/Flight
 }
