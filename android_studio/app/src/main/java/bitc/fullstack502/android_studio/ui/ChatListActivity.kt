@@ -9,6 +9,7 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import bitc.fullstack502.android_studio.BuildConfig           // ✅ 추가
 import bitc.fullstack502.android_studio.R
 import bitc.fullstack502.android_studio.model.ChatMessage
 import bitc.fullstack502.android_studio.model.ConversationSummary
@@ -29,12 +30,17 @@ class ChatListActivity : AppCompatActivity() {
     private lateinit var progress: ProgressBar
     private val adapter = ConversationsAdapter { openChat(it) }
 
-    // 실시간 갱신
-    private val serverUrl = "ws://10.0.2.2:8080/ws"
+    // ✅ 공용 서버 WS 주소 사용
+    private val serverUrl = BuildConfig.WS_BASE
     private lateinit var stomp: StompManager
     private val gson = Gson()
+
     private val seenInbox = HashSet<String>()
     private fun keyOf(m: ChatMessage) = "${m.roomId}|${m.senderId}|${m.content}|${m.sentAt}"
+
+    // ✅ 방 토픽 구독 관리
+    private val roomsToSubscribe = LinkedHashSet<String>()
+    private val subscribedRooms = HashSet<String>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,27 +70,18 @@ class ChatListActivity : AppCompatActivity() {
         super.onStart()
         if (::stomp.isInitialized) runCatching { stomp.disconnect() }
         seenInbox.clear()
+        subscribedRooms.clear() // 재입장 시 다시 구독 구성
 
         stomp = StompManager(serverUrl)
-
-        // ✅ 전역 연결만 수행 (onMessage 인자 제거)
         stomp.connectGlobal(
             userId = myUsersId,
             onConnected = {
-                // 연결되면 인박스 구독 시작
-                stomp.subscribeUserQueue(
-                    name = "inbox",
-                    onMessage = { payload ->
-                        val msg = runCatching { gson.fromJson(payload, ChatMessage::class.java) }.getOrNull()
-                        msg?.let { onInboxMessage(it) }
-                    },
-                    onError = { /* 필요시 로그 */ }
-                )
+                // 연결되면 대기 중인 방들 구독 시도
+                subscribePendingRooms()
             },
             onError = { /* 필요시 로그 */ }
         )
     }
-
 
     override fun onStop() {
         runCatching { if (::stomp.isInitialized) stomp.disconnect() }
@@ -99,6 +96,15 @@ class ChatListActivity : AppCompatActivity() {
                     ApiProvider.api.conversations(myUsersId)
                 }
                 adapter.submit(list)
+
+                // ✅ 서버가 개인큐를 안 보내므로, 내 대화방들의 토픽을 구독
+                roomsToSubscribe.clear()
+                list.forEach { item ->
+                    val rid = if (!item.roomId.isNullOrBlank()) item.roomId
+                    else ChatIds.roomIdFor(myUsersId, item.partnerId)
+                    roomsToSubscribe += rid
+                }
+                subscribePendingRooms()
             } catch (e: Exception) {
                 e.printStackTrace()
                 Toast.makeText(this@ChatListActivity, "목록을 불러오지 못했어요", Toast.LENGTH_SHORT).show()
@@ -108,7 +114,24 @@ class ChatListActivity : AppCompatActivity() {
         }
     }
 
-    // 인박스 수신 처리: 배지/내용/시간 갱신 + 맨 위로 이동
+    /** 아직 구독 안 한 방 토픽을 구독한다 */
+    private fun subscribePendingRooms() {
+        if (!::stomp.isInitialized) return
+        for (rid in roomsToSubscribe) {
+            if (subscribedRooms.add(rid)) {
+                stomp.subscribeTopic(
+                    "/topic/room.$rid",
+                    onMessage = { payload ->
+                        val msg = runCatching { gson.fromJson(payload, ChatMessage::class.java) }.getOrNull()
+                        msg?.let { onInboxMessage(it) }
+                    },
+                    onError = { /* 필요시 로그 */ }
+                )
+            }
+        }
+    }
+
+    // 방 토픽 수신: 배지/내용/시간 갱신 + 맨 위로 이동
     private fun onInboxMessage(m: ChatMessage) {
         val k = keyOf(m)
         if (!seenInbox.add(k)) return
@@ -123,7 +146,7 @@ class ChatListActivity : AppCompatActivity() {
             incrementUnread = shouldIncrementUnread
         )
 
-        // 새로운 대화면 전체 재조회
+        // 새로운 대화(처음 보는 roomId)면 다음 로드에서 반영
         if (!updated) loadData()
     }
 

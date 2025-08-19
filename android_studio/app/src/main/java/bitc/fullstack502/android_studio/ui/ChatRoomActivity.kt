@@ -10,6 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
+import bitc.fullstack502.android_studio.BuildConfig   // ✅ 추가
 import bitc.fullstack502.android_studio.IdInputActivity
 import bitc.fullstack502.android_studio.R
 import bitc.fullstack502.android_studio.StompManager
@@ -21,13 +22,13 @@ import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class ChatRoomActivity : AppCompatActivity() {
 
-    private val serverUrl = "ws://10.0.2.2:8080/ws"
+    // 기존 하드코딩 제거 → BuildConfig 사용
+    private val serverUrl = BuildConfig.WS_BASE   // ✅ ws://<공용서버IP>:8080/ws
 
     private lateinit var myUserId: String
     private lateinit var partnerId: String
@@ -55,7 +56,6 @@ class ChatRoomActivity : AppCompatActivity() {
 
     // 읽음 영수증 최신값 저장 (상대가 읽은 마지막 메시지 id)
     private var lastReadByOtherId: Long = 0L
-
 
     // ✅ 읽음 처리 디바운스
     private var readJob: Job? = null
@@ -96,13 +96,13 @@ class ChatRoomActivity : AppCompatActivity() {
         btnSend = findViewById(R.id.btnSend)
         tvTitle.text = partnerId
 
-        Log.d("CHAT", "room=$roomId partner=$partnerId me=$myUserId")
+        Log.d("CHAT", "room=$roomId partner=$partnerId me=$myUserId serverUrl=$serverUrl")
 
         // 4) 리스트 + 레이아웃 매니저
         messageAdapter = ChatMessagesAdapter(myUserId)
         layoutManager = LinearLayoutManager(this).apply {
             stackFromEnd = true
-            reverseLayout = false // 절대 true 금지 (순서 꼬임 방지)
+            reverseLayout = false
         }
         rvChat.layoutManager = layoutManager
         rvChat.adapter = messageAdapter
@@ -137,7 +137,6 @@ class ChatRoomActivity : AppCompatActivity() {
         }
     }
 
-
     override fun onStart() {
         super.onStart()
         isActive = true
@@ -167,9 +166,6 @@ class ChatRoomActivity : AppCompatActivity() {
         runCatching { stomp.disconnect() }
     }
 
-
-    // STOMP 연결: 방 토픽 + 개인 인박스 + 읽음 영수증
-// STOMP 연결: 방 토픽 + 개인 인박스 + 읽음 영수증
     // STOMP 연결: 방 토픽(메시지) + 방 토픽(읽음 영수증)
     private fun connectStomp() {
         stomp.connectGlobal(
@@ -187,7 +183,7 @@ class ChatRoomActivity : AppCompatActivity() {
                     onError = { err -> Log.e("CHAT", "room topic err: $err") }
                 )
 
-                // 2) 방 토픽(읽음 영수증) — 서버에서 /topic/room.{roomId}.read 로 브로드캐스트
+                // 2) 방 토픽(읽음 영수증)
                 stomp.subscribeTopic(
                     "/topic/room.$roomId.read",
                     onMessage = { payload ->
@@ -199,9 +195,6 @@ class ChatRoomActivity : AppCompatActivity() {
                     },
                     onError = { err -> Log.e("CHAT", "read-receipt topic err: $err") }
                 )
-
-                // (선택) 이제 토픽만 사용하므로 인박스 구독은 제거해도 됩니다.
-                // stomp.subscribeUserQueue("/user/queue/inbox", onMessage = { ... })
             },
             onError = { err ->
                 Log.e("CHAT", "STOMP err: $err")
@@ -212,9 +205,6 @@ class ChatRoomActivity : AppCompatActivity() {
             }
         )
     }
-
-
-
 
     /** 서버 수신 공통 처리 */
     private fun onIncoming(m: ChatMessage) {
@@ -235,7 +225,6 @@ class ChatRoomActivity : AppCompatActivity() {
         }
     }
 
-
     private fun loadHistoryAndMarkRead() {
         val rid = roomId
         lifecycleScope.launch {
@@ -244,19 +233,14 @@ class ChatRoomActivity : AppCompatActivity() {
                 hasMore = true
 
                 val list = withContext(Dispatchers.IO) {
-                    // 입장 시 읽음 처리
-                    ApiProvider.api.markRead(rid, myUserId)
-                    // 백엔드 변경 반영: me/other 전달
-                    ApiProvider.api.history(rid, 50, null, myUserId, partnerId)
+                    ApiProvider.api.markRead(rid, myUserId)                 // 입장 시 읽음 처리
+                    ApiProvider.api.history(rid, 50, null, myUserId, partnerId) // 히스토리
                 }.sortedBy { it.id } // ASC
 
-                // 중복 차단 id 세트 갱신
                 seenIds.clear()
                 list.forEach { it.id?.let(seenIds::add) }
-
                 messageAdapter.setAll(list)
 
-                // ▼ 추가: 저장해둔 읽음 지점 재적용(재입장/재로딩 대비)
                 if (lastReadByOtherId > 0) {
                     messageAdapter.markReadByOtherUpTo(lastReadByOtherId)
                 }
@@ -278,27 +262,23 @@ class ChatRoomActivity : AppCompatActivity() {
         val beforeId = messageAdapter.getFirstIdOrNull() ?: return
         isLoadingMore = true
 
-        // 스크롤 위치 보존(점프 방지)
         val firstIndex = layoutManager.findFirstVisibleItemPosition()
         val firstTop = layoutManager.findViewByPosition(firstIndex)?.top ?: 0
 
         lifecycleScope.launch {
             try {
                 val older = withContext(Dispatchers.IO) {
-                    // 백엔드 변경 반영: me/other 전달
                     ApiProvider.api.history(roomId, 50, beforeId, myUserId, partnerId)
                 }.sortedBy { it.id }
 
                 if (older.isEmpty()) {
                     hasMore = false
                 } else {
-                    // 이미 있는 id 제거 후 프리펜드
                     val filtered = older.filter { it.id == null || !seenIds.contains(it.id!!) }
                     filtered.forEach { it.id?.let(seenIds::add) }
 
                     if (filtered.isNotEmpty()) {
                         messageAdapter.prependMany(filtered)
-                        // 스크롤 위치 복원
                         rvChat.post {
                             layoutManager.scrollToPositionWithOffset(firstIndex + filtered.size, firstTop)
                         }

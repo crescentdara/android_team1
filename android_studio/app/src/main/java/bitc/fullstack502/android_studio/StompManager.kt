@@ -11,14 +11,16 @@ import ua.naiksoftware.stomp.dto.LifecycleEvent
 import java.net.URLEncoder
 
 class StompManager(
-    /** 예: ws://10.0.2.2:8080/ws  (실기기는 PC의 LAN IP/도메인) */
+    /** 예: ws://<SERVER_IP>:8080/ws */
     private val serverUrl: String
 ) {
     companion object {
         private const val TAG = "STOMP"
-        private const val PATH_SEND = "/app/chat.send"        // 서버의 @MessageMapping 경로
+        private const val PATH_SEND = "/app/chat.send"        // 서버 @MessageMapping
         private const val TOPIC_ROOM_PREFIX = "/topic/room."  // + {roomId}
-        private const val USER_QUEUE_PREFIX = "/user/queue/"  // + inbox / read-receipt 등
+        private const val TOPIC_READ_SUFFIX = ".read"         // /topic/room.{roomId}.read
+        // 개인 큐는 이번 구조에서 사용하지 않음
+        private const val USER_QUEUE_PREFIX = "/user/queue/"  // (미사용)
     }
 
     private var stompClient: StompClient? = null
@@ -28,18 +30,22 @@ class StompManager(
     /** 현재 연결 여부 */
     fun isConnected(): Boolean = stompClient?.isConnected == true
 
-    /** 모든 구독 해제 (특정 토픽만 해제하고 싶으면 unsubscribe(path) 사용) */
+    /** 모든 구독 해제 */
     fun clearSubscriptions() {
-        topicSubs.values.forEach { runCatching { it.dispose() } }
+        topicSubs.forEach { (path, d) ->
+            runCatching { d.dispose() }.onFailure { Log.w(TAG, "dispose fail: $path", it) }
+        }
         topicSubs.clear()
     }
 
-    /** 개별 토픽 해제 */
+    /** 특정 토픽 해제 */
     fun unsubscribe(path: String) {
-        topicSubs.remove(path)?.let { runCatching { it.dispose() } }
+        topicSubs.remove(path)?.let {
+            runCatching { it.dispose() }.onFailure { e -> Log.w(TAG, "unsubscribe fail: $path", e) }
+        }
     }
 
-    /** 기존 연결 정리 후 지정 room 토픽 하나만 구독해 연결 (레거시) */
+    /** (레거시) 단일 방 전용 연결 */
     fun connect(
         roomId: String,
         onConnected: () -> Unit = {},
@@ -53,7 +59,7 @@ class StompManager(
                 .subscribe({ e ->
                     when (e.type) {
                         LifecycleEvent.Type.OPENED -> {
-                            Log.d(TAG, "Connected")
+                            Log.d(TAG, "Connected (room=$roomId)")
                             onConnected()
                             subscribeTopic(
                                 "$TOPIC_ROOM_PREFIX$roomId",
@@ -74,7 +80,7 @@ class StompManager(
         }
     }
 
-    /** 전역 연결: userId 쿼리파라미터로 접속. 구독은 별도 헬퍼로 호출자가 선택적으로 추가. */
+    /** 전역 연결: userId 쿼리파라미터로 접속. 구독은 호출자가 선택적으로 추가. */
     fun connectGlobal(
         userId: String,
         onConnected: () -> Unit = {},
@@ -90,7 +96,7 @@ class StompManager(
             .subscribe({ e ->
                 when (e.type) {
                     LifecycleEvent.Type.OPENED -> {
-                        Log.d(TAG, "Connected (global)")
+                        Log.d(TAG, "Connected (global) userId=$userId")
                         onConnected()
                     }
                     LifecycleEvent.Type.ERROR -> {
@@ -113,9 +119,11 @@ class StompManager(
         onError: (String) -> Unit = {}
     ) {
         val c = stompClient ?: run { onError("stomp not connected"); return }
-        // 이미 구독 중이면 스킵
-        if (topicSubs.containsKey(path)) return
-
+        if (topicSubs.containsKey(path)) {
+            Log.d(TAG, "skip duplicate subscribe: $path")
+            return
+        }
+        Log.d(TAG, "subscribe: $path")
         val d = c.topic(path)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ frame -> onMessage(frame.payload) },
@@ -129,13 +137,25 @@ class StompManager(
         subscribeTopic("$TOPIC_ROOM_PREFIX$roomId", onMessage, onError)
     }
 
-    /** 사용자 큐 구독: /user/queue/{name} (예: inbox, read-receipt) */
+    /** 방 읽음 토픽 구독: /topic/room.{roomId}.read */
+    fun subscribeRoomRead(roomId: String, onMessage: (String) -> Unit, onError: (String) -> Unit = {}) {
+        subscribeTopic("$TOPIC_ROOM_PREFIX$roomId$TOPIC_READ_SUFFIX", onMessage, onError)
+    }
+
+    /** (미사용) 사용자 큐 구독 — 이번 구조에선 쓰지 않음 */
+    @Deprecated(
+        message = "개인 큐는 사용하지 않습니다. 방 토픽(/topic/room.{id})을 구독하세요.",
+        level = DeprecationLevel.WARNING
+    )
     fun subscribeUserQueue(
         name: String,
         onMessage: (String) -> Unit,
         onError: (String) -> Unit = {}
     ) {
-        subscribeTopic("$USER_QUEUE_PREFIX$name", onMessage, onError)
+        // no-op: 토픽만 사용
+        Log.w(TAG, "subscribeUserQueue called but ignored: $name")
+        // 필요하면 아래 한 줄을 살리되, 서버가 /user/queue/* 브로캐스트를 보내는 경우에만.
+        // subscribeTopic("$USER_QUEUE_PREFIX$name", onMessage, onError)
     }
 
     /** 메시지 전송 */
@@ -147,7 +167,7 @@ class StompManager(
         val json = JSONObject().apply {
             put("roomId", roomId)
             put("senderId", senderId)
-            if (!receiverId.isNullOrBlank()) put("receiverId", receiverId) // 서버가 필요 시 사용
+            if (!receiverId.isNullOrBlank()) put("receiverId", receiverId)
             put("content", content)
         }.toString()
 

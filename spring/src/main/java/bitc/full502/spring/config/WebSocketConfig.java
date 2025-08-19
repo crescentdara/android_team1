@@ -10,27 +10,29 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-    // 클라이언트가 메시지를 보낼 경로 prefix (예: /app/chat.send)
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        // 서버가 클라이언트에게 푸시할 때 사용할 간단 브로커(prefix)
-        registry.enableSimpleBroker("/topic", "/queue");
-        // 클라이언트 → 서버(컨트롤러 @MessageMapping)로 보낼 때 붙일 prefix
+        // ✅ 서버 → 클라 브로드캐스트: /topic/* (방 메시지, 읽음영수증 모두 토픽으로 보냄)
+        registry.enableSimpleBroker("/topic");
+
+        // ✅ 클라 → 서버 전송: /app/*  (예: /app/chat.send)
         registry.setApplicationDestinationPrefixes("/app");
-        // (선택) 개인 큐 prefix — 나중에 사용자별 큐 쓰고 싶을 때
-        registry.setUserDestinationPrefix("/user");
+
+        // ❌ 개인 큐는 사용하지 않으므로 비활성(남겨도 되지만 혼선 방지를 위해 주석)
+        // registry.setUserDestinationPrefix("/user");
     }
 
-    // 실제 WebSocket 접속 엔드포인트 (STOMP handshake)
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
+        // 안드로이드 네이티브 WebSocket 접속 (ws://<IP>:8080/ws)
         registry.addEndpoint("/ws")
-                .setHandshakeHandler(new UserHandshakeHandler()) // userId를 Principal로 심어줌
+                .setHandshakeHandler(new UserHandshakeHandler()) // 있으면 유지, 없으면 제거해도 OK
                 .setAllowedOriginPatterns("*");
+
+        // (옵션) SockJS 지원 — 브라우저 클라이언트용. 안드로이드는 위 엔드포인트만 있으면 충분
         registry.addEndpoint("/ws")
                 .setHandshakeHandler(new UserHandshakeHandler())
                 .setAllowedOriginPatterns("*")
                 .withSockJS();
     }
-
 }
