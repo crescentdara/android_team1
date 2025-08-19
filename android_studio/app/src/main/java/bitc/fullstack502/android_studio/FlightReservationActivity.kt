@@ -209,6 +209,7 @@ class FlightReservationActivity : AppCompatActivity() {
         btnProceed.setOnClickListener { guardAndProceed() }
     }
 
+    // 🔧 guardAndProceed() 함수 수정 (중요 부분만 발췌)
     private fun guardAndProceed() {
         val loggedIn = AuthManager.isLoggedIn()
         val userPk = AuthManager.id()
@@ -217,16 +218,21 @@ class FlightReservationActivity : AppCompatActivity() {
             return
         }
 
+        if (outDateYmd.isNullOrBlank()) {
+            Toast.makeText(this, "출발 날짜를 선택하세요", Toast.LENGTH_SHORT).show()
+            return
+        }
+
         if (isRoundTrip) {
+            if (inDateYmd.isNullOrBlank()) {
+                Toast.makeText(this, "오는 날짜를 선택하세요", Toast.LENGTH_SHORT).show()
+                return
+            }
             openInboundSelection()
         } else {
             val out = selectedOut
             if (out == null) {
                 Toast.makeText(this, "먼저 가는 편을 선택하세요", Toast.LENGTH_SHORT).show()
-                return
-            }
-            if (outDateYmd.isNullOrBlank()) {
-                Toast.makeText(this, "출발 날짜를 선택하세요", Toast.LENGTH_SHORT).show()
                 return
             }
             openPassengerInput(out, null, selectedOutPrice, 0)

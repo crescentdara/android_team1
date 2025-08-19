@@ -18,21 +18,38 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- 상단: 항공사/시간/소요시간/도착시간 -->
+        <!-- 상단: 항공사/시간/소요시간/도착시간 + ★ -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
+            <!-- 즐겨찾기(별) -->
+            <ImageButton
+                android:id="@+id/btnWish"
+                style="?attr/borderlessButtonStyle"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="4dp"
+                android:contentDescription="@string/app_name"
+                app:tint="@color/jeju_primary"
+                android:src="@drawable/ic_star_border_24"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
             <!-- 항공사 -->
             <TextView
                 android:id="@+id/tvAirline"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="진에어"
                 android:textColor="@color/ink_800"
                 android:textSize="14sp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintEnd_toStartOf="@id/btnWish"
+                app:layout_constraintTop_toTopOf="parent"
+                android:ellipsize="end"
+                android:maxLines="1"/>
 
             <!-- 출발 시간 -->
             <TextView
@@ -47,7 +64,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvAirline" />
 
-            <!-- 도착 시간 -->
+            <!-- 도착 시간 (별 왼쪽에 정렬) -->
             <TextView
                 android:id="@+id/tvArr"
                 android:layout_width="wrap_content"
@@ -56,7 +73,7 @@
                 android:textStyle="bold"
                 android:textSize="20sp"
                 android:textColor="@color/ink_900"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/btnWish"
                 app:layout_constraintBaseline_toBaselineOf="@id/tvDep" />
 
             <!-- 소요 시간 -->
@@ -160,7 +177,6 @@
                     android:textColor="@color/ink_700"
                     android:textSize="13sp"/>
             </LinearLayout>
-
         </LinearLayout>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

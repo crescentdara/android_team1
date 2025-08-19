@@ -4,12 +4,13 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import bitc.fullstack502.android_studio.model.BookingRequest
 import bitc.fullstack502.android_studio.model.BookingResponse
 import bitc.fullstack502.android_studio.model.Flight
 import bitc.fullstack502.android_studio.network.ApiProvider
-import kotlinx.coroutines.launch
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class FlightReservationViewModel : ViewModel() {
 
@@ -23,25 +24,37 @@ class FlightReservationViewModel : ViewModel() {
     private val _error = MutableLiveData<String>()
     val error: LiveData<String> get() = _error
 
+    // ===== 예약 =====
     fun bookFlight(request: BookingRequest) {
-        _loading.value = true
-        viewModelScope.launch {
-            try {
-                val res = ApiProvider.api.createBooking(request)
-                if (res.isSuccessful) {
-                    res.body()?.let { _bookingResponse.postValue(it) }
-                        ?: _error.postValue("예약 응답이 비어 있습니다.")
-                } else {
-                    val err = runCatching { res.errorBody()?.string() }.getOrNull()
-                    _error.postValue("예약 실패: ${res.code()} ${res.message()}${err?.let { " - $it" } ?: ""}")
+        _loading.postValue(true)
+        ApiProvider.api.createFlightBooking(request)
+            .enqueue(object : Callback<BookingResponse> {
+                override fun onResponse(
+                    call: Call<BookingResponse>,
+                    response: Response<BookingResponse>
+                ) {
+                    if (response.isSuccessful) {
+                        val body = response.body()
+                        // 🔧 nullable 안전 처리: let 사용
+                        body?.let { _bookingResponse.postValue(it) }
+                            ?: _error.postValue("예약 응답이 비어 있습니다.")
+                    } else {
+                        val errBody = try { response.errorBody()?.string() } catch (_: Exception) { null }
+                        _error.postValue(
+                            "예약 실패: ${response.code()} ${response.message()}" +
+                                    (if (errBody.isNullOrBlank()) "" else " - $errBody")
+                        )
+                    }
+                    _loading.postValue(false)
                 }
-            } catch (e: Exception) {
-                _error.postValue(e.message ?: "예약 중 오류가 발생했습니다.")
-            } finally {
-                _loading.postValue(false)
-            }
-        }
+
+                override fun onFailure(call: Call<BookingResponse>, t: Throwable) {
+                    _error.postValue(t.message ?: "예약 중 네트워크 오류")
+                    _loading.postValue(false)
+                }
+            })
     }
+
 
     // ============== 항공편 검색(분리 저장) ==============
     private val _outFlights = MutableLiveData<List<Flight>>()
@@ -56,9 +69,7 @@ class FlightReservationViewModel : ViewModel() {
     @Volatile private var lastReqOut: Long = 0L
     @Volatile private var lastReqIn: Long = 0L
 
-    /**
-     * 가는편 검색
-     */
+    /** 가는편 검색 */
     fun searchFlights(dep: String, arr: String, dateYmd: String, depTime: String? = null) {
         val api = ApiProvider.api
         val safeTime = depTime?.takeIf { it.isNotBlank() }
@@ -99,9 +110,7 @@ class FlightReservationViewModel : ViewModel() {
             })
     }
 
-    /**
-     * 오는편 검색 (왕복)
-     */
+    /** 오는편 검색 (왕복) */
     fun searchInboundFlights(dep: String, arr: String, dateYmd: String, depTime: String? = null) {
         val api = ApiProvider.api
         val safeTime = depTime?.takeIf { it.isNotBlank() }

@@ -4,11 +4,18 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import bitc.fullstack502.android_studio.R
 import bitc.fullstack502.android_studio.databinding.ItemFlightTicketBinding
 import bitc.fullstack502.android_studio.model.Flight
+import bitc.fullstack502.android_studio.network.ApiProvider
+import bitc.fullstack502.android_studio.network.dto.WishStatusDto
+import bitc.fullstack502.android_studio.util.AuthManager
 import com.google.android.material.card.MaterialCardView
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -20,6 +27,10 @@ class FlightAdapter(
 ) : RecyclerView.Adapter<FlightAdapter.FlightViewHolder>() {
 
     private var selectedPos: Int = RecyclerView.NO_POSITION
+
+    // 즐겨찾기 상태 캐시: flightId -> wished
+    private val wishMap = mutableMapOf<Long, Boolean>()
+    private val requesting = mutableSetOf<Long>() // 중복 요청 방지
 
     inner class FlightViewHolder(val binding: ItemFlightTicketBinding)
         : RecyclerView.ViewHolder(binding.root) {
@@ -41,7 +52,37 @@ class FlightAdapter(
             applySelectedState(cardRoot, selected)
             panelDetails.visibility = if (selected) View.VISIBLE else View.GONE
 
-            // ✅ 카드 탭: 선택 토글 + 모달 트리거(onSelect 호출)
+            // ------- 즐겨찾기(별) 초기 상태 -------
+            val fid = item.id
+            val uid = AuthManager.id()
+            // 캐시에 있으면 바로 반영, 없고 로그인 되어 있으면 서버에서 상태 조회
+            updateStar(wishMap[fid ?: -1L] ?: false)
+            if (uid > 0L && fid != null && !wishMap.containsKey(fid) && !requesting.contains(fid)) {
+                requesting.add(fid)
+                ApiProvider.api.getFlightWishStatus(fid, uid).enqueue(object : Callback<WishStatusDto> {
+                    override fun onResponse(call: Call<WishStatusDto>, res: Response<WishStatusDto>) {
+                        requesting.remove(fid)
+                        if (res.isSuccessful) {
+                            res.body()?.let { st ->
+                                wishMap[fid] = st.wished
+                                // 현재 바인딩된 항목이 같은 flight인지 확인 후 갱신
+                                if (adapterPosition != RecyclerView.NO_POSITION &&
+                                    flights.getOrNull(adapterPosition)?.id == fid) {
+                                    updateStar(st.wished)
+                                } else {
+                                    val idx = flights.indexOfFirst { it.id == fid }
+                                    if (idx != -1) notifyItemChanged(idx)
+                                }
+                            }
+                        }
+                    }
+                    override fun onFailure(call: Call<WishStatusDto>, t: Throwable) {
+                        requesting.remove(fid)
+                    }
+                })
+            }
+
+            // ------- 카드 탭: 선택 토글 + 모달 트리거(onSelect 호출) -------
             root.setOnClickListener {
                 val old = selectedPos
                 val pos = adapterPosition
@@ -51,8 +92,51 @@ class FlightAdapter(
                 if (old != RecyclerView.NO_POSITION) notifyItemChanged(old)
                 notifyItemChanged(selectedPos)
 
-                val price = priceOf(item)
-                onSelect?.invoke(item, pos, price)   // ✅ 모달 띄울 트리거
+                val p = priceOf(item)
+                onSelect?.invoke(item, pos, p)
+            }
+
+            // ------- 별 클릭: 로그인 체크 → 서버 토글 → UI 반영 -------
+            btnWish.setOnClickListener {
+                val context = it.context
+                val userId = AuthManager.id()
+                val flightId = item.id
+                if (userId <= 0L) {
+                    Toast.makeText(context, "로그인 후 이용해주세요.", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+                if (flightId == null) {
+                    Toast.makeText(context, "항공편 정보 오류입니다.", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+
+                val current = wishMap[flightId] ?: false
+
+                // 낙관적 업데이트
+                wishMap[flightId] = !current
+                updateStar(!current)
+
+                ApiProvider.api.toggleFlightWish(flightId, userId).enqueue(object : Callback<WishStatusDto> {
+                    override fun onResponse(call: Call<WishStatusDto>, res: Response<WishStatusDto>) {
+                        if (res.isSuccessful) {
+                            res.body()?.let { st ->
+                                wishMap[flightId] = st.wished
+                                updateStar(st.wished)
+                            }
+                        } else {
+                            // 롤백
+                            wishMap[flightId] = current
+                            updateStar(current)
+                            Toast.makeText(context, "즐겨찾기 저장 실패(${res.code()})", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                    override fun onFailure(call: Call<WishStatusDto>, t: Throwable) {
+                        // 롤백
+                        wishMap[flightId] = current
+                        updateStar(current)
+                        Toast.makeText(context, "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
+                    }
+                })
             }
         }
 
@@ -83,7 +167,7 @@ class FlightAdapter(
 
         private fun applySelectedState(card: MaterialCardView, selected: Boolean) {
             val c = card.context
-            val sel = c.getColor(R.color.jeju_primary)  // #206064
+            val sel = c.getColor(R.color.jeju_primary)
             val def = c.getColor(R.color.divider)
             val ink = c.getColor(R.color.ink_900)
 
@@ -99,6 +183,14 @@ class FlightAdapter(
                 card.strokeWidth = dp(c, 1f)
                 binding.tvPrice.setTextColor(ink)
             }
+        }
+
+        private fun updateStar(wished: Boolean) {
+            binding.btnWish.setImageResource(
+                if (wished) R.drawable.ic_star_24 else R.drawable.ic_star_border_24
+            )
+            binding.btnWish.alpha = if (wished) 1.0f else 0.85f
+            binding.btnWish.contentDescription = if (wished) "즐겨찾기 해제" else "즐겨찾기 추가"
         }
     }
 
@@ -119,6 +211,7 @@ class FlightAdapter(
         flights.clear()
         flights.addAll(newItems)
         selectedPos = RecyclerView.NO_POSITION
+        wishMap.clear()
         notifyDataSetChanged()
     }
 

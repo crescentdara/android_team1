@@ -2,6 +2,7 @@ package bitc.fullstack502.android_studio.util
 
 import android.content.Context
 import android.content.SharedPreferences
+import bitc.fullstack502.android_studio.model.Passenger
 
 object AuthManager {
     private const val SP_NAME = "userInfo"
@@ -51,4 +52,5 @@ object AuthManager {
     fun email(): String = sp.getString(K_EMAIL, "") ?: ""
     fun phone(): String = sp.getString(K_PHONE, "") ?: ""
     fun accessToken(): String? = sp.getString(K_TOKEN, null)
+
 }

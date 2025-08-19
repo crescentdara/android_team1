@@ -190,6 +190,10 @@ class InboundSelectActivity : AppCompatActivity() {
         }
     }
 
+    // 🔧 수정 대상: InboundSelectActivity.kt
+// 🔥 문제 원인: 왕복일 때 PassengerInputActivity로 진입할 때 날짜가 전달되지 않음
+// 🔧 해결 방법: putExtra로 outDateYmd (가는 날)과 inDateYmd (오는 날) 함께 전달
+
     private fun openPassengerInput(
         outFlight: Flight,
         inFlight: Flight,
@@ -199,6 +203,9 @@ class InboundSelectActivity : AppCompatActivity() {
         child: Int,
         infant: Int
     ) {
+        val outDate = intent.getStringExtra(PassengerInputActivity.EXTRA_OUT_DATE)
+        val inDate  = intent.getStringExtra(PassengerInputActivity.EXTRA_IN_DATE)
+
         startActivity(
             Intent(this, PassengerInputActivity::class.java).apply {
                 putExtra(FlightReservationActivity.EXTRA_TRIP_TYPE, "ROUND_TRIP")
@@ -208,10 +215,15 @@ class InboundSelectActivity : AppCompatActivity() {
                 putExtra(FlightReservationActivity.EXTRA_IN_PRICE, inPrice)
                 putExtra(FlightReservationActivity.EXTRA_ADULT, adult)
                 putExtra(FlightReservationActivity.EXTRA_CHILD, child)
-                putExtra(FlightReservationActivity.EXTRA_INFANT, infant) //=0
+                putExtra(FlightReservationActivity.EXTRA_INFANT, infant)
+
+                // ✅ 날짜 전달 추가
+                putExtra(PassengerInputActivity.EXTRA_OUT_DATE, outDate)
+                putExtra(PassengerInputActivity.EXTRA_IN_DATE,  inDate)
             }
         )
     }
+
 
 
 }

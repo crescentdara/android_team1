@@ -228,9 +228,6 @@ interface AppApi {
     @GET("/api/mypage/liked-posts")
     suspend fun getLikedPosts(@Query("userPk") userPk: Long): List<PostDto>
 
-    @GET("/api/mypage/flight-wishlist")
-    suspend fun getFlightWishlist(@Query("userPk") userPk: Long): List<FlightWishDto>
-
     @GET("/api/mypage/lodging-wishlist")
     suspend fun getLodgingWishlist(@Query("userPk") userPk: Long): List<LodgingWishDto>
 
@@ -240,16 +237,39 @@ interface AppApi {
     @GET("/api/mypage/lodging-bookings")
     suspend fun getLodgingBookings(@Query("userPk") userPk: Long): List<LodgingBookingDto>
 
-    // ---------- 항공 ----------
-    @GET("/api/flights/search")
+    @GET("/api/mypage/flight-wishlist")
+    suspend fun getFlightWishlist(@Query("userPk") userPk: Long): List<FlightWishDto>
+
+
+    /* ---------- 항공 검색 ---------- */
+    @GET("/api/flight/search")
     fun searchFlights(
         @Query("dep") dep: String,
         @Query("arr") arr: String,
-        @Query("date") date: String,              // yyyy-MM-dd
+        @Query("date") date: String,        // yyyy-MM-dd
         @Query("depTime") depTime: String? = null
     ): Call<List<Flight>>
 
+    /* ---------- 항공 예약 ---------- */
     @POST("/api/bookings/flight")
-    suspend fun createBooking(@Body req: BookingRequest): Response<BookingResponse>
+    fun createFlightBooking(@Body req: BookingRequest): Call<BookingResponse>
+
+    @GET("/api/bookings/flight/user/{userId}")
+    fun getMyFlightBookings(@Path("userId") userId: Long): Call<List<BookingResponse>>
+
+    /* ---------- 항공 즐겨찾기 ---------- */
+    @GET("/api/flight/{flightId}/wish/status")
+    fun getFlightWishStatus(
+        @Path("flightId") flightId: Long,
+        @Header("X-USER-ID") userId: Long
+    ): Call<WishStatusDto>
+
+
+    @PUT("/api/flight/{flightId}/wish")
+    fun toggleFlightWish(
+        @Path("flightId") flightId: Long,
+        @Header("X-USER-ID") userId: Long
+    ): Call<WishStatusDto>
+
 
 }

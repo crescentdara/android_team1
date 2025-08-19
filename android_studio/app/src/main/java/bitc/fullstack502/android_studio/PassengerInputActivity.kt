@@ -4,21 +4,14 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.View
 import android.widget.RadioGroup
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import bitc.fullstack502.android_studio.adapter.PassengerSelectorAdapter
-import bitc.fullstack502.android_studio.model.Flight
-import bitc.fullstack502.android_studio.model.Passenger
-import bitc.fullstack502.android_studio.model.PassengerType
-import bitc.fullstack502.android_studio.model.BookingRequest
-import bitc.fullstack502.android_studio.model.BookingResponse
-import bitc.fullstack502.android_studio.network.AppApi
+import bitc.fullstack502.android_studio.model.*
+import bitc.fullstack502.android_studio.network.ApiProvider.api
 import bitc.fullstack502.android_studio.util.AuthManager
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.button.MaterialButton
@@ -26,12 +19,9 @@ import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.radiobutton.MaterialRadioButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import kotlinx.coroutines.launch
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Call
+import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -39,23 +29,11 @@ import java.time.format.DateTimeFormatter
 class PassengerInputActivity : AppCompatActivity() {
 
     companion object {
-        const val EXTRA_ADULTS = "EXTRA_ADULTS" // (안씀: 기존 호환용)
-        const val EXTRA_CHILDREN = "EXTRA_CHILDREN" // (안씀: 기존 호환용)
+        const val EXTRA_ADULTS = "EXTRA_ADULTS"      // (안씀: 기존 호환용)
+        const val EXTRA_CHILDREN = "EXTRA_CHILDREN"  // (안씀: 기존 호환용)
         // ▼ 반드시 FlightReservationActivity에서 함께 넣어주기
         const val EXTRA_OUT_DATE = "EXTRA_OUT_DATE"   // "yyyy-MM-dd"
         const val EXTRA_IN_DATE  = "EXTRA_IN_DATE"    // 왕복일 때만, "yyyy-MM-dd"
-    }
-
-    // --- Retrofit 간단 Provider (프로젝트 전역 Provider 있으면 그걸 쓰세요) ---
-    private val api: AppApi by lazy {
-        val logging = HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
-        val client = OkHttpClient.Builder().addInterceptor(logging).build()
-        Retrofit.Builder()
-            .baseUrl("http://10.0.2.2:8080")  // 실제 서버 주소로 교체
-            .client(client)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-            .create(AppApi::class.java)
     }
 
     private lateinit var rv: RecyclerView
@@ -82,28 +60,7 @@ class PassengerInputActivity : AppCompatActivity() {
     private lateinit var etEmgName: TextInputEditText
     private lateinit var etEmgPhone: TextInputEditText
 
-    private val watcher = object : TextWatcher {
-        override fun afterTextChanged(s: Editable?) { syncCurrentPassengerAndValidate() }
-        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-    }
-
     private fun current(): Passenger = passengers[selectedIndex]
-
-    private fun resetPassenger(p: Passenger) {
-        p.lastNameEn = ""
-        p.firstNameEn = ""
-        p.gender = ""
-        p.birth = ""
-        p.passportNo = ""
-        p.passportExpiry = ""
-        p.nationality = ""
-        p.phone = ""
-        p.email = ""
-        p.emergencyName = ""
-        p.emergencyPhone = ""
-        p.edited = false
-    }
 
     private fun bindEmptyForm() {
         isBinding = true
@@ -159,13 +116,19 @@ class PassengerInputActivity : AppCompatActivity() {
         // 1) 인텐트 수신
         val tripType  = intent.getStringExtra(FlightReservationActivity.EXTRA_TRIP_TYPE)
         val outFlight = intent.getSerializableExtra(FlightReservationActivity.EXTRA_OUTBOUND) as? Flight
-        val inFlight  = intent.getSerializableExtra(FlightReservationActivity.EXTRA_INBOUND) as? Flight
+        val inFlight  = intent.getSerializableExtra(FlightReservationActivity.EXTRA_INBOUND)  as? Flight
         val outPrice  = intent.getIntExtra(FlightReservationActivity.EXTRA_OUT_PRICE, 0)
         val inPrice   = intent.getIntExtra(FlightReservationActivity.EXTRA_IN_PRICE, 0)
         val adults    = intent.getIntExtra(FlightReservationActivity.EXTRA_ADULT, 1)
         val children  = intent.getIntExtra(FlightReservationActivity.EXTRA_CHILD, 0)
         val outDate   = intent.getStringExtra(EXTRA_OUT_DATE)  // ★ "yyyy-MM-dd"
         val inDate    = intent.getStringExtra(EXTRA_IN_DATE)   // 왕복일 때만
+
+        if (outDate.isNullOrBlank()) {
+            Toast.makeText(this, "출발 날짜 정보가 없습니다. 처음 화면에서 다시 선택하세요.", Toast.LENGTH_LONG).show()
+            finish()
+            return
+        }
 
         // 2) 리스트 초기화
         var idx = 0
@@ -201,7 +164,7 @@ class PassengerInputActivity : AppCompatActivity() {
         etEmgPhone= findViewById(R.id.etEmergencyPhone)
         rgGender  = findViewById(R.id.rgGender)
 
-        // 4) 날짜 피커/전화 워처
+        // 4) 날짜 피커/워처
         findViewById<TextInputLayout>(R.id.tilBirth)
             .setEndIconOnClickListener { showMaterialDatePicker(etBirth) }
         findViewById<TextInputLayout>(R.id.tilPassportExpiry)
@@ -231,19 +194,16 @@ class PassengerInputActivity : AppCompatActivity() {
                 Toast.makeText(this, "로그인 후 이용해주세요", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            val flight = outFlight
-            if (flight == null) {
+            val flight = outFlight ?: run {
                 Toast.makeText(this, "선택된 항공편 정보가 없습니다.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
-            // 날짜 필수 (이전 화면에서 putExtra(EXTRA_OUT_DATE, outDateYmd) 필요)
-            val tripDate = outDate
-            if (tripDate.isNullOrBlank()) {
+            // 날짜 필수
+            val tripDate = outDate ?: run {
                 Toast.makeText(this, "출발 날짜 정보가 없습니다.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // 총액(간단 계산: (가는+오는) * (성인+아동)) — 프로젝트 로직에 맞게 조정하세요
             val seatCnt = adults + children
             val total   = ((outPrice + inPrice) * seatCnt).toLong()
 
@@ -253,20 +213,25 @@ class PassengerInputActivity : AppCompatActivity() {
                 seatCnt = seatCnt,
                 adult = adults,
                 child = children,
-                tripDate = tripDate,         // "yyyy-MM-dd" (BookingRequest.kt를 String으로 맞추세요)
+                tripDate = tripDate,
                 totalPrice = total
             )
 
-            // 실제 예약 저장 → 성공 후 여정화면(또는 성공화면) 이동
-            lifecycleScope.launch {
-                val res: Response<BookingResponse> = try {
-                    api.createBooking(req)
-                } catch (e: Exception) {
-                    Toast.makeText(this@PassengerInputActivity, "네트워크 오류: ${e.message}", Toast.LENGTH_SHORT).show()
-                    return@launch
-                }
-                if (res.isSuccessful) {
-                    // 예매 성공 → 티켓 성공 or 일정 화면으로 이동
+            api.createFlightBooking(req).enqueue(object : Callback<BookingResponse> {
+                override fun onResponse(
+                    call: Call<BookingResponse>,
+                    response: Response<BookingResponse>
+                ) {
+                    if (!response.isSuccessful) {
+                        val msg = when (response.code()) {
+                            409 -> "잔여좌석이 부족합니다. 다른 항공편을 선택해주세요."
+                            400 -> "예약 정보가 올바르지 않습니다."
+                            else -> "예약 실패: ${response.code()}"
+                        }
+                        Toast.makeText(this@PassengerInputActivity, msg, Toast.LENGTH_SHORT).show()
+                        return
+                    }
+
                     startActivity(Intent(this@PassengerInputActivity, TicketSuccessActivity::class.java).apply {
                         putExtra("PASSENGERS", ArrayList(passengers))
                         putExtra(FlightReservationActivity.EXTRA_TRIP_TYPE, tripType)
@@ -276,10 +241,12 @@ class PassengerInputActivity : AppCompatActivity() {
                         putExtra(FlightReservationActivity.EXTRA_IN_PRICE, inPrice)
                     })
                     finish()
-                } else {
-                    Toast.makeText(this@PassengerInputActivity, "예약 실패: ${res.code()}", Toast.LENGTH_SHORT).show()
                 }
-            }
+
+                override fun onFailure(call: Call<BookingResponse>, t: Throwable) {
+                    Toast.makeText(this@PassengerInputActivity, "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
+                }
+            })
         }
 
         // 7) 초기 검증 반영
@@ -287,7 +254,7 @@ class PassengerInputActivity : AppCompatActivity() {
     }
 
     private fun syncCurrentPassengerAndValidate() {
-        val p = passengers[selectedIndex]
+        val p = current()
         p.lastNameEn     = etLast.text?.toString()?.trim().orEmpty()
         p.firstNameEn    = etFirst.text?.toString()?.trim().orEmpty()
         p.gender         = when (rgGender.checkedRadioButtonId) {
@@ -347,7 +314,7 @@ class PassengerInputActivity : AppCompatActivity() {
             .build()
         picker.addOnPositiveButtonClickListener { millis ->
             val date = Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault()).toLocalDate()
-            target.setText(date.format(DateTimeFormatter.ISO_LOCAL_DATE)) // YYYY-MM-DD
+            target.setText(date.format(DateTimeFormatter.ISO_LOCAL_DATE))
             syncCurrentPassengerAndValidate()
         }
         picker.show(supportFragmentManager, "date_picker")
