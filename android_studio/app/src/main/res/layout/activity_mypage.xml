@@ -17,7 +17,8 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="20dp">
 
             <!-- 상단: 로그아웃 -->
             <LinearLayout
@@ -133,75 +134,124 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
+                android:layout_marginBottom="16dp"
                 android:background="#FFFDF9"
-                android:padding="12dp"
                 android:elevation="5dp"
-                android:layout_marginBottom="16dp">
+                android:orientation="vertical"
+                android:padding="12dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
                     android:text="내 활동"
-                    android:textSize="16sp"
-                    android:textStyle="bold"
                     android:textColor="#000"
-                    android:layout_marginBottom="8dp"/>
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="#E0E0E0"
-                    android:layout_marginBottom="8dp"/>
+                    android:layout_margin="8dp"
+                    android:background="#E0E0E0" />
 
                 <!-- 공통 행 스타일 -->
                 <LinearLayout
                     android:id="@+id/row_my_posts"
-                    style="@style/RowItemStyle">
-                    <TextView style="@style/RowItemTitle" android:text="내가 쓴 글"/>
-                    <TextView style="@style/RowItemChevron" android:text="›"/>
+                    style="@style/RowItemStyle"
+                    android:layout_marginVertical="10dp">
+
+                    <TextView
+                        style="@style/RowItemTitle"
+                        android:text="내가 쓴 글" />
+
+                    <TextView
+                        style="@style/RowItemChevron"
+                        android:text="›" />
                 </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/row_my_comments"
-                    style="@style/RowItemStyle">
-                    <TextView style="@style/RowItemTitle" android:text="내가 쓴 댓글"/>
-                    <TextView style="@style/RowItemChevron" android:text="›"/>
+                    style="@style/RowItemStyle"
+                    android:layout_marginVertical="10dp">
+
+                    <TextView
+                        style="@style/RowItemTitle"
+                        android:text="내가 쓴 댓글" />
+
+                    <TextView
+                        style="@style/RowItemChevron"
+                        android:text="›" />
                 </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/row_liked_posts"
-                    style="@style/RowItemStyle">
-                    <TextView style="@style/RowItemTitle" android:text="좋아요 한 게시글"/>
-                    <TextView style="@style/RowItemChevron" android:text="›"/>
+                    style="@style/RowItemStyle"
+                    android:layout_marginVertical="10dp">
+
+                    <TextView
+                        style="@style/RowItemTitle"
+                        android:text="좋아요 한 게시글" />
+
+                    <TextView
+                        style="@style/RowItemChevron"
+                        android:text="›" />
                 </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/row_flight_wishlist"
-                    style="@style/RowItemStyle">
-                    <TextView style="@style/RowItemTitle" android:text="항공 즐겨찾기"/>
-                    <TextView style="@style/RowItemChevron" android:text="›"/>
+                    style="@style/RowItemStyle"
+                    android:layout_marginVertical="10dp">
+
+                    <TextView
+                        style="@style/RowItemTitle"
+                        android:text="항공 즐겨찾기" />
+
+                    <TextView
+                        style="@style/RowItemChevron"
+                        android:text="›" />
                 </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/row_lodging_wishlist"
-                    style="@style/RowItemStyle">
-                    <TextView style="@style/RowItemTitle" android:text="숙소 즐겨찾기"/>
-                    <TextView style="@style/RowItemChevron" android:text="›"/>
+                    style="@style/RowItemStyle"
+                    android:layout_marginVertical="10dp">
+
+                    <TextView
+                        style="@style/RowItemTitle"
+                        android:text="숙소 즐겨찾기" />
+
+                    <TextView
+                        style="@style/RowItemChevron"
+                        android:text="›" />
                 </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/row_flight_bookings"
-                    style="@style/RowItemStyle">
-                    <TextView style="@style/RowItemTitle" android:text="항공 예매내역"/>
-                    <TextView style="@style/RowItemChevron" android:text="›"/>
+                    style="@style/RowItemStyle"
+                    android:layout_marginVertical="10dp">
+
+                    <TextView
+                        style="@style/RowItemTitle"
+                        android:text="항공 예매내역" />
+
+                    <TextView
+                        style="@style/RowItemChevron"
+                        android:text="›" />
                 </LinearLayout>
 
                 <LinearLayout
                     android:id="@+id/row_lodging_bookings"
-                    style="@style/RowItemStyle">
-                    <TextView style="@style/RowItemTitle" android:text="숙박 예약내역"/>
-                    <TextView style="@style/RowItemChevron" android:text="›"/>
+                    style="@style/RowItemStyle"
+                    android:layout_marginVertical="10dp">
+
+                    <TextView
+                        style="@style/RowItemTitle"
+                        android:text="숙박 예약내역" />
+
+                    <TextView
+                        style="@style/RowItemChevron"
+                        android:text="›" />
                 </LinearLayout>
 
             </LinearLayout>

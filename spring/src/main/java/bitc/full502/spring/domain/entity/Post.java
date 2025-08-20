@@ -19,7 +19,7 @@ public class Post {
     @Column(nullable = false, length = 150)
     private String title;
 
-    @Lob
+    @Column(length = 255)
     private String content;
 
     @Column(length = 255)

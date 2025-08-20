@@ -59,7 +59,8 @@
                         android:paddingTop="0dp"
                         android:paddingBottom="0dp"
                         android:singleLine="true"
-                        android:textSize="14sp" />
+                        android:textSize="14sp"
+                        android:backgroundTint="@color/jeju_tint"/>
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>

@@ -20,6 +20,7 @@ class ImageSliderAdapter(
 
     override fun onBindViewHolder(holder: VH, position: Int) {
         holder.img.setImageResource(images[position])
+        holder.img.scaleType = ImageView.ScaleType.CENTER_CROP
     }
 
     override fun getItemCount() = images.size

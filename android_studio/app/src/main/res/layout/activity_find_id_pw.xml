@@ -35,7 +35,6 @@
             android:background="#EEEEEE" />
     </LinearLayout>
 
-    <!-- 아이디 찾기 레이아웃 -->
     <LinearLayout
         android:id="@+id/layout_id_find"
         android:orientation="vertical"
@@ -74,8 +73,7 @@
             android:layout_height="wrap_content"
             android:text="아이디 찾기"
             android:layout_marginTop="20dp"
-            android:background="#FFf"
-            android:textColor="#000000" />
+            android:textColor="#FFFFFF" />
     </LinearLayout>
 
     <!-- 비밀번호 찾기 레이아웃 -->

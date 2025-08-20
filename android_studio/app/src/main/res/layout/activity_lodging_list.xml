@@ -46,7 +46,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
-                android:text="인원: 성인 2, 아동 0" />
+                android:text="인원: 성인 1, 아동 0" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 

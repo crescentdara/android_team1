@@ -75,7 +75,7 @@
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:padding="16dp">
+                    android:padding="25dp">
 
                     <!-- 출발 -->
                     <LinearLayout
@@ -92,8 +92,8 @@
                             android:layout_height="wrap_content"
                             android:gravity="center_vertical">
                             <ImageView
-                                android:layout_width="18dp"
-                                android:layout_height="18dp"
+                                android:layout_width="20dp"
+                                android:layout_height="20dp"
                                 app:tint="@color/ink_600"
                                 android:src="@drawable/ic_flight_takeoff_24" />
                             <TextView
@@ -145,8 +145,8 @@
                             android:layout_height="wrap_content"
                             android:gravity="center_vertical">
                             <ImageView
-                                android:layout_width="18dp"
-                                android:layout_height="18dp"
+                                android:layout_width="17dp"
+                                android:layout_height="17dp"
                                 app:tint="@color/ink_600"
                                 android:src="@drawable/ic_flight_land_24" />
                             <TextView
@@ -193,7 +193,7 @@
                             android:layout_width="18dp"
                             android:layout_height="18dp"
                             app:tint="@color/jeju_primary"
-                            android:src="@android:drawable/ic_menu_today" />
+                            android:src="@drawable/ic_calendar" />
 
                         <TextView
                             android:id="@+id/tvDate"
@@ -226,10 +226,10 @@
                         android:gravity="center_vertical">
 
                         <ImageView
-                            android:layout_width="18dp"
-                            android:layout_height="18dp"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
                             app:tint="@color/jeju_primary"
-                            android:src="@android:drawable/ic_menu_myplaces" />
+                            android:src="@drawable/ic_person" />
 
                         <TextView
                             android:id="@+id/tvPax"

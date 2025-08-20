@@ -34,9 +34,6 @@
                 android:contentDescription="@string/app_name"/>
         </com.google.android.material.appbar.MaterialToolbar>
 
-        <Space
-            android:layout_width="match_parent"
-            android:layout_height="8dp" />
 
         <!-- 스크롤 영역 -->
         <androidx.core.widget.NestedScrollView
@@ -47,8 +44,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
+                android:orientation="vertical">
 
                 <!-- 사진 슬라이더 -->
                 <FrameLayout
@@ -59,7 +55,7 @@
                     <androidx.viewpager2.widget.ViewPager2
                         android:id="@+id/viewPager"
                         android:layout_width="match_parent"
-                        android:layout_height="200dp" />
+                        android:layout_height="280dp" />
 
                     <!-- 좌/우 버튼 -->
                     <ImageButton
@@ -107,7 +103,8 @@
                     android:layout_height="wrap_content"
                     android:background="@color/colorBg_je"
                     app:columnCount="2"
-                    app:rowOrderPreserved="false">
+                    app:rowOrderPreserved="false"
+                    android:padding="20dp">
 
                     <!-- Flights -->
                     <com.google.android.material.card.MaterialCardView
