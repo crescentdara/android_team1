@@ -5,7 +5,20 @@
     <dimen name="menu_item_margin">16dp</dimen>      <!-- 안쪽 마진 -->
     <dimen name="menu_label_size">16sp</dimen>       <!-- 텍스트 크기 -->
 
-
     <dimen name="card_stroke_selected">2dp</dimen>
     <dimen name="card_stroke_normal">1dp</dimen>
+
+    <!-- 추가 -->
+    <!-- 칩 공통 규격 -->
+    <dimen name="chip_height">44dp</dimen>
+    <dimen name="chip_corner">12dp</dimen>
+    <dimen name="chip_stroke">1dp</dimen>
+    <dimen name="chip_h_padding">8dp</dimen>
+    <dimen name="chip_text_size">14sp</dimen>
+    <!-- 칩 간격(세 영역 동일) -->
+    <dimen name="chip_margin_h">4dp</dimen>
+    <dimen name="chip_margin_v">6dp</dimen>
+    <!-- 공통 너비: 가장 긴 라벨 기준으로 한 번만 맞추세요 -->
+    <!-- 필요하면 96~128dp 사이에서 조정 -->
+    <dimen name="chip_fixed_width">112dp</dimen>
 </resources>
