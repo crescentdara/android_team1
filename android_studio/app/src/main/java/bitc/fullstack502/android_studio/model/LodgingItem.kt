@@ -8,7 +8,6 @@ data class LodgingItem(
     val city: String?,
     val town: String?,
     val addrRd: String?,
-    @SerializedName(value = "base_price", alternate = ["basePrice", "lowestPrice"])
     val basePrice: Long,
     val img: String?
 )

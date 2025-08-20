@@ -228,18 +228,23 @@ interface AppApi {
     @GET("/api/mypage/liked-posts")
     suspend fun getLikedPosts(@Query("userPk") userPk: Long): List<PostDto>
 
-    @GET("/api/mypage/lodging-wishlist")
-    suspend fun getLodgingWishlist(@Query("userPk") userPk: Long): List<LodgingWishDto>
+    @GET("/api/mypage/lodging/wishlist")
+    suspend fun getLodgingWishlist(
+        @Query("userId") userId: Long
+    ): List<LodgingListDto>
 
+    // ApiProvider.kt (인터페이스 일부)
     @GET("/api/mypage/flight-bookings")
-    suspend fun getFlightBookings(@Query("userPk") userPk: Long): List<FlightBookingDto>
-
-    @GET("/api/mypage/lodging-bookings")
-    suspend fun getLodgingBookings(@Query("userPk") userPk: Long): List<LodgingBookingDto>
+    suspend fun getFlightBookings(@Query("userPk") userPk: Long): List<BookingResponse>
 
     @GET("/api/mypage/flight-wishlist")
     suspend fun getFlightWishlist(@Query("userPk") userPk: Long): List<FlightWishDto>
 
+
+    @GET("/api/mypage/lodging/bookings")
+    suspend fun getLodgingBookings(
+        @Query("userId") userId: Long
+    ): List<LodgingBookingDto>
 
     /* ---------- 항공 검색 ---------- */
     @GET("/api/flight/search")

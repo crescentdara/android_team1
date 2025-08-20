@@ -221,7 +221,8 @@ public class LodgingService {
         String addr = (l.getAddrRd() != null && !l.getAddrRd().isBlank())
                 ? l.getAddrRd()
                 : l.getAddrJb();
-        Long price = (l.getBasePrice() != null) ? l.getBasePrice().longValue() : 0L; // 기본가(없으면 0)
+
+        Long price = l.getBasePrice(); // 이미 long이므로 null 걱정 없음
 
         return LodgingListDto.builder()
                 .id(l.getId())
@@ -229,8 +230,11 @@ public class LodgingService {
                 .city(l.getCity())
                 .town(l.getTown())
                 .addrRd(addr)
-                .basePrice(price)
+                .basePrice(price)  // DTO도 long/Long 맞춰야 함
                 .img(l.getImg())
                 .build();
     }
+
+
+
 }

@@ -1,19 +1,29 @@
 package bitc.full502.spring.dto;
 
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@Data
 public class LodgingBookingDto {
-    private int adult;
-    private int child;
+    private Long id;          // ← 추가: 예약 PK
+    private Long userId;
+    private Long lodId;
     private String ckIn;
     private String ckOut;
-    private Long lodId;
+    private Integer adult;
+    private Integer child;
     private String roomType;
-    private String status;
     private Long totalPrice;
-    private Long userId;
+    private String status;
+
+    // ↓↓↓ 목록/상세 카드에 쓸 숙소 정보 추가
+    private String lodName;
+    private String lodImg;
+    private String addrRd;
+    private String addrJb;
 }
+
 

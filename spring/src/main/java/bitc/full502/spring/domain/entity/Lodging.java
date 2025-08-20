@@ -44,5 +44,5 @@ public class Lodging {
     /** 2페이지 노출용 대표가/최저가 (추가 필드, ddl-auto=update로 컬럼 자동 추가) */
     // 이거 db에 추가 안되는데 확인 필요함 / 달빛
     @Column(name = "base_price", nullable = false)
-    private Integer basePrice = 100000;
+    private Long basePrice;
 }

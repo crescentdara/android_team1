@@ -33,6 +33,7 @@ class PostDetailActivity : AppCompatActivity() {
         val sp = getSharedPreferences("userInfo", MODE_PRIVATE)
         return sp.getString("usersId", "") ?: ""
     }
+
     private fun requireLoginOrFinish(): Boolean {
         val id = usersIdHeader()
         if (id.isBlank()) {
@@ -65,12 +66,20 @@ class PostDetailActivity : AppCompatActivity() {
 
         if (!requireLoginOrFinish()) return
         myUsersId = usersIdHeader()
+
+        // ✅ "id" 없으면 "postId"로 보조 처리
         id = intent.getLongExtra("id", 0L)
+        if (id == 0L) {
+            id = intent.getLongExtra("postId", 0L)
+        }
 
         // 댓글 어댑터
         cAdapter = CommentAdapter { comm -> showCommentUserMenu(comm) }
         b.rvComments.layoutManager = LinearLayoutManager(this)
         b.rvComments.adapter = cAdapter
+
+        // 이하 동일 ...
+
 
         // 좋아요
         b.btnHeart.setOnClickListener { toggleLikeAndIcon() }
@@ -103,9 +112,26 @@ class PostDetailActivity : AppCompatActivity() {
                 b.tvContent.text = p.content
                 postAuthor = p.author                       // ✅ 저장
 
-                if (!p.imgUrl.isNullOrEmpty()) {
-                    Glide.with(b.img).load("http://10.0.2.2:8080${p.imgUrl}").into(b.img)
-                } else b.img.setImageDrawable(null)
+                val raw = p.imgUrl
+                val url = when {
+                    raw.isNullOrBlank() -> null
+                    raw.startsWith("http", ignoreCase = true) -> raw
+                    else -> "http://10.0.2.2:8080$raw"
+                }
+
+                b.img.setImageDrawable(null)
+                b.img.clearColorFilter()
+
+                if (url == null) {
+                    b.img.setImageResource(R.drawable.ic_launcher_foreground)
+                } else {
+                    Glide.with(b.img)
+                        .load(url)
+                        .centerCrop()
+                        .placeholder(R.drawable.ic_launcher_foreground)
+                        .error(R.drawable.ic_launcher_foreground)
+                        .into(b.img)
+                }
 
                 isLiked = p.liked == true
                 b.btnHeart.setImageResource(
@@ -117,6 +143,7 @@ class PostDetailActivity : AppCompatActivity() {
                 b.btnEdit.visibility = if (mine) View.VISIBLE else View.GONE
                 b.btnDelete.visibility = if (mine) View.VISIBLE else View.GONE
             }
+
             override fun onFailure(call: Call<PostDto>, t: Throwable) {}
         })
     }
@@ -134,7 +161,10 @@ class PostDetailActivity : AppCompatActivity() {
                 b.tvLikeCount.text = "$cnt"
                 b.btnHeart.isEnabled = true
             }
-            override fun onFailure(call: Call<Long>, t: Throwable) { b.btnHeart.isEnabled = true }
+
+            override fun onFailure(call: Call<Long>, t: Throwable) {
+                b.btnHeart.isEnabled = true
+            }
         })
     }
 
@@ -145,6 +175,7 @@ class PostDetailActivity : AppCompatActivity() {
                 val flat = res.body() ?: emptyList()
                 cAdapter.submitList(arrangeComments(flat)) // ✅ 부모 아래에 붙도록 정렬
             }
+
             override fun onFailure(call: Call<List<CommDto>>, t: Throwable) {}
         })
     }
@@ -175,6 +206,7 @@ class PostDetailActivity : AppCompatActivity() {
                     b.etComment.hint = "댓글쓰기"
                     loadComments()
                 }
+
                 override fun onFailure(call: Call<Long>, t: Throwable) {}
             })
     }
@@ -189,7 +221,10 @@ class PostDetailActivity : AppCompatActivity() {
 
     private fun deletePost() {
         ApiProvider.api.deletePost(id, myUsersId).enqueue(object : Callback<Void> {
-            override fun onResponse(call: Call<Void>, response: Response<Void>) { finish() }
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                finish()
+            }
+
             override fun onFailure(call: Call<Void>, t: Throwable) {}
         })
     }
@@ -208,12 +243,15 @@ class PostDetailActivity : AppCompatActivity() {
             )
             setOnItemClickListener { _, _, pos, _ ->
                 when (options[pos]) {
-                    "1:1 채팅" -> { openChatWith(c.author); sheet.dismiss() } // ✅ 바로 연결
+                    "1:1 채팅" -> {
+                        openChatWith(c.author); sheet.dismiss()
+                    } // ✅ 바로 연결
                     "답글 쓰기" -> {
                         replyTarget = c
                         b.etComment.hint = "↳ ${c.author}에게 답글"
                         sheet.dismiss()
                     }
+
                     "댓글 수정" -> showEditCommentDialog(c)
                     "댓글 삭제" -> confirmDeleteComment(c.id)
                 }
@@ -230,7 +268,10 @@ class PostDetailActivity : AppCompatActivity() {
             .setPositiveButton("저장") { _, _ ->
                 ApiProvider.api.editComment(c.id, input.text.toString(), myUsersId)
                     .enqueue(object : Callback<Void> {
-                        override fun onResponse(call: Call<Void>, response: Response<Void>) { loadComments() }
+                        override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                            loadComments()
+                        }
+
                         override fun onFailure(call: Call<Void>, t: Throwable) {}
                     })
             }
@@ -244,7 +285,10 @@ class PostDetailActivity : AppCompatActivity() {
             .setPositiveButton("삭제") { _, _ ->
                 ApiProvider.api.deleteComment(commentId, myUsersId)
                     .enqueue(object : Callback<Void> {
-                        override fun onResponse(call: Call<Void>, response: Response<Void>) { loadComments() }
+                        override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                            loadComments()
+                        }
+
                         override fun onFailure(call: Call<Void>, t: Throwable) {}
                     })
             }

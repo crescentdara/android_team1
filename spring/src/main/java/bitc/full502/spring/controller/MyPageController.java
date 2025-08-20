@@ -2,12 +2,13 @@ package bitc.full502.spring.controller;
 
 import bitc.full502.spring.domain.entity.Post;
 import bitc.full502.spring.domain.entity.Users;
-import bitc.full502.spring.domain.repository.CommRepository;
-import bitc.full502.spring.domain.repository.PostLikeRepository;
-import bitc.full502.spring.domain.repository.PostRepository;
-import bitc.full502.spring.domain.repository.UsersRepository;
+import bitc.full502.spring.domain.repository.*;
+import bitc.full502.spring.dto.BookingResponseDto;
 import bitc.full502.spring.dto.CommDto;
+import bitc.full502.spring.dto.FlightWishDto;
 import bitc.full502.spring.dto.PostDto;
+import bitc.full502.spring.service.CommService;
+import bitc.full502.spring.service.FlBookService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +24,9 @@ public class MyPageController {
     private final PostRepository postRepository;
     private final PostLikeRepository postLikeRepository;
     private final CommRepository commRepository;
+    private final CommService commService;
+    private final FlBookService flBookService;
+    private final FlWishRepository flWishRepository;
 
     private Users getUserByPk(Long userPk) {
         return usersRepository.findById(userPk)
@@ -49,22 +53,6 @@ public class MyPageController {
                 .toList();
     }
 
-    /** 2) 내가 쓴 댓글 */
-    @GetMapping("/comments")
-    public List<CommDto> myComments(@RequestParam("userPk") Long userPk) {
-        Users user = getUserByPk(userPk);
-        return commRepository.findByUserOrderByCreatedAtDesc(user).stream()
-                .map(c -> CommDto.builder()
-                        .id(c.getId())
-                        .postId(c.getPost().getId())
-                        .parentId(c.getParent() == null ? null : c.getParent().getId())
-                        .author(c.getUser().getUsersId())
-                        .content(c.getContent())
-                        .createdAt(c.getCreatedAt())
-                        .build())
-                .toList();
-    }
-
     /** 3) 좋아요 한 게시글 */
     @GetMapping("/liked-posts")
     public List<PostDto> likedPosts(@RequestParam("userPk") Long userPk) {
@@ -87,4 +75,33 @@ public class MyPageController {
                 })
                 .toList();
     }
+
+    /** 2) 내가 쓴 댓글 */
+    @GetMapping("/comments")
+    public List<CommDto> myComments(@RequestParam("userPk") Long userPk) {
+        Users user = getUserByPk(userPk);
+        return commService.listMyComments(user.getUsersId()); // ✅ service 호출
+    }
+
+    /** ✅ 4) 항공 예매내역 */
+    @GetMapping("/flight-bookings")
+    public List<BookingResponseDto> myFlightBookings(@RequestParam("userPk") Long userPk) {
+        return flBookService.getBookingsByUser(userPk);
+    }
+
+    /** ✅ 5) 항공 즐겨찾기 */
+    @GetMapping("/flight-wishlist")
+    public List<FlightWishDto> myFlightWishlist(@RequestParam("userPk") Long userPk) {
+        return flWishRepository.findByUser_Id(userPk).stream()
+                .map(w -> new FlightWishDto(
+                        w.getId(),
+                        w.getFlight().getAirline(),
+                        w.getFlight().getFlNo(),
+                        w.getFlight().getDep(),
+                        w.getFlight().getArr(),
+                        null // 썸네일 사용 안 하면 null
+                ))
+                .toList();
+    }
+
 }
