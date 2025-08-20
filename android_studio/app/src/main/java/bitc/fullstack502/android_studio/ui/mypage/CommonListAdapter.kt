@@ -34,14 +34,25 @@ class CommonListAdapter(
         holder.tvSub.text = item.subtitle
 
         val url = fullUrl(item.imageUrl)
-        if (url == null) {
-            holder.iv.setImageResource(R.drawable.ic_launcher_foreground)
+        if (url.isNullOrEmpty()) {
+            // 항공쪽은 imageUrl = null로 내려주니까 → 이미지뷰 숨기기
+            holder.iv.visibility = View.GONE
         } else {
+            holder.iv.visibility = View.VISIBLE
             holder.iv.load(url)
         }
 
-        holder.itemView.setOnClickListener { onClick(item) }
+        // 꺽쇠 아이콘 처리
+        val arrow = holder.itemView.findViewById<ImageView>(R.id.ivArrow)
+        if (item.clickable) {
+            arrow.visibility = View.VISIBLE
+            holder.itemView.setOnClickListener { onClick(item) }
+        } else {
+            arrow.visibility = View.GONE
+            holder.itemView.setOnClickListener(null)
+        }
     }
+
 
     override fun getItemCount(): Int = items.size
 

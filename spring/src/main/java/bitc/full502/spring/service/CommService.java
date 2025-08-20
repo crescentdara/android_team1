@@ -8,4 +8,6 @@ public interface CommService {
     Long write(Long postId, Long parentId, String content, String usersId);
     void edit(Long id, String content, String usersId);
     void remove(Long id, String usersId);
+    List<CommDto> listMyComments(String usersId);
+
 }

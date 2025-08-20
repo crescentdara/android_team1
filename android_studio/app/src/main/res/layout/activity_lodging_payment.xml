@@ -64,7 +64,35 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:textColor="@android:color/holo_red_dark"/>
+
+            <RadioGroup
+                android:id="@+id/rgPayment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="16dp">
+
+                <RadioButton
+                    android:id="@+id/rbKakaoPay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="카카오페이" />
+
+                <RadioButton
+                    android:id="@+id/rbCard"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="신용카드" />
+
+                <RadioButton
+                    android:id="@+id/rbBank"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="무통장입금" />
+            </RadioGroup>
+
 
             <Button
                 android:id="@+id/btnLodgingPay"

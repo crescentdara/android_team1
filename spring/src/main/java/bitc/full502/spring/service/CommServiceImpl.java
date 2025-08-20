@@ -37,9 +37,13 @@ public class CommServiceImpl implements CommService {
                         .author(c.getUser().getUsersId())
                         .content(c.getContent())
                         .createdAt(c.getCreatedAt())
+                        // 👇 추가 필드
+                        .postTitle(post.getTitle())
+                        .postImgUrl(post.getImg()) // 엔티티 필드명이 imgUrl인 구조에 맞춤
                         .build())
                 .toList();
     }
+
 
     @Override
     public Long write(Long postId, Long parentId, String content, String usersId) {
@@ -85,4 +89,26 @@ public class CommServiceImpl implements CommService {
             commRepository.deleteAll(children);
         }
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CommDto> listMyComments(String usersId) {
+        Users user = getUserOrThrow(usersId);
+
+        return commRepository.findByUserOrderByCreatedAtDesc(user).stream()
+                .map(c -> CommDto.builder()
+                        .id(c.getId())
+                        .postId(c.getPost().getId())
+                        .parentId(c.getParent() == null ? null : c.getParent().getId())
+                        .author(c.getUser().getUsersId())
+                        .content(c.getContent())
+                        .createdAt(c.getCreatedAt())
+                        // 👇 댓글이 달린 글의 제목 & 이미지
+                        .postTitle(c.getPost().getTitle())
+                        .postImgUrl(c.getPost().getImg())
+                        .build())
+                .toList();
+    }
+
+
 }

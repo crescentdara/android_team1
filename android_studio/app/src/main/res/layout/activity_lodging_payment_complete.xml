@@ -1,32 +1,102 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-        <!-- 필요 시 결제완료 정보 바인딩용 변수 추가 가능 -->
-        <!-- <variable name="info" type="bitc.fullstack502.android_studio.ui.lodging.CompleteInfo" /> -->
+        <!-- 필요 시 바인딩 변수 선언 -->
     </data>
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="20dp"
-        android:gravity="center_horizontal">
+        android:padding="16dp"
+        android:background="@android:color/white">
 
-        <TextView
-            android:id="@+id/tvCompleteInfo"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:lineSpacingExtra="4dp"
-            android:textColor="@android:color/black"
-            android:text="결제 정보가 여기에 표시됩니다" />
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
 
-        <Button
-            android:id="@+id/btnGoHome"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginTop="20dp"
-            android:text="홈으로 가기" />
-    </LinearLayout>
+            <!-- 카드 뷰 -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="6dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+
+                    <ImageView
+                        android:id="@+id/imgLodging"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp"
+                        android:scaleType="centerCrop"
+                        android:background="@android:color/darker_gray" />
+
+                    <TextView
+                        android:id="@+id/tvLodgingName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:text="숙소명 - 룸타입 (상태)"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="@android:color/black" />
+
+                    <TextView
+                        android:id="@+id/tvLodgingAddr"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="주소: 제주특별자치도 제주시..."
+                        android:textSize="14sp"
+                        android:textColor="@android:color/darker_gray" />
+
+                    <TextView
+                        android:id="@+id/tvCheckInOut"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="체크인: 2025-08-22 • 체크아웃: 2025-08-23"
+                        android:textSize="15sp"
+                        android:textColor="@android:color/black" />
+
+                    <TextView
+                        android:id="@+id/tvRoomType"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="객실 타입: 싱글룸"
+                        android:textSize="15sp"
+                        android:textColor="@android:color/black" />
+
+                    <TextView
+                        android:id="@+id/tvTotalPrice"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="총 결제금액: 120,000원"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                         />
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <Button
+                android:id="@+id/btnGoHome"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="20dp"
+                android:text="홈으로 가기"
+                android:textColor="@android:color/white" />
+
+        </LinearLayout>
+    </ScrollView>
 </layout>

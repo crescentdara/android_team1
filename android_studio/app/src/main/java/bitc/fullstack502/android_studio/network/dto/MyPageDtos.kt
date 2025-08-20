@@ -3,9 +3,14 @@ package bitc.fullstack502.android_studio.network.dto
 data class CommentDto(
     val id: Long,
     val postId: Long,
-    val postTitle: String?,
-    val content: String?,
-    val createdAt: String?
+    val parentId: Long?,
+    val author: String,
+    val content: String,
+    val createdAt: String,
+
+    // 👇 신규(옵션)
+    val postTitle: String? = null,
+    val postImgUrl: String? = null
 )
 
 // 항공 즐겨찾기/예약

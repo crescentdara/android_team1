@@ -3,6 +3,7 @@ package bitc.full502.spring.controller;
 import bitc.full502.spring.domain.entity.Users;
 import bitc.full502.spring.domain.repository.UsersRepository;
 import bitc.full502.spring.dto.*;
+import bitc.full502.spring.service.UserCleanupService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ import java.util.Optional;
 public class UsersController {
 
     private final UsersRepository usersRepository;
+    private final UserCleanupService userCleanupService;
 
     // ------------------------- 로그인 -------------------------
     @PostMapping("/login")
@@ -94,9 +96,10 @@ public class UsersController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @DeleteMapping("/delete-user")
-    public ResponseEntity<?> deleteUserV1(@RequestParam("userId") String userId) {
-        return deleteUserV2(userId);
+    /** 사용자 삭제 V2 */
+    @DeleteMapping("/users/{usersId}/v2")
+    public void deleteUserV2(@PathVariable String usersId) {
+        userCleanupService.cascadeDeleteByUsersId(usersId);
     }
 
     // ------------------------- V2 표준 엔드포인트 -------------------------
@@ -154,14 +157,4 @@ public class UsersController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    /** 사용자 삭제 V2 */
-    @DeleteMapping("/users/{usersId}")
-    public ResponseEntity<?> deleteUserV2(@PathVariable String usersId) {
-        return usersRepository.findByUsersId(usersId)
-                .map(u -> {
-                    usersRepository.delete(u);
-                    return ResponseEntity.noContent().build();
-                })
-                .orElseGet(() -> ResponseEntity.notFound().build());
-    }
 }

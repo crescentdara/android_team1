@@ -20,4 +20,7 @@ public interface CommRepository extends JpaRepository<Comm, Long> {
 
     // ✅ 내가 쓴 댓글 (최신순)
     List<Comm> findByUserOrderByCreatedAtDesc(Users user);
+
+    List<Comm> findByUser(Users user);
+
 }
