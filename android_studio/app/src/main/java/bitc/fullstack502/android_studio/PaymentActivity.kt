@@ -2,6 +2,7 @@ package bitc.fullstack502.android_studio
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.RadioButton
 import android.widget.TextView
@@ -91,7 +92,7 @@ class PaymentActivity : AppCompatActivity() {
         tvFacility.text = "공항시설사용료: %,d원".format(fac)
         tvTotal.text    = "총 결제금액: %,d원".format(totalX)
 
-        // --- 출발일(가는 편) 안전 수신 ---
+        // --- 출발일(가는 편) 안전 수신  ---
         // ※ FlightReservationActivity.EXTRA_DATE 는 존재하지 않으므로 절대 참조하지 말 것
         val outDateYmd: String? =
             intent.getStringExtra(PassengerInputActivity.EXTRA_OUT_DATE) // 권장 키
@@ -101,6 +102,8 @@ class PaymentActivity : AppCompatActivity() {
 
         // --- 결제 처리 ---
         btnPay.setOnClickListener {
+            Log.d("*** flight *** ", "$outFlight, $inFlight, outDateYmd : $outDateYmd")
+
             if (!AuthManager.isLoggedIn()) {
                 Toast.makeText(this, "로그인 후 이용해주세요.", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
