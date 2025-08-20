@@ -16,5 +16,6 @@ data class LodgingBookingDto(
     val lodName: String?,       // 숙소 이름
     val lodImg: String?,        // 숙소 이미지
     val addrRd: String?,        // 도로명 주소
-    val addrJb: String?         // 지번 주소
+    val addrJb: String?,         // 지번 주소
+    val basePrice: Long
 )

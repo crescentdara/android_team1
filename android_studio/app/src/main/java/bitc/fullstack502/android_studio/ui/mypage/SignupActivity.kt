@@ -191,7 +191,7 @@ class SignupActivity : AppCompatActivity() {
                         Toast.makeText(this@SignupActivity, "회원가입이 완료되었습니다.", Toast.LENGTH_SHORT).show()
                         finish()
                     } else {
-                        Toast.makeText(this@SignupActivity, "회원가입 실패: ${response.code()}", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@SignupActivity, "이메일 중복 ( ${response.code()} )", Toast.LENGTH_SHORT).show()
                     }
                 }
                 override fun onFailure(call: Call<Void>, t: Throwable) {

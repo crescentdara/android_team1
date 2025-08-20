@@ -170,7 +170,8 @@ class LodgingPaymentActivity : AppCompatActivity() {
                 lodName = lodgingName,
                 lodImg = lodgingImg,
                 addrRd = null,
-                addrJb = null
+                addrJb = null,
+                basePrice = totalPrice
             )
 
             ApiProvider.api.createBooking(booking).enqueue(object : Callback<Void> {

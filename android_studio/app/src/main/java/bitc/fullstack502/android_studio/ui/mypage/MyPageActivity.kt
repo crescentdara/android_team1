@@ -1,4 +1,5 @@
 package bitc.fullstack502.android_studio.ui.mypage
+
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -24,6 +25,9 @@ class MyPageActivity : AppCompatActivity() {
     private lateinit var tvName: TextView
     private lateinit var tvEmail: TextView
     private lateinit var tvPhone: TextView
+
+    private lateinit var tvGreetingMy: TextView
+
 
     private var usersId: String = ""
 
@@ -57,11 +61,19 @@ class MyPageActivity : AppCompatActivity() {
                 phone = newPhone
             )
             ApiProvider.api.updateUserV2(updated).enqueue(object : Callback<UsersResponse> {
-                override fun onResponse(call: Call<UsersResponse>, response: Response<UsersResponse>) {
+                override fun onResponse(
+                    call: Call<UsersResponse>,
+                    response: Response<UsersResponse>
+                ) {
                     if (!response.isSuccessful) {
-                        Toast.makeText(this@MyPageActivity, "수정 실패 (${response.code()})", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this@MyPageActivity,
+                            "수정 실패 (${response.code()})",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
+
                 override fun onFailure(call: Call<UsersResponse>, t: Throwable) {
                     Toast.makeText(this@MyPageActivity, "네트워크 오류", Toast.LENGTH_SHORT).show()
                 }
@@ -152,14 +164,18 @@ class MyPageActivity : AppCompatActivity() {
             startActivity(Intent(this, LodgingBookingsActivity::class.java))
         }
 
+        tvGreetingMy = findViewById(R.id.tv_greeting_my)
+
     }
 
     private fun loadUserInfo(userId: String) {
-        // ✅ V2 엔드포인트 사용
         ApiProvider.api.getUserInfoV2(userId).enqueue(object : Callback<UsersResponse> {
             override fun onResponse(call: Call<UsersResponse>, response: Response<UsersResponse>) {
                 if (response.isSuccessful) {
                     response.body()?.let {
+                        // ✅ 여기서 greeting_my 적용
+                        tvGreetingMy.text = getString(R.string.greeting_my, it.name)
+
                         tvName.text = "이름: ${it.name}"
                         tvEmail.text = "Email: ${it.email}"
                         tvPhone.text = "전화번호: ${it.phone}"
@@ -172,10 +188,9 @@ class MyPageActivity : AppCompatActivity() {
                             apply()
                         }
                     }
-                } else {
-                    Toast.makeText(this@MyPageActivity, "사용자 정보 로드 실패 (${response.code()})", Toast.LENGTH_SHORT).show()
                 }
             }
+
             override fun onFailure(call: Call<UsersResponse>, t: Throwable) {
                 Toast.makeText(this@MyPageActivity, "네트워크 오류", Toast.LENGTH_SHORT).show()
             }
@@ -193,9 +208,14 @@ class MyPageActivity : AppCompatActivity() {
                     startActivity(Intent(this@MyPageActivity, LoginActivity::class.java))
                     finish()
                 } else {
-                    Toast.makeText(this@MyPageActivity, "탈퇴 실패 (${response.code()})", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@MyPageActivity,
+                        "탈퇴 실패 (${response.code()})",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
+
             override fun onFailure(call: Call<Void>, t: Throwable) {
                 Toast.makeText(this@MyPageActivity, "네트워크 오류", Toast.LENGTH_SHORT).show()
             }

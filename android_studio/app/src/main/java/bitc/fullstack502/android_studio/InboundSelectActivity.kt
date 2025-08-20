@@ -262,6 +262,7 @@ class InboundSelectActivity : AppCompatActivity() {
         child: Int,
         infant: Int
     ) {
+
         val outDate = intent.getStringExtra(PassengerInputActivity.EXTRA_OUT_DATE)
         val inDate  = intent.getStringExtra(PassengerInputActivity.EXTRA_IN_DATE)
 
@@ -276,12 +277,15 @@ class InboundSelectActivity : AppCompatActivity() {
                 putExtra(FlightReservationActivity.EXTRA_CHILD, child)
                 putExtra(FlightReservationActivity.EXTRA_INFANT, infant)
 
-                // ✅ 날짜 전달 추가
+                // ✅ 올바른 키로 전달
                 putExtra(PassengerInputActivity.EXTRA_OUT_DATE, outDate)
-                putExtra(PassengerInputActivity.EXTRA_IN_DATE,  inDate)
+                putExtra(PassengerInputActivity.EXTRA_IN_DATE, inDate)
             }
         )
     }
+
+
+
 
     // ----------------- 로그인/헤더 처리 -----------------
 

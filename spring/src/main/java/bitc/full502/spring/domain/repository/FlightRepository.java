@@ -29,7 +29,13 @@ public interface FlightRepository extends JpaRepository<Flight, Long> {
     AND f.days LIKE CONCAT('%', :day, '%')
     AND (:depTime IS NULL OR f.depTime >= :depTime)
 """)
-    List<Flight> searchByDepArrDay(String dep, String arr, String day, LocalTime depTime);
+
+
+    List<Flight> findByDepAndArrAndDaysContaining(String dep, String arr, String day);
+
+    List<Flight> findByDepAndArrAndDaysContainingAndDepTimeAfter(
+            String dep, String arr, String day, LocalTime depTime
+    );
 
 
 }

@@ -2,6 +2,7 @@ package bitc.full502.spring.domain.repository;
 
 import bitc.full502.spring.domain.entity.FlBook;
 import bitc.full502.spring.domain.entity.Users;
+import bitc.full502.spring.dto.BookingResponseDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -25,4 +26,22 @@ public interface FlBookRepository extends JpaRepository<FlBook, Long> {
     """)
     long countBookedSeats(@Param("flightId") Long flightId,
                           @Param("tripDate") LocalDate tripDate);
+
+    @Query("""
+        SELECT new bitc.full502.spring.dto.BookingResponseDto(
+            b.id, b.user.id,
+            b.flight.id, b.returnFlight.id,
+            null, b.adult, b.child,
+            b.totalPrice, b.status,
+            b.depDate, b.retDate,
+            f1.flNo, f1.dep, f1.arr,
+            f2.flNo, f2.dep, f2.arr
+        )
+        FROM FlBook b
+        JOIN b.flight f1
+        LEFT JOIN b.returnFlight f2
+        WHERE b.user.id = :userId
+    """)
+    List<BookingResponseDto> findBookingsWithFlights(@Param("userId") Long userId);
+
 }

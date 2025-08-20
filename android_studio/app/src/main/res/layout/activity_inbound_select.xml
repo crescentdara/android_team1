@@ -50,7 +50,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:padding="0dp">
+                        android:padding="20dp">
 
                         <!-- 출발 / 도착 -->
                         <LinearLayout

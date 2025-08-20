@@ -38,7 +38,7 @@
             </intent-filter>
         </activity>
 
-        <!-- 마이페이지 -->
+        <!-- 유저 -->
         <activity
             android:name=".ui.mypage.EditInfoActivity"
             android:exported="false" />

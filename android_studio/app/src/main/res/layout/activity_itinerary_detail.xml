@@ -20,7 +20,9 @@
             <!-- ✅ 공통 헤더 -->
             <include
                 android:id="@+id/header"
-                layout="@layout/inc_header_jeu" />
+                layout="@layout/inc_header_jeu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
 
             <!-- ✅ 스크롤 본문 -->
             <androidx.core.widget.NestedScrollView

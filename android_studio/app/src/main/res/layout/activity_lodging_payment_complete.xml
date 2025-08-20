@@ -31,7 +31,11 @@
 
                     <!-- ✅ 공통 헤더 -->
                     <include
-                        layout="@layout/inc_header_jeu" />
+                        android:id="@+id/header"
+                        layout="@layout/inc_header_jeu"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+
 
                     <!-- 본문 컨텐츠 -->
                     <LinearLayout
@@ -111,16 +115,6 @@
                             </LinearLayout>
                         </androidx.cardview.widget.CardView>
 
-                        <!-- ✅ 추가 안내/정보 -->
-                        <TextView
-                            android:id="@+id/tvCompleteInfo"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
-                            android:text="결제 정보가 여기에 표시됩니다"
-                            android:textSize="16sp"
-                            android:lineSpacingExtra="4dp"
-                            android:textColor="@android:color/black" />
 
                         <!-- 홈으로 가기 버튼 -->
                         <Button

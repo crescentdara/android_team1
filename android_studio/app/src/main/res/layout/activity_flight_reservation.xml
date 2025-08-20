@@ -14,12 +14,14 @@
 
         <!-- ✅ 헤더 (툴바 + 햄버거 버튼) -->
         <include
+            android:id="@+id/header"
             layout="@layout/inc_header_jeu"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"/>
 
         <!-- ✅ 스크롤 영역 -->
         <androidx.core.widget.NestedScrollView
+            android:id="@+id/scroll"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"

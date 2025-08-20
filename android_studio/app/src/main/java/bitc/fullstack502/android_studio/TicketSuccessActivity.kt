@@ -1,4 +1,5 @@
 package bitc.fullstack502.android_studio
+
 import android.content.Intent
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -11,20 +12,21 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import bitc.fullstack502.android_studio.model.BookingResponse
+import bitc.fullstack502.android_studio.model.Passenger
+import bitc.fullstack502.android_studio.ui.ChatListActivity
+import bitc.fullstack502.android_studio.ui.MainActivity
+import bitc.fullstack502.android_studio.ui.lodging.LodgingSearchActivity
+import bitc.fullstack502.android_studio.ui.mypage.LoginActivity
+import bitc.fullstack502.android_studio.ui.mypage.MyPageActivity
+import bitc.fullstack502.android_studio.ui.post.PostListActivity
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.navigation.NavigationView
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
 import com.google.zxing.MultiFormatWriter
 import com.google.zxing.common.BitMatrix
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
-import bitc.fullstack502.android_studio.model.Passenger   //
-import bitc.fullstack502.android_studio.ui.MainActivity
-import bitc.fullstack502.android_studio.ui.ChatListActivity
-import bitc.fullstack502.android_studio.ui.lodging.LodgingSearchActivity
-import bitc.fullstack502.android_studio.ui.mypage.LoginActivity
-import bitc.fullstack502.android_studio.ui.mypage.MyPageActivity
-import bitc.fullstack502.android_studio.ui.post.PostListActivity
-import com.google.android.material.navigation.NavigationView
 
 class TicketSuccessActivity : AppCompatActivity() {
 
@@ -32,58 +34,36 @@ class TicketSuccessActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_ticket_success)
 
-
-        /////////////////////////////////////
-        // ✅ Drawer & NavigationView
+        // ===== Drawer & NavigationView =====
         val drawer = findViewById<DrawerLayout>(R.id.drawerLayout)
         val navView = findViewById<NavigationView>(R.id.navigationView)
 
-        // ✅ 공통 헤더 버튼 세팅
         val header = findViewById<View>(R.id.header)
         val btnBack: ImageButton = header.findViewById(R.id.btnBack)
         val imgLogo: ImageView   = header.findViewById(R.id.imgLogo)
         val btnMenu: ImageButton = header.findViewById(R.id.btnMenu)
 
-        btnBack.setOnClickListener { finish() }  // 뒤로가기
-        imgLogo.setOnClickListener {             // 로고 → 메인으로
-            startActivity(
-                Intent(this, MainActivity::class.java)
-                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-            )
+        btnBack.setOnClickListener { finish() }
+        imgLogo.setOnClickListener {
+            startActivity(Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
         }
-        btnMenu.setOnClickListener {             // 햄버거 → Drawer 열기
-            drawer.openDrawer(GravityCompat.END)
-        }
+        btnMenu.setOnClickListener { drawer.openDrawer(GravityCompat.END) }
 
-        // 드로어 헤더 인사말 세팅 (로그인 상태 반영)
         updateHeader(navView)
 
-        // ✅ Drawer 메뉴 클릭 처리
         navView.setNavigationItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.nav_hotel -> {
-                    startActivity(Intent(this, LodgingSearchActivity::class.java)); true
-                }
-                R.id.nav_board -> {
-                    startActivity(Intent(this, PostListActivity::class.java)); true
-                }
-                R.id.nav_chat -> {
-                    startActivity(Intent(this, ChatListActivity::class.java)); true
-                }
-                R.id.nav_flight -> {
-                    // 현재 FlightReservationActivity니까 따로 이동 안 해도 됨
-                    true
-                }
+                R.id.nav_hotel -> { startActivity(Intent(this, LodgingSearchActivity::class.java)); true }
+                R.id.nav_board -> { startActivity(Intent(this, PostListActivity::class.java)); true }
+                R.id.nav_chat  -> { startActivity(Intent(this, ChatListActivity::class.java)); true }
+                R.id.nav_flight -> true
                 else -> false
             }.also { drawer.closeDrawers() }
         }
 
-        //////////////////////////////////////////////////////////////////////////////////////
-
-        findViewById<ImageView>(R.id.btnBack).setOnClickListener { finish() }
+        // 완료 버튼
         findViewById<MaterialButton>(R.id.btnDone).setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
-            // 스택에 TicketSuccessActivity 포함된 이전 화면들 다 날리고 메인으로
             intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
             startActivity(intent)
             finish()
@@ -92,57 +72,46 @@ class TicketSuccessActivity : AppCompatActivity() {
         val container = findViewById<LinearLayout>(R.id.ticketContainer)
         container.removeAllViews()
 
-        val isRoundTrip = intent.getBooleanExtra("EXTRA_ROUNDTRIP", false)
-
-        // 가는 편 공통 데이터
-        val dep      = intent.getStringExtra("EXTRA_DEP") ?: "출발지 미정"
-        val arr      = intent.getStringExtra("EXTRA_ARR") ?: "도착지 미정"
-        val dt       = intent.getStringExtra("EXTRA_DATETIME") ?: "시간 정보 없음"
-        val flightNo = intent.getStringExtra("EXTRA_FLIGHT_NO") ?: "편명 없음"
-        val seatCls  = intent.getStringExtra("EXTRA_CLASS") ?: "이코노미"
-
-        // 오는 편
-        val depR      = intent.getStringExtra("EXTRA_DEP_RETURN") ?: ""
-        val arrR      = intent.getStringExtra("EXTRA_ARR_RETURN") ?: ""
-        val dtR       = intent.getStringExtra("EXTRA_DATETIME_RETURN") ?: ""
-        val flightNoR = intent.getStringExtra("EXTRA_FLIGHT_NO_RETURN") ?: ""
-        val seatClsR  = intent.getStringExtra("EXTRA_CLASS_RETURN") ?: "이코노미"
-
-        @Suppress("UNCHECKED_CAST")
-        val passengers = intent.getSerializableExtra("PASSENGERS") as? ArrayList<Passenger> ?: arrayListOf()
-
-        val paxNameFallback  = intent.getStringExtra("EXTRA_PASSENGER")
-        val paxCountFallback = intent.getIntExtra("EXTRA_PAX_COUNT", if (passengers.isEmpty()) 1 else passengers.size)
-
-        if (passengers.isEmpty()) {
-            // 단일 이름만 받은 경우
-            val display = if (paxCountFallback > 1 && !paxNameFallback.isNullOrBlank())
-                "$paxNameFallback 외 ${paxCountFallback - 1}명" else (paxNameFallback ?: "승객")
-            // 가는 편
-            addTicket(container, "가는 편", dep, arr, dt, flightNo,
-                randomGate(), randomSeat(), seatCls, display, "결제 완료")
-            // 오는 편
-            if (isRoundTrip) {
-                addTicket(container, "오는 편", depR, arrR, dtR, flightNoR,
-                    randomGate(), randomSeat(), seatClsR, display, "결제 완료")
-            }
-        } else {
-            // 다인원: 승객별
-            passengers.forEach { p ->
-                val name = p.displayName().ifBlank { "승객 ${p.index + 1}" }
-                // 가는 편
-                addTicket(container, "가는 편", dep, arr, dt, flightNo,
-                    randomGate(), randomSeat(), seatCls, name, "결제 완료")
-                // 오는 편
-                if (isRoundTrip) {
-                    addTicket(container, "오는 편", depR, arrR, dtR, flightNoR,
-                        randomGate(), randomSeat(), seatClsR, name, "결제 완료")
-                }
-            }
+        // ✅ 예약 객체 받기
+        val booking = intent.getSerializableExtra("EXTRA_BOOKING") as? BookingResponse
+        if (booking == null) {
+            Toast.makeText(this, "예약 정보를 불러올 수 없습니다.", Toast.LENGTH_SHORT).show()
+            finish()
+            return
         }
+
+        val passengers = arrayListOf<Passenger>() // 필요시 확장
+        val paxDisplay = "성인 ${booking.adult}" +
+                (if (booking.child != null && booking.child!! > 0) ", 소아 ${booking.child}" else "")
+
+//        // 가는 편
+//        addTicket(
+//            container, "가는 편",
+//            booking.outDep ?: "출발지",
+//            booking.outArr ?: "도착지",
+//            booking.depDate,
+//            booking.outFlNo ?: "편명없음",
+//            randomGate(), randomSeat(),
+//            "이코노미", paxDisplay, booking.status
+//        )
+//
+//// 오는 편
+//        if (!booking.retDate.isNullOrBlank() && booking.inFlightId != null) {
+//            addTicket(
+//                container, "오는 편",
+//                booking.inDep ?: "도착지",
+//                booking.inArr ?: "출발지",
+//                booking.retDate!!,
+//                booking.inFlNo ?: "편명없음",
+//                randomGate(), randomSeat(),
+//                "이코노미", paxDisplay, booking.status
+//            )
+//        }
+
+
     }
 
-    // 위치 인자 기준 시그니처
+    // ----------------- 티켓 뷰 -----------------
     private fun addTicket(
         container: LinearLayout,
         badge: String,
@@ -160,7 +129,7 @@ class TicketSuccessActivity : AppCompatActivity() {
 
         v.findViewById<TextView>(R.id.tvBadge).text     = badge
         v.findViewById<TextView>(R.id.tvStatus).text    = status
-        v.findViewById<TextView>(R.id.tvRoute).text     = "$routeDep  →  $routeArr"
+        v.findViewById<TextView>(R.id.tvRoute).text     = "$routeDep → $routeArr"
         v.findViewById<TextView>(R.id.tvPassenger).text = passenger
         v.findViewById<TextView>(R.id.tvDateTime).text  = dateTime
         v.findViewById<TextView>(R.id.tvFlightNo).text  = flightNo
@@ -168,14 +137,10 @@ class TicketSuccessActivity : AppCompatActivity() {
         v.findViewById<TextView>(R.id.tvClass).text     = seatClass
         v.findViewById<TextView>(R.id.tvSeat).text      = seat
 
-        // QR payload
-        val payload = listOf(
-            routeDep, routeArr, flightNo, dateTime.replace(" ", "T"), seat, passenger
-        ).joinToString("|")
+        val payload = listOf(routeDep, routeArr, flightNo, dateTime.replace(" ", "T"), seat, passenger)
+            .joinToString("|")
 
-        v.findViewById<ImageView?>(R.id.ivQr)?.apply {
-            setImageBitmap(makeQrCode(payload))
-        }
+        v.findViewById<ImageView?>(R.id.ivQr)?.setImageBitmap(makeQrCode(payload))
 
         container.addView(v)
     }
@@ -185,21 +150,20 @@ class TicketSuccessActivity : AppCompatActivity() {
         val col = ('A'..'F').random()
         return "$row$col"
     }
+
     private fun randomGate(): String {
         val n = (1..40).random()
-        val wing = listOf("A","B","C").random()
+        val wing = listOf("A", "B", "C").random()
         return "${n}${wing}"
     }
 
-    // ZXing 사용 (build.gradle에 의존성 필요)
     private fun makeQrCode(data: String, size: Int = 600): Bitmap {
-        val hints = hashMapOf<_root_ide_package_.com.google.zxing.EncodeHintType, Any>(
+        val hints = hashMapOf<EncodeHintType, Any>(
             EncodeHintType.CHARACTER_SET to "UTF-8",
             EncodeHintType.ERROR_CORRECTION to ErrorCorrectionLevel.M,
             EncodeHintType.MARGIN to 1
         )
-        val matrix: BitMatrix =
-            MultiFormatWriter().encode(data, BarcodeFormat.QR_CODE, size, size, hints)
+        val matrix: BitMatrix = MultiFormatWriter().encode(data, BarcodeFormat.QR_CODE, size, size, hints)
         val w = matrix.width
         val h = matrix.height
         val pixels = IntArray(w * h)
@@ -215,8 +179,7 @@ class TicketSuccessActivity : AppCompatActivity() {
         }
     }
 
-    // ----------------- 로그인/헤더 처리 -----------------
-
+    // ----------------- 로그인/헤더 -----------------
     private fun isLoggedIn(): Boolean {
         val sp = getSharedPreferences("userInfo", MODE_PRIVATE)
         return !sp.getString("usersId", null).isNullOrBlank()
@@ -258,10 +221,8 @@ class TicketSuccessActivity : AppCompatActivity() {
                 updateHeader(navView)
             }
         } else {
-            // 비로그인: “000님” 같은 더미 표시 제거하고 “로그인”만 노출
             tvGreet.text = "로그인"
             tvEmail.visibility = View.GONE
-
             btnLogout.visibility = View.GONE
             btnMyPage.text = "로그인"
             btnMyPage.setOnClickListener {
