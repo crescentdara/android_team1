@@ -1,0 +1,4 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <solid android:color="@color/brand_bg"/> <!-- 배경색과 같게 맞추기 -->
+</shape>

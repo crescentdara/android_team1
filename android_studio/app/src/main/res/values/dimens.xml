@@ -8,4 +8,7 @@
 
     <dimen name="card_stroke_selected">2dp</dimen>
     <dimen name="card_stroke_normal">1dp</dimen>
+
+    <!-- 푸터 -->
+    <dimen name="footer_height">56dp</dimen>
 </resources>

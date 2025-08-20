@@ -1,32 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
         <!-- 필요 시 결제완료 정보 바인딩용 변수 추가 가능 -->
         <!-- <variable name="info" type="bitc.fullstack502.android_studio.ui.lodging.CompleteInfo" /> -->
     </data>
 
-    <LinearLayout
+    <androidx.drawerlayout.widget.DrawerLayout
+        android:id="@+id/drawerLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:padding="20dp"
-        android:gravity="center_horizontal">
+        android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/tvCompleteInfo"
+        <!-- 메인 컨텐츠 -->
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:lineSpacingExtra="4dp"
-            android:textColor="@android:color/black"
-            android:text="결제 정보가 여기에 표시됩니다" />
+            android:layout_height="match_parent">
 
-        <Button
-            android:id="@+id/btnGoHome"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:layout_marginTop="20dp"
-            android:text="홈으로 가기" />
-    </LinearLayout>
+            <androidx.core.widget.NestedScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fillViewport="true"
+                android:overScrollMode="never">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="20dp"
+                    android:gravity="center_horizontal">
+
+                    <!-- ✅ 공통 헤더 -->
+                    <include
+                        android:id="@+id/header"
+                        layout="@layout/inc_header_jeu" />
+
+                    <!-- ✅ 기존 결제 완료 컨텐츠 -->
+                    <TextView
+                        android:id="@+id/tvCompleteInfo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:textSize="16sp"
+                        android:lineSpacingExtra="4dp"
+                        android:textColor="@android:color/black"
+                        android:text="결제 정보가 여기에 표시됩니다" />
+
+                    <Button
+                        android:id="@+id/btnGoHome"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:layout_marginTop="20dp"
+                        android:text="홈으로 가기" />
+                </LinearLayout>
+            </androidx.core.widget.NestedScrollView>
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+        <!-- ✅ 드로어 메뉴 -->
+        <com.google.android.material.navigation.NavigationView
+            android:id="@+id/navigationView"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="end"
+            app:headerLayout="@layout/nav_header_jeu"
+            app:menu="@menu/drawer_menu_jeu"
+            app:itemBackground="@drawable/nav_item_bg_jeu" />
+    </androidx.drawerlayout.widget.DrawerLayout>
 </layout>
