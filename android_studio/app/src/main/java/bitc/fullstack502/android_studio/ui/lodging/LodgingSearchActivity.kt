@@ -177,12 +177,22 @@ class LodgingSearchActivity : AppCompatActivity() {
                     deferred.flatMap { it.await() }.toSet().toList().sorted()
                 } catch (_: Exception) { emptyList() }
             }
+            // ✅ '없음' 등 표시 원치 않는 항목 필터링 + 빈 목록이면 GONE (문구 노출 없음)
+//            if (allVills.isEmpty()) {
+//                toast("선택한 읍/면/동에 해당하는 리가 없습니다."); return@launch
+//            }
+            val filtered = allVills     // 여기부터~
+                .filter { it.isNotBlank() && it != "없음" && it != "-" }
+                .sorted()
 
-            if (allVills.isEmpty()) {
-                toast("선택한 읍/면/동에 해당하는 리가 없습니다."); return@launch
+            if (filtered.isEmpty()) {
+                layoutVill.removeAllViews()
+                layoutVill.visibility = View.GONE
+                updateSearchButtonState()
+                return@launch                       // ~여기까지 추가(수정)
             }
 
-            allVills.forEach { v ->
+            filtered.forEach { v ->         // filtered(단어 수정)
                 val tv = chip(v)
                 tv.setOnClickListener {
                     toggleMulti(tv, selectedVills)

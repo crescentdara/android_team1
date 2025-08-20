@@ -17,7 +17,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 import kotlin.math.max
-
+import android.widget.ImageButton   // 추가(수정)
 class LodgingFilterBottomSheet : BottomSheetDialogFragment() {
 
     companion object {
@@ -46,11 +46,11 @@ class LodgingFilterBottomSheet : BottomSheetDialogFragment() {
         val btnChangeDate = view.findViewById<MaterialButton>(R.id.btnChangeDate)
         val txtDateSummary = view.findViewById<TextView>(R.id.txtDateSummary)
 
-        val btnAdultMinus = view.findViewById<MaterialButton>(R.id.btnAdultMinus)
-        val btnAdultPlus = view.findViewById<MaterialButton>(R.id.btnAdultPlus)
+        val btnAdultMinus = view.findViewById<ImageButton>(R.id.btnAdultMinus) // 수정
+        val btnAdultPlus = view.findViewById<ImageButton>(R.id.btnAdultPlus)    // 수정
         val txtAdultCount = view.findViewById<TextView>(R.id.txtAdultCount)
-        val btnChildMinus = view.findViewById<MaterialButton>(R.id.btnChildMinus)
-        val btnChildPlus = view.findViewById<MaterialButton>(R.id.btnChildPlus)
+        val btnChildMinus = view.findViewById<ImageButton>(R.id.btnChildMinus)  // 수정
+        val btnChildPlus = view.findViewById<ImageButton>(R.id.btnChildPlus)    // 수정
         val txtChildCount = view.findViewById<TextView>(R.id.txtChildCount)
         val txtGuestHeader = view.findViewById<TextView>(R.id.txtGuestHeader)
 
@@ -72,7 +72,8 @@ class LodgingFilterBottomSheet : BottomSheetDialogFragment() {
         }
 
         val updateDateSummary: () -> Unit = {
-            val ci = checkInCal; val co = checkOutCal
+            val ci = checkInCal;
+            val co = checkOutCal
             if (ci != null && co != null) {
                 val nights = max(0, daysBetween(ci, co))
                 txtDateSummary.text = "${displayFormat.format(ci.time)} ~ ${displayFormat.format(co.time)} • ${nights}박"
@@ -111,13 +112,15 @@ class LodgingFilterBottomSheet : BottomSheetDialogFragment() {
         btnChildPlus.setOnClickListener { children += 1; renderGuests() }
 
         view.findViewById<MaterialButton>(R.id.btnApply).setOnClickListener {
-            val ci = checkInCal; val co = checkOutCal
+            val ci = checkInCal;
+            val co = checkOutCal
             if (ci == null || co == null) {
                 Toast.makeText(requireContext(), "날짜를 선택하세요.", Toast.LENGTH_SHORT).show(); return@setOnClickListener
             }
             // 1박 이상 보장
             if (co.timeInMillis - ci.timeInMillis <= 0) {
-                Toast.makeText(requireContext(), "체크아웃은 체크인 이후여야 합니다.", Toast.LENGTH_SHORT).show(); return@setOnClickListener
+                Toast.makeText(requireContext(), "체크아웃은 체크인 이후여야 합니다.", Toast.LENGTH_SHORT)
+                    .show(); return@setOnClickListener
             }
             setFragmentResult(
                 RESULT_KEY,

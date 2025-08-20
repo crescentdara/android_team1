@@ -5,10 +5,10 @@
     android:layout_height="match_parent">
 
     <LinearLayout
-        android:orientation="vertical"
-        android:padding="12dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="12dp">
 
         <!-- 정사각 메인 이미지 -->
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -20,52 +20,52 @@
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:scaleType="centerCrop"
-                app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Medium"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintDimensionRatio="1:1"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintDimensionRatio="1:1" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Medium" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <!-- 본문 카드 -->
+        <!-- 게시글 내용 카드 -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            app:cardUseCompatPadding="true"
-            app:cardCornerRadius="16dp">
+            app:cardCornerRadius="16dp"
+            app:cardUseCompatPadding="true">
 
             <LinearLayout
-                android:orientation="vertical"
-                android:padding="14dp"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="14dp">
 
                 <TextView
                     android:id="@+id/tvTitle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textStyle="bold"
+                    android:layout_marginBottom="4dp"
                     android:textSize="20sp"
-                    android:layout_marginBottom="4dp"/>
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/tvMeta"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="12sp"
+                    android:layout_marginBottom="10dp"
                     android:textColor="@android:color/darker_gray"
-                    android:layout_marginBottom="10dp"/>
+                    android:textSize="12sp" />
 
                 <TextView
                     android:id="@+id/tvContent"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"/>
+                    android:layout_marginTop="4dp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- 액션 영역 -->
+        <!-- 좋아요/수정/삭제 액션 버튼 -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -74,53 +74,50 @@
             android:orientation="horizontal">
 
             <!-- 하트 아이콘 -->
-             <ImageButton
+            <ImageButton
                 android:id="@+id/btnHeart"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:background="@android:color/transparent"
                 android:contentDescription="@string/app_name"
-                android:scaleType="centerInside"
                 android:padding="4dp"
+                android:scaleType="centerInside"
                 android:src="@drawable/ic_heart_outline"
-                app:tint="@color/jeju_primary" /> <!-- app:tint로 변경 -->
-
+                app:tint="@color/jeju_primary" />
 
             <!-- 좋아요 개수 -->
             <TextView
                 android:id="@+id/tvLikeCount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="0"
-                android:textSize="16sp"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="6dp"
-                android:layout_marginEnd="12dp" />
+                android:layout_marginEnd="12dp"
+                android:text="0"
+                android:textSize="16sp" />
 
-            <!-- 수정 버튼 -->
+            <!-- 수정 버튼 (Filled + Bold로 변경) -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnEdit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="6dp"
                 android:text="수정"
-                app:cornerRadius="8dp"
-                app:strokeWidth="1dp"
-                app:strokeColor="?attr/colorPrimary"
-                android:textColor="?attr/colorPrimary"
-                app:backgroundTint="@android:color/transparent"
-                android:layout_marginEnd="6dp" />
+                android:textColor="@android:color/white"
+                android:textStyle="bold"
+                app:backgroundTint="?attr/colorPrimary"
+                app:cornerRadius="8dp" />
 
-            <!-- 삭제 버튼 -->
+            <!-- 삭제 버튼 (Filled + Bold로 변경) -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnDelete"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="삭제"
-                app:cornerRadius="8dp"
-                app:strokeWidth="1dp"
-                app:strokeColor="?attr/colorPrimary"
-                android:textColor="?attr/colorPrimary"
-                app:backgroundTint="@android:color/transparent" />
+                android:textColor="@android:color/white"
+                android:textStyle="bold"
+                app:backgroundTint="?attr/colorPrimary"
+                app:cornerRadius="8dp" />
         </LinearLayout>
 
         <!-- 댓글 리스트 -->
@@ -131,7 +128,7 @@
             android:layout_marginTop="8dp"
             android:nestedScrollingEnabled="false" />
 
-        <!-- 댓글 입력 -->
+        <!-- 댓글 입력 영역 -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -142,36 +139,49 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:padding="10dp">
 
                 <com.google.android.material.textfield.TextInputLayout
+                    style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:hint="댓글쓰기">
+                    android:hint="댓글쓰기"
+                    app:boxBackgroundMode="filled"
+                    app:boxCornerRadiusBottomEnd="14dp"
+                    app:boxCornerRadiusBottomStart="14dp"
+                    app:boxCornerRadiusTopEnd="14dp"
+                    app:boxCornerRadiusTopStart="14dp">
 
+                    <!-- 겹침 방지를 위한 minHeight 추가 -->
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etComment"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:minHeight="48dp"/>
+                        android:inputType="textMultiLine"
+                        android:minHeight="48dp"
+                        android:paddingTop="12dp"
+                        android:paddingBottom="12dp" />
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <!-- 등록 버튼 -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnSend"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:text="등록"
-                    app:cornerRadius="8dp"
+                    android:textColor="@android:color/white"
                     app:backgroundTint="?attr/colorPrimary"
-                    android:textColor="@android:color/white"/>
+                    app:cornerRadius="8dp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
+        <!-- 하단 여백 -->
         <Space
             android:layout_width="match_parent"
-            android:layout_height="16dp"/>
+            android:layout_height="16dp" />
     </LinearLayout>
 </androidx.core.widget.NestedScrollView>

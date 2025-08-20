@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?><!-- 날짜/인원 선택 바텀시트 -->
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -12,19 +12,22 @@
         android:orientation="vertical"
         android:padding="16dp">
 
+        <!-- 📌 날짜 선택 카드 -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardCornerRadius="12dp">
+            app:cardCornerRadius="12dp"
+            app:cardUseCompatPadding="true">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:padding="12dp"
-                android:gravity="center_vertical">
+                android:padding="12dp">
 
+                <!-- 체크인 ~ 체크아웃 -->
                 <TextView
                     android:id="@+id/txtDateSummary"
                     android:layout_width="0dp"
@@ -33,15 +36,23 @@
                     android:text="체크인 ~ 체크아웃 • 0박"
                     android:textSize="16sp" />
 
+                <!-- 변경 버튼 -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnChangeDate"
                     style="@style/Widget.Material3.Button.OutlinedButton"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="변경" />
+                    android:layout_height="36dp"
+                    android:text="변경"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/black"
+                    android:textSize="15sp"
+                    app:cornerRadius="18dp"
+                    app:strokeColor="#33000000"
+                    app:strokeWidth="1dp" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
+        <!-- 📌 인원 요약 -->
         <TextView
             android:id="@+id/txtGuestHeader"
             android:layout_width="match_parent"
@@ -50,14 +61,15 @@
             android:text="성인 1, 아동 0"
             android:textStyle="bold" />
 
-        <!-- 성인 -->
+        <!-- 📌 성인 행 -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="12dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
+            <!-- 성인 라벨 -->
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -65,30 +77,39 @@
                 android:text="성인"
                 android:textSize="16sp" />
 
-            <com.google.android.material.button.MaterialButton
+            <!-- 성인 - 버튼 -->
+            <ImageButton
                 android:id="@+id/btnAdultMinus"
-                style="@style/Widget.Material3.Button.OutlinedButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="−"/>
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/bg_circle_button"
+                android:contentDescription="성인 감소"
+                android:padding="8dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_minus" />
 
+            <!-- 성인 수 -->
             <TextView
                 android:id="@+id/txtAdultCount"
                 android:layout_width="48dp"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="1"
-                android:textSize="16sp" />
+                android:textSize="18sp" />
 
-            <com.google.android.material.button.MaterialButton
+            <!-- 성인 + 버튼 -->
+            <ImageButton
                 android:id="@+id/btnAdultPlus"
-                style="@style/Widget.Material3.Button.OutlinedButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="+"/>
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/bg_circle_button"
+                android:contentDescription="성인 추가"
+                android:padding="8dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_plus" />
         </LinearLayout>
 
-        <!-- 아동 -->
+        <!-- 📌 아동 행 -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -96,6 +117,7 @@
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
+            <!-- 아동 라벨 -->
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -103,34 +125,50 @@
                 android:text="아동"
                 android:textSize="16sp" />
 
-            <com.google.android.material.button.MaterialButton
+            <!-- 아동 - 버튼 -->
+            <ImageButton
                 android:id="@+id/btnChildMinus"
-                style="@style/Widget.Material3.Button.OutlinedButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="−"/>
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/bg_circle_button"
+                android:contentDescription="아동 감소"
+                android:padding="8dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_minus" />
 
+            <!-- 아동 수 -->
             <TextView
                 android:id="@+id/txtChildCount"
                 android:layout_width="48dp"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="0"
-                android:textSize="16sp" />
+                android:textSize="18sp" />
 
-            <com.google.android.material.button.MaterialButton
+            <!-- 아동 + 버튼 -->
+            <ImageButton
                 android:id="@+id/btnChildPlus"
-                style="@style/Widget.Material3.Button.OutlinedButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="+"/>
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/bg_circle_button"
+                android:contentDescription="아동 추가"
+                android:padding="8dp"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_plus" />
         </LinearLayout>
 
+        <!-- 📌 적용하기 버튼 -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnApply"
+            style="@style/Widget.Material3.Button"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:layout_marginTop="16dp"
-            android:text="적용하기" />
+            android:text="적용하기"
+            android:textAllCaps="false"
+            android:textColor="?attr/colorOnPrimary"
+            android:textSize="16sp"
+            app:backgroundTint="?attr/colorPrimary"
+            app:cornerRadius="18dp" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

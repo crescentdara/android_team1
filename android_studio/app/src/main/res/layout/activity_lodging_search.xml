@@ -20,6 +20,13 @@
             app:flexWrap="wrap"
             app:justifyContent="center" />
 
+        <!-- ▲ town 섹션 위 구분선 -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="12dp"
+            android:background="@color/jeju_primary" />
+
         <!-- 읍/면/동: 텍스트 토글(다중선택) -->
         <com.google.android.flexbox.FlexboxLayout
             android:id="@+id/layoutTown"
@@ -28,7 +35,15 @@
             android:layout_marginTop="12dp"
             android:visibility="gone"
             app:flexWrap="wrap"
-            app:justifyContent="flex_start" />
+            app:justifyContent="center"
+            app:alignItems="center" />
+
+        <!-- ▼ town 섹션 아래 구분선 -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="12dp"
+            android:background="@color/jeju_primary" />
 
         <!-- 리: 텍스트 토글(다중선택) -->
         <com.google.android.flexbox.FlexboxLayout
@@ -38,7 +53,8 @@
             android:layout_marginTop="12dp"
             android:visibility="gone"
             app:flexWrap="wrap"
-            app:justifyContent="flex_start" />
+            app:justifyContent="center"
+            app:alignItems="center" />
 
         <!-- 날짜/인원 바텀시트 -->
         <com.google.android.material.button.MaterialButton
