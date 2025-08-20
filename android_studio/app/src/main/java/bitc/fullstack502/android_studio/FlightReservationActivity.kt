@@ -3,7 +3,6 @@ package bitc.fullstack502.android_studio
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.util.TypedValue
 import android.view.View
 import android.widget.Button
 import android.widget.TextView
@@ -306,8 +305,8 @@ class FlightReservationActivity : AppCompatActivity() {
             inDateYmd = null
         }
         picker.show(supportFragmentManager, "single_date")
-        Log.d("*** flight ***", "$")
     }
+
     private fun showRangeDatePicker() {
         val picker = MaterialDatePicker.Builder.dateRangePicker()
             .setTitleText("가는 날과 오는 날")

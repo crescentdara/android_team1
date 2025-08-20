@@ -103,7 +103,6 @@
                                 android:text="출발"
                                 android:textSize="12sp"
                                 android:textColor="@color/ink_600" />
-
                         </LinearLayout>
 
                         <TextView
