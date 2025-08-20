@@ -100,10 +100,6 @@ class PaymentActivity : AppCompatActivity() {
                 ?: intent.getStringExtra("selectedDate")                 // 과거 버전 대비
                 ?: intent.getStringExtra("outDate")                      // 과거 버전 대비
 
-        // --- 오는편 수신 ---
-        val inDateYmd: String?  = intent.getStringExtra(PassengerInputActivity.EXTRA_IN_DATE)   // 왕복일 때만
-
-
         // --- 결제 처리 ---
         btnPay.setOnClickListener {
             Log.d("*** flight *** ", "$outFlight, $inFlight, outDateYmd : $outDateYmd")
@@ -128,13 +124,11 @@ class PaymentActivity : AppCompatActivity() {
             // DB 저장(예약 생성)
             val req = BookingRequest(
                 userId = AuthManager.id(),
-                outFlId = outFlight.id,
-                depDate = outDateYmd,
-                inFlId = inFlight?.id,
-                retDate = inFlight?.let { inDateYmd },
+                flId = outFlight.id,
                 seatCnt = adults + children,
                 adult = adults,
                 child = children,
+                tripDate = outDateYmd,     // yyyy-MM-dd
                 totalPrice = totalX.toLong()
             )
 

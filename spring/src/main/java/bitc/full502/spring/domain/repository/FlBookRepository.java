@@ -20,7 +20,7 @@ public interface FlBookRepository extends JpaRepository<FlBook, Long> {
         SELECT COALESCE(SUM(COALESCE(b.adult,0) + COALESCE(b.child,0)), 0)
         FROM FlBook b
         WHERE b.flight.id = :flightId
-          AND b.depDate   = :tripDate
+          AND b.tripDate   = :tripDate
           AND (b.status IS NULL OR b.status <> 'CANCEL')
     """)
     long countBookedSeats(@Param("flightId") Long flightId,

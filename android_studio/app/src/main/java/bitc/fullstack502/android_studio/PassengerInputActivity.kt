@@ -209,65 +209,47 @@ class PassengerInputActivity : AppCompatActivity() {
 
             val req = BookingRequest(
                 userId = uid,
-                outFlId = flight.id,
-                depDate = tripDate,
-                inFlId = null,
-                retDate = null,
+                flId = flight.id,
                 seatCnt = seatCnt,
                 adult = adults,
                 child = children,
+                tripDate = tripDate,
                 totalPrice = total
             )
 
-            val intent = Intent(this, ItineraryActivity::class.java).apply {
-                putExtra(FlightReservationActivity.EXTRA_TRIP_TYPE, tripType)
-                putExtra(FlightReservationActivity.EXTRA_OUTBOUND, outFlight)
-                putExtra(FlightReservationActivity.EXTRA_INBOUND,  inFlight)
-                putExtra(FlightReservationActivity.EXTRA_OUT_PRICE, outPrice)
-                putExtra(FlightReservationActivity.EXTRA_IN_PRICE,  inPrice)
-                putExtra(FlightReservationActivity.EXTRA_ADULT, adults)
-                putExtra(FlightReservationActivity.EXTRA_CHILD, children)
+            api.createFlightBooking(req).enqueue(object : Callback<BookingResponse> {
+                override fun onResponse(
+                    call: Call<BookingResponse>,
+                    response: Response<BookingResponse>
+                ) {
+                    if (!response.isSuccessful) {
+                        val msg = when (response.code()) {
+                            409 -> "잔여좌석이 부족합니다. 다른 항공편을 선택해주세요."
+                            400 -> "예약 정보가 올바르지 않습니다."
+                            else -> "예약 실패: ${response.code()}"
+                        }
+                        Toast.makeText(this@PassengerInputActivity, msg, Toast.LENGTH_SHORT).show()
+                        return
+                    }
 
-                // ★ 반드시 날짜 전달
-                putExtra(PassengerInputActivity.EXTRA_OUT_DATE, outDate)  // yyyy-MM-dd
-                inDate?.let { putExtra(PassengerInputActivity.EXTRA_IN_DATE, it) }
+                    startActivity(Intent(this@PassengerInputActivity, ItineraryActivity::class.java).apply {
+                        putExtra(PassengerInputActivity.EXTRA_OUT_DATE, outDate)   // ★ 추가
+                        inDate?.let { putExtra(PassengerInputActivity.EXTRA_IN_DATE, it) } // 왕복일 경우
 
-                putExtra("PASSENGERS", ArrayList(passengers))
-            }
-            startActivity(intent)
-//            api.createFlightBooking(req).enqueue(object : Callback<BookingResponse> {
-//                override fun onResponse(
-//                    call: Call<BookingResponse>,
-//                    response: Response<BookingResponse>
-//                ) {
-//                    if (!response.isSuccessful) {
-//                        val msg = when (response.code()) {
-//                            409 -> "잔여좌석이 부족합니다. 다른 항공편을 선택해주세요."
-//                            400 -> "예약 정보가 올바르지 않습니다."
-//                            else -> "예약 실패: ${response.code()}"
-//                        }
-//                        Toast.makeText(this@PassengerInputActivity, msg, Toast.LENGTH_SHORT).show()
-//                        return
-//                    }
-//
-//                    startActivity(Intent(this@PassengerInputActivity, ItineraryActivity::class.java).apply {
-//                        putExtra(PassengerInputActivity.EXTRA_OUT_DATE, outDate)   // ★ 추가
-//                        inDate?.let { putExtra(PassengerInputActivity.EXTRA_IN_DATE, it) } // 왕복일 경우
-//
-//                        putExtra("PASSENGERS", ArrayList(passengers))
-//                        putExtra(FlightReservationActivity.EXTRA_TRIP_TYPE, tripType)
-//                        putExtra(FlightReservationActivity.EXTRA_OUTBOUND, outFlight)
-//                        putExtra(FlightReservationActivity.EXTRA_OUT_PRICE, outPrice)
-//                        putExtra(FlightReservationActivity.EXTRA_INBOUND, inFlight)
-//                        putExtra(FlightReservationActivity.EXTRA_IN_PRICE, inPrice)
-//                    })
-//                    finish()
-//                }
-//
-//                override fun onFailure(call: Call<BookingResponse>, t: Throwable) {
-//                    Toast.makeText(this@PassengerInputActivity, "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
-//                }
-//            })
+                        putExtra("PASSENGERS", ArrayList(passengers))
+                        putExtra(FlightReservationActivity.EXTRA_TRIP_TYPE, tripType)
+                        putExtra(FlightReservationActivity.EXTRA_OUTBOUND, outFlight)
+                        putExtra(FlightReservationActivity.EXTRA_OUT_PRICE, outPrice)
+                        putExtra(FlightReservationActivity.EXTRA_INBOUND, inFlight)
+                        putExtra(FlightReservationActivity.EXTRA_IN_PRICE, inPrice)
+                    })
+                    finish()
+                }
+
+                override fun onFailure(call: Call<BookingResponse>, t: Throwable) {
+                    Toast.makeText(this@PassengerInputActivity, "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
+                }
+            })
         }
 
         // 7) 초기 검증 반영
