@@ -28,8 +28,9 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.navigation.NavigationView
 import kotlin.jvm.java
+import bitc.fullstack502.android_studio.ui.common.BaseFooterActivity
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseFooterActivity() {
 
     private lateinit var drawer: DrawerLayout
     private lateinit var viewPager: ViewPager2

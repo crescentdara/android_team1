@@ -10,6 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
+import bitc.fullstack502.android_studio.BuildConfig   // ✅ 추가
 import bitc.fullstack502.android_studio.IdInputActivity
 import bitc.fullstack502.android_studio.R
 import bitc.fullstack502.android_studio.StompManager
@@ -21,13 +22,18 @@ import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+import androidx.activity.addCallback
+
 class ChatRoomActivity : AppCompatActivity() {
 
-    private val serverUrl = "ws://10.0.2.2:8080/ws"
+    // 기존 하드코딩 제거 → BuildConfig 사용
+    private val serverUrl = BuildConfig.WS_BASE   // ✅ ws://<공용서버IP>:8080/ws
+
+    // 클래스 필드
+    private var isFinishingByBack = false
 
     private lateinit var myUserId: String
     private lateinit var partnerId: String
@@ -56,7 +62,6 @@ class ChatRoomActivity : AppCompatActivity() {
     // 읽음 영수증 최신값 저장 (상대가 읽은 마지막 메시지 id)
     private var lastReadByOtherId: Long = 0L
 
-
     // ✅ 읽음 처리 디바운스
     private var readJob: Job? = null
     private fun debounceMarkRead() {
@@ -72,29 +77,37 @@ class ChatRoomActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_chat_room)
 
-        // 1) 인텐트 파라미터 수신 (IdInputActivity / ChatListActivity 양쪽 호환)
-        myUserId = intent.getStringExtra(IdInputActivity.Companion.EXTRA_MY_ID) ?: "android1"
-        partnerId = intent.getStringExtra(IdInputActivity.Companion.EXTRA_PARTNER_ID)
-            ?: intent.getStringExtra(ChatListActivity.EXTRA_PARTNER_ID)
-                    ?: "android2"
-        roomId = intent.getStringExtra(IdInputActivity.Companion.EXTRA_ROOM_ID)
-            ?: intent.getStringExtra(ChatListActivity.EXTRA_ROOM_ID)
-                    ?: "testroom"
+        // 1) 인텐트 파라미터 수신 (전역 규격: roomId, partnerId)
+        val r = intent.getStringExtra("roomId")
+        val p = intent.getStringExtra("partnerId")
+        if (r.isNullOrBlank() || p.isNullOrBlank()) {
+            finish()
+            return
+        }
+        roomId = r
+        partnerId = p
 
-        // 2) 뷰 바인딩
+        // 2) 로그인 사용자(ID는 전역 AuthManager에서만)
+        myUserId = bitc.fullstack502.android_studio.util.AuthManager.usersId()
+        if (myUserId.isBlank()) {
+            finish()
+            return
+        }
+
+        // 3) 뷰 바인딩
         tvTitle = findViewById(R.id.tvTitle)
         rvChat  = findViewById(R.id.rvChat)
         etMsg   = findViewById(R.id.etMsg)
         btnSend = findViewById(R.id.btnSend)
         tvTitle.text = partnerId
 
-        Log.d("CHAT", "room=$roomId partner=$partnerId me=$myUserId")
+        Log.d("CHAT", "room=$roomId partner=$partnerId me=$myUserId serverUrl=$serverUrl")
 
-        // 3) 리스트 + 레이아웃 매니저
+        // 4) 리스트 + 레이아웃 매니저
         messageAdapter = ChatMessagesAdapter(myUserId)
         layoutManager = LinearLayoutManager(this).apply {
             stackFromEnd = true
-            reverseLayout = false // 절대 true 금지 (순서 꼬임 방지)
+            reverseLayout = false
         }
         rvChat.layoutManager = layoutManager
         rvChat.adapter = messageAdapter
@@ -102,7 +115,7 @@ class ChatRoomActivity : AppCompatActivity() {
         // 🔥 변경 애니메이션으로 인한 고스트/점프 방지
         (rvChat.itemAnimator as? SimpleItemAnimator)?.supportsChangeAnimations = false
 
-        // 3-1) 위로 스크롤 시 과거 더 불러오기 + 바닥 근처면 읽음 갱신
+        // 5) 위로 스크롤 시 과거 더 불러오기 + 바닥 근처면 읽음 갱신
         rvChat.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrolled(rv: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(rv, dx, dy)
@@ -116,7 +129,7 @@ class ChatRoomActivity : AppCompatActivity() {
             }
         })
 
-        // 4) 전송: 로컬 에코 → 실제 전송 → 읽음 포인터 갱신
+        // 6) 전송: 로컬 에코 → 실제 전송 → 읽음 포인터 갱신
         btnSend.setOnClickListener {
             val content = etMsg.text.toString().trim()
             if (content.isNotEmpty()) {
@@ -127,7 +140,29 @@ class ChatRoomActivity : AppCompatActivity() {
                 debounceMarkRead()                                                // 내가 보고 있으니 읽음 갱신
             }
         }
+
+        onBackPressedDispatcher.addCallback(this) {
+            if (isFinishingByBack) return@addCallback
+            isFinishingByBack = true
+
+            lifecycleScope.launch {
+                // 현재 방 보고 있던 내용 전부 읽음으로 확정
+                runCatching { ApiProvider.api.markRead(roomId, myUserId) }
+                // 이제 방을 떠났다고 표시 (목록 배지 증가 방지)
+                ForegroundRoom.current = null
+                finish()
+            }
+        }
+
     }
+
+    override fun onPause() {
+        super.onPause()
+        lifecycleScope.launch {
+            runCatching { ApiProvider.api.markRead(roomId, myUserId) }
+        }
+    }
+
 
     override fun onStart() {
         super.onStart()
@@ -158,13 +193,12 @@ class ChatRoomActivity : AppCompatActivity() {
         runCatching { stomp.disconnect() }
     }
 
-
-    // STOMP 연결: 방 토픽 + 개인 인박스 + 읽음 영수증
+    // STOMP 연결: 방 토픽(메시지) + 방 토픽(읽음 영수증)
     private fun connectStomp() {
         stomp.connectGlobal(
             userId = myUserId,
             onConnected = {
-                // 1) 방 토픽 구독
+                // 1) 방 토픽 (새 메시지 수신)
                 stomp.subscribeTopic(
                     "/topic/room.$roomId",
                     onMessage = { payload ->
@@ -176,31 +210,18 @@ class ChatRoomActivity : AppCompatActivity() {
                     onError = { err -> Log.e("CHAT", "room topic err: $err") }
                 )
 
-                // 2) 읽음 영수증 구독
+                // 2) 방 토픽(읽음 영수증)
                 stomp.subscribeTopic(
-                    "/user/queue/read-receipt",
+                    "/topic/room.$roomId.read",
                     onMessage = { payload ->
                         val rc = runCatching { gson.fromJson(payload, ReadReceiptDTO::class.java) }.getOrNull()
-                        if (rc != null && rc.roomId == roomId) {
-                            // 내가 읽은 영수증은 무시, 상대가 읽은 것만 반영
-                            if (rc.readerId != myUserId) {
-                                // 최신값 저장 (경쟁조건 대비, 큰 값 유지)
-                                if (rc.lastReadId > lastReadByOtherId) lastReadByOtherId = rc.lastReadId
-                                runOnUiThread {
-                                    messageAdapter.markReadByOtherUpTo(lastReadByOtherId)
-                                }
-                            }
+                        if (rc != null && rc.roomId == roomId && rc.readerId != myUserId) {
+                            if (rc.lastReadId > lastReadByOtherId) lastReadByOtherId = rc.lastReadId
+                            runOnUiThread { messageAdapter.markReadByOtherUpTo(lastReadByOtherId) }
                         }
                     },
-                    onError = { err -> Log.e("CHAT", "read-receipt err: $err") }
+                    onError = { err -> Log.e("CHAT", "read-receipt topic err: $err") }
                 )
-            },
-            // 3) 개인 인박스 (/user/queue/inbox)
-            onMessage = { payload ->
-                val m = runCatching { gson.fromJson(payload, ChatMessage::class.java) }.getOrNull()
-                if (m != null && m.roomId == roomId) {
-                    runOnUiThread { onIncoming(m) }
-                }
             },
             onError = { err ->
                 Log.e("CHAT", "STOMP err: $err")
@@ -214,22 +235,20 @@ class ChatRoomActivity : AppCompatActivity() {
 
     /** 서버 수신 공통 처리 */
     private fun onIncoming(m: ChatMessage) {
-        // ✅ 중복 차단 (방 토픽/인박스 양쪽 수신)
         m.id?.let { if (!seenIds.add(it)) return }
 
-        // 로컬 에코를 교체하거나, 없으면 추가
         messageAdapter.reconcileIncoming(m)
 
-        // ▼ 추가: 로컬 에코가 방금 '진짜 id'로 바뀐 경우도 커버
         if (lastReadByOtherId > 0) {
             messageAdapter.markReadByOtherUpTo(lastReadByOtherId)
         }
 
-        // 바닥 근처면 자동 스크롤 + 읽음 갱신
+        // ✅ 새 메시지 도착 시 항상 읽음 디바운스 → 방 안에 있으면 즉시 읽음 처리
+        debounceMarkRead()
+
         val atBottom = layoutManager.findLastVisibleItemPosition() >= (messageAdapter.itemCount - 3)
         if (atBottom) {
             rvChat.scrollToPosition(messageAdapter.itemCount - 1)
-            debounceMarkRead()
         }
     }
 
@@ -241,25 +260,21 @@ class ChatRoomActivity : AppCompatActivity() {
                 hasMore = true
 
                 val list = withContext(Dispatchers.IO) {
-                    // 입장 시 읽음 처리
-                    ApiProvider.api.markRead(rid, myUserId)
-                    // 백엔드 변경 반영: me/other 전달
-                    ApiProvider.api.history(rid, 50, null, myUserId, partnerId)
+                    ApiProvider.api.markRead(rid, myUserId)                 // 입장 시 읽음 처리
+                    ApiProvider.api.history(rid, 50, null, myUserId, partnerId) // 히스토리
                 }.sortedBy { it.id } // ASC
 
-                // 중복 차단 id 세트 갱신
                 seenIds.clear()
                 list.forEach { it.id?.let(seenIds::add) }
-
                 messageAdapter.setAll(list)
 
-                // ▼ 추가: 저장해둔 읽음 지점 재적용(재입장/재로딩 대비)
                 if (lastReadByOtherId > 0) {
                     messageAdapter.markReadByOtherUpTo(lastReadByOtherId)
                 }
 
                 rvChat.post {
                     rvChat.scrollToPosition((messageAdapter.itemCount - 1).coerceAtLeast(0))
+                    debounceMarkRead() // ✅ 입장 직후 읽음도 보장
                 }
             } catch (e: Exception) {
                 Log.e("CHAT", "history/read error: ${e.message}", e)
@@ -274,27 +289,23 @@ class ChatRoomActivity : AppCompatActivity() {
         val beforeId = messageAdapter.getFirstIdOrNull() ?: return
         isLoadingMore = true
 
-        // 스크롤 위치 보존(점프 방지)
         val firstIndex = layoutManager.findFirstVisibleItemPosition()
         val firstTop = layoutManager.findViewByPosition(firstIndex)?.top ?: 0
 
         lifecycleScope.launch {
             try {
                 val older = withContext(Dispatchers.IO) {
-                    // 백엔드 변경 반영: me/other 전달
                     ApiProvider.api.history(roomId, 50, beforeId, myUserId, partnerId)
                 }.sortedBy { it.id }
 
                 if (older.isEmpty()) {
                     hasMore = false
                 } else {
-                    // 이미 있는 id 제거 후 프리펜드
                     val filtered = older.filter { it.id == null || !seenIds.contains(it.id!!) }
                     filtered.forEach { it.id?.let(seenIds::add) }
 
                     if (filtered.isNotEmpty()) {
                         messageAdapter.prependMany(filtered)
-                        // 스크롤 위치 복원
                         rvChat.post {
                             layoutManager.scrollToPositionWithOffset(firstIndex + filtered.size, firstTop)
                         }

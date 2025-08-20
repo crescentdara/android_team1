@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.drawerlayout.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/drawerLayoutShell"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- 화면 본문이 들어갈 컨테이너만 둔다 -->
+    <FrameLayout
+        android:id="@+id/contentContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"/>
+
+    <!-- (선택) 우측 드로어 -->
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/navigationViewShell"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="end"/>
+</androidx.drawerlayout.widget.DrawerLayout>

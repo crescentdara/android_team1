@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/headerToolbar"
+    android:layout_width="match_parent"
+    android:layout_height="?attr/actionBarSize"
+    android:background="@color/brand_bg"
+    android:elevation="6dp"
+    android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+    android:paddingStart="8dp"
+    android:paddingEnd="8dp">
+
+    <!-- 왼쪽 뒤로가기 -->
+    <ImageButton
+        android:id="@+id/btnBack"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_arrow_left"
+        android:contentDescription="@string/back"
+        android:tint="@color/jeju_primary"
+        android:padding="8dp"/>
+
+    <!-- 로고 -->
+    <ImageView
+        android:id="@+id/imgLogo"
+        android:layout_width="50dp"
+        android:layout_height="43dp"
+        android:layout_gravity="center"
+        android:adjustViewBounds="true"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/app_name"
+        android:src="@drawable/jeu_logo" />
+
+    <!-- 오른쪽 햄버거 버튼 -->
+    <ImageButton
+        android:id="@+id/btnMenu"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="end"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_menu"
+        android:contentDescription="@string/menu"
+        android:tint="@color/jeju_primary"
+        android:padding="8dp"/>
+</androidx.appcompat.widget.Toolbar>

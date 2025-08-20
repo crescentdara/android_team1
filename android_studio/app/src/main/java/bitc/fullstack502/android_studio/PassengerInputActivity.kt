@@ -4,9 +4,17 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+<<<<<<< HEAD
+=======
+import android.view.View
+import android.widget.ImageButton
+import android.widget.ImageView
+>>>>>>> jgy/chat2
 import android.widget.RadioGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+<<<<<<< HEAD
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import bitc.fullstack502.android_studio.adapter.PassengerSelectorAdapter
@@ -14,6 +22,19 @@ import bitc.fullstack502.android_studio.model.*
 import bitc.fullstack502.android_studio.network.ApiProvider.api
 import bitc.fullstack502.android_studio.util.AuthManager
 import com.google.android.material.appbar.MaterialToolbar
+=======
+import androidx.core.view.GravityCompat
+import androidx.core.view.ViewCompat
+import androidx.drawerlayout.widget.DrawerLayout
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import bitc.fullstack502.android_studio.adapter.PassengerSelectorAdapter
+import bitc.fullstack502.android_studio.model.Flight
+import bitc.fullstack502.android_studio.model.Passenger
+import bitc.fullstack502.android_studio.model.PassengerType
+import bitc.fullstack502.android_studio.ui.ChatListActivity
+import bitc.fullstack502.android_studio.ui.MainActivity
+>>>>>>> jgy/chat2
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.radiobutton.MaterialRadioButton
@@ -26,6 +47,19 @@ import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
+<<<<<<< HEAD
+=======
+// ✅ 추가
+import bitc.fullstack502.android_studio.ui.PhoneHyphenTextWatcher
+import bitc.fullstack502.android_studio.ui.lodging.LodgingSearchActivity
+import bitc.fullstack502.android_studio.ui.mypage.LoginActivity
+import bitc.fullstack502.android_studio.ui.mypage.MyPageActivity
+import bitc.fullstack502.android_studio.ui.post.PostListActivity
+import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.navigation.NavigationView
+import kotlin.collections.all
+
+>>>>>>> jgy/chat2
 class PassengerInputActivity : AppCompatActivity() {
 
     companion object {
@@ -104,9 +138,57 @@ class PassengerInputActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_passenger_input)
 
+<<<<<<< HEAD
         val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
         toolbar.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
+=======
+        /////////////////////////////////////
+        // ✅ Drawer & NavigationView
+        val drawer = findViewById<DrawerLayout>(R.id.drawerLayout)
+        val navView = findViewById<NavigationView>(R.id.navigationView)
+
+        // ✅ 공통 헤더 버튼 세팅
+        val header = findViewById<View>(R.id.header)
+        val btnBack: ImageButton = header.findViewById(R.id.btnBack)
+        val imgLogo: ImageView = header.findViewById(R.id.imgLogo)
+        val btnMenu: ImageButton = header.findViewById(R.id.btnMenu)
+
+        btnBack.setOnClickListener { finish() }  // 뒤로가기
+        imgLogo.setOnClickListener {             // 로고 → 메인으로
+            startActivity(
+                Intent(this, MainActivity::class.java)
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            )
+        }
+        btnMenu.setOnClickListener {             // 햄버거 → Drawer 열기
+            drawer.openDrawer(GravityCompat.END)
+        }
+
+        // 드로어 헤더 인사말 세팅 (로그인 상태 반영)
+        updateHeader(navView)
+
+        // ✅ Drawer 메뉴 클릭 처리
+        navView.setNavigationItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_hotel -> {
+                    startActivity(Intent(this, LodgingSearchActivity::class.java)); true
+                }
+                R.id.nav_board -> {
+                    startActivity(Intent(this, PostListActivity::class.java)); true
+                }
+                R.id.nav_chat -> {
+                    startActivity(Intent(this, ChatListActivity::class.java)); true
+                }
+                R.id.nav_flight -> {
+                    // 현재 FlightReservationActivity니까 따로 이동 안 해도 됨
+                    true
+                }
+                else -> false
+            }.also { drawer.closeDrawers() }
+        }
+        /////////////////////////////////////
+>>>>>>> jgy/chat2
 
         // 0) 버튼 초기화
         btnNext = findViewById(R.id.btnNext)
@@ -140,10 +222,20 @@ class PassengerInputActivity : AppCompatActivity() {
         rv.layoutManager = LinearLayoutManager(this, RecyclerView.HORIZONTAL, false)
         adapter = PassengerSelectorAdapter(passengers) { pos ->
             if (pos == selectedIndex) return@PassengerSelectorAdapter
+<<<<<<< HEAD
             val old = selectedIndex
             if (old in passengers.indices) saveFormToModel(old)
             selectedIndex = pos
             adapter.setSelected(pos)
+=======
+
+            val old = selectedIndex
+            if (old in passengers.indices) saveFormToModel(old)
+
+            selectedIndex = pos
+            adapter.setSelected(pos)
+
+>>>>>>> jgy/chat2
             val target = passengers[pos]
             if (!target.edited) bindEmptyForm() else bindForm(target)
         }
@@ -164,7 +256,17 @@ class PassengerInputActivity : AppCompatActivity() {
         etEmgPhone= findViewById(R.id.etEmergencyPhone)
         rgGender  = findViewById(R.id.rgGender)
 
+<<<<<<< HEAD
         // 4) 날짜 피커/워처
+=======
+        rgGender = findViewById(R.id.rgGender)
+        rbMale   = findViewById(R.id.rbMale)
+        rbFemale = findViewById(R.id.rbFemale)
+
+        etPhone.addTextChangedListener(PhoneHyphenTextWatcher(etPhone))
+        etEmgPhone.addTextChangedListener(PhoneHyphenTextWatcher(etEmgPhone))
+
+>>>>>>> jgy/chat2
         findViewById<TextInputLayout>(R.id.tilBirth)
             .setEndIconOnClickListener { showMaterialDatePicker(etBirth) }
         findViewById<TextInputLayout>(R.id.tilPassportExpiry)
@@ -172,8 +274,13 @@ class PassengerInputActivity : AppCompatActivity() {
         etBirth.setOnClickListener { showMaterialDatePicker(etBirth) }
         etPassExp.setOnClickListener { showMaterialDatePicker(etPassExp) }
 
+<<<<<<< HEAD
         // 5) 기본 폼 바인딩 + 워처 연결
         bindForm(passengers[0])
+=======
+        bindForm(passengers[0])
+
+>>>>>>> jgy/chat2
         listOf(etLast, etFirst, etPassNo, etNation, etPhone, etEmail, etEmgName, etEmgPhone)
             .forEach { it.addTextChangedListener(object : TextWatcher {
                 override fun afterTextChanged(s: Editable?) { if (!isBinding) syncCurrentPassengerAndValidate() }
@@ -182,7 +289,15 @@ class PassengerInputActivity : AppCompatActivity() {
             }) }
         rgGender.setOnCheckedChangeListener { _, _ -> if (!isBinding) syncCurrentPassengerAndValidate() }
 
+<<<<<<< HEAD
         // 6) 다음(=예약) 버튼
+=======
+        rgGender.setOnCheckedChangeListener { _, _ ->
+            if (isBinding) return@setOnCheckedChangeListener
+            syncCurrentPassengerAndValidate()
+        }
+
+>>>>>>> jgy/chat2
         btnNext.setOnClickListener {
             val allOk = passengers.all { it.isRequiredFilled() }
             if (!allOk) {
@@ -220,6 +335,7 @@ class PassengerInputActivity : AppCompatActivity() {
             )
 
             val intent = Intent(this, ItineraryActivity::class.java).apply {
+<<<<<<< HEAD
                 putExtra(FlightReservationActivity.EXTRA_TRIP_TYPE, tripType)
                 putExtra(FlightReservationActivity.EXTRA_OUTBOUND, outFlight)
                 putExtra(FlightReservationActivity.EXTRA_INBOUND,  inFlight)
@@ -233,6 +349,16 @@ class PassengerInputActivity : AppCompatActivity() {
                 inDate?.let { putExtra(PassengerInputActivity.EXTRA_IN_DATE, it) }
 
                 putExtra("PASSENGERS", ArrayList(passengers))
+=======
+                putExtra("PASSENGERS", ArrayList(passengers))
+                putExtra(FlightReservationActivity.EXTRA_ADULT, adults)
+                putExtra(FlightReservationActivity.EXTRA_CHILD, children)
+                putExtra(FlightReservationActivity.EXTRA_TRIP_TYPE, tripType)
+                putExtra(FlightReservationActivity.EXTRA_OUTBOUND, outFlight)
+                putExtra(FlightReservationActivity.EXTRA_OUT_PRICE, outPrice)
+                putExtra(FlightReservationActivity.EXTRA_INBOUND, inFlight)
+                putExtra(FlightReservationActivity.EXTRA_IN_PRICE, inPrice)
+>>>>>>> jgy/chat2
             }
             startActivity(intent)
 //            api.createFlightBooking(req).enqueue(object : Callback<BookingResponse> {
@@ -270,10 +396,28 @@ class PassengerInputActivity : AppCompatActivity() {
 //            })
         }
 
-        // 7) 초기 검증 반영
         validateAll()
     }
 
+<<<<<<< HEAD
+=======
+
+    private fun removeAllWatchers() {
+        listOf(etLast, etFirst, etPassNo, etNation, etPhone, etEmail, etEmgName, etEmgPhone)
+            .forEach { it.removeTextChangedListener(watcher) }
+        rbMale.setOnCheckedChangeListener(null)
+        rbFemale.setOnCheckedChangeListener(null)
+    }
+
+    private fun addAllWatchers() {
+        listOf(etLast, etFirst, etPassNo, etNation, etPhone, etEmail, etEmgName, etEmgPhone)
+            .forEach { it.addTextChangedListener(watcher) }
+        rbMale.setOnCheckedChangeListener { _, _ -> syncCurrentPassengerAndValidate() }
+        rbFemale.setOnCheckedChangeListener { _, _ -> syncCurrentPassengerAndValidate() }
+    }
+
+
+>>>>>>> jgy/chat2
     private fun syncCurrentPassengerAndValidate() {
         val p = current()
         p.lastNameEn     = etLast.text?.toString()?.trim().orEmpty()
@@ -339,5 +483,60 @@ class PassengerInputActivity : AppCompatActivity() {
             syncCurrentPassengerAndValidate()
         }
         picker.show(supportFragmentManager, "date_picker")
+    }
+
+    // ----------------- 로그인/헤더 처리 -----------------
+
+    private fun isLoggedIn(): Boolean {
+        val sp = getSharedPreferences("userInfo", MODE_PRIVATE)
+        return !sp.getString("usersId", null).isNullOrBlank()
+    }
+
+    private fun currentUserName(): String {
+        val sp = getSharedPreferences("userInfo", MODE_PRIVATE)
+        return sp.getString("name", null) ?: sp.getString("usersId", "") ?: ""
+    }
+
+    private fun currentUserEmail(): String {
+        val sp = getSharedPreferences("userInfo", MODE_PRIVATE)
+        return sp.getString("email", "") ?: ""
+    }
+
+    private fun updateHeader(navView: NavigationView) {
+        val header = navView.getHeaderView(0)
+        val tvGreet = header.findViewById<TextView>(R.id.tvUserGreeting)
+        val tvEmail = header.findViewById<TextView>(R.id.tvUserEmail)
+        val btnMyPage = header.findViewById<MaterialButton>(R.id.btnMyPage)
+        val btnLogout = header.findViewById<MaterialButton>(R.id.btnLogout)
+
+        if (isLoggedIn()) {
+            val name = currentUserName()
+            val email = currentUserEmail()
+            tvGreet.text = getString(R.string.greeting_fmt, if (name.isBlank()) "회원" else name)
+            tvEmail.visibility = View.VISIBLE
+            tvEmail.text = if (email.isNotBlank()) email else "로그인됨"
+
+            btnLogout.visibility = View.VISIBLE
+            btnMyPage.text = getString(R.string.mypage)
+            btnMyPage.setOnClickListener {
+                startActivity(Intent(this, MyPageActivity::class.java))
+            }
+            btnLogout.setOnClickListener {
+                val sp = getSharedPreferences("userInfo", MODE_PRIVATE)
+                sp.edit().clear().apply()
+                Toast.makeText(this, "로그아웃되었습니다.", Toast.LENGTH_SHORT).show()
+                updateHeader(navView)
+            }
+        } else {
+            // 비로그인: “000님” 같은 더미 표시 제거하고 “로그인”만 노출
+            tvGreet.text = "로그인"
+            tvEmail.visibility = View.GONE
+
+            btnLogout.visibility = View.GONE
+            btnMyPage.text = "로그인"
+            btnMyPage.setOnClickListener {
+                startActivity(Intent(this, LoginActivity::class.java))
+            }
+        }
     }
 }

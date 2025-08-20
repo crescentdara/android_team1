@@ -15,20 +15,33 @@ android {
         versionCode = 1
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // ✅ 공용 서버 주소(BuildConfig에 주입)
+        buildConfigField("String", "API_BASE", "\"http://10.100.202.31:8080\"")
+        buildConfigField("String", "WS_BASE",  "\"ws://10.100.202.31:8080/ws\"")
     }
 
     buildFeatures {
         viewBinding = true
         dataBinding = true
+        buildConfig = true
     }
 
     buildTypes {
+        debug {
+            // 필요하면 디버그 전용 값으로 덮어쓰기 가능
+            // buildConfigField("String", "API_BASE", "\"http://10.100.202.31:8080\"")
+            // buildConfigField("String", "WS_BASE",  "\"ws://10.100.202.31:8080/ws\"")
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            // 릴리즈에서도 동일 주소 사용 (필요시 여기서만 바꿔도 됨)
+            buildConfigField("String", "API_BASE", "\"http://10.100.202.31:8080\"")
+            buildConfigField("String", "WS_BASE",  "\"ws://10.100.202.31:8080/ws\"")
         }
     }
 
@@ -55,7 +68,7 @@ dependencies {
     implementation("androidx.gridlayout:gridlayout:1.0.0")
     implementation("androidx.fragment:fragment-ktx:1.6.2")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
-    implementation("com.google.android.material:material:1.12.0") // ✅ Material v1만 유지
+    implementation("com.google.android.material:material:1.12.0")
     implementation("com.google.android.flexbox:flexbox:3.0.0")
     implementation("com.github.bumptech.glide:glide:4.16.0")
     implementation("io.coil-kt:coil:2.6.0")
@@ -66,7 +79,6 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
-    // ❌ implementation(libs.androidx.material3) 제거
 
     // 네이버 지도
     implementation("com.naver.maps:map-sdk:3.22.1")

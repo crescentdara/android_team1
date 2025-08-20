@@ -13,15 +13,16 @@
         android:background="@color/colorBg_je">
 
         <!-- 헤더 -->
+
         <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:background="@color/colorBg_je"
             android:elevation="6dp"
-            app:title=""
+            app:contentInsetStartWithNavigation="0dp"
             app:menu="@menu/main_toolbar_menu"
-            app:contentInsetStartWithNavigation="0dp">
+            app:title="">
 
             <ImageView
                 android:id="@+id/imgLogo"
@@ -30,8 +31,8 @@
                 android:layout_marginStart="12dp"
                 android:adjustViewBounds="true"
                 android:background="@android:color/transparent"
-                app:srcCompat="@drawable/jeu_logo"
-                android:contentDescription="@string/app_name"/>
+                android:contentDescription="@string/app_name"
+                app:srcCompat="@drawable/jeu_logo" />
         </com.google.android.material.appbar.MaterialToolbar>
 
 

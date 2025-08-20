@@ -1,145 +1,182 @@
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/drawerLayout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fillViewport="true"
-    android:background="@color/brand_bg"
-    android:padding="16dp">
+    android:layout_height="match_parent">
 
-    <LinearLayout
+    <!-- 메인 콘텐츠 -->
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:spacing="12dp">
+        android:layout_height="match_parent"
+        android:background="@color/brand_bg"
+        android:fitsSystemWindows="true">
 
-        <!-- 제목 -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="여정 상세"
-            android:textStyle="bold"
-            android:textSize="18sp"
-            android:textColor="@color/jeju_primary"
-            android:paddingBottom="8dp" />
+        <!-- ✅ 공통 헤더 -->
+        <include
+            android:id="@+id/header"
+            layout="@layout/inc_header_jeu" />
 
-        <!-- 가는 편 카드 -->
-        <LinearLayout
+        <!-- ✅ 본문 -->
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/scroll"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@drawable/bg_card"
-            android:padding="12dp"
-            android:layout_marginBottom="8dp">
+            android:layout_height="match_parent"
+            android:layout_marginTop="?attr/actionBarSize"
+            android:fillViewport="true"
+            android:background="@color/brand_bg"
+            android:padding="16dp">
 
-            <TextView
-                android:id="@+id/tvOutFlight"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="가는 편 항공편 정보"
-                android:background="@drawable/bg_card"
-                android:padding="12dp"
-                android:layout_marginBottom="8dp"/>
-        </LinearLayout>
+                android:orientation="vertical"
+                android:spacing="12dp">
 
-        <!-- 오는 편 카드 -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@drawable/bg_card"
-            android:padding="12dp"
-            android:layout_marginBottom="8dp">
+                <!-- 제목 -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="여정 상세"
+                    android:textStyle="bold"
+                    android:textSize="18sp"
+                    android:textColor="@color/jeju_primary"
+                    android:paddingBottom="8dp" />
 
-            <TextView
-                android:id="@+id/tvInFlight"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="오는 편 항공편 정보"
-                android:background="@drawable/bg_card"
-                android:padding="12dp"
-                android:layout_marginBottom="8dp"/>
-        </LinearLayout>
+                <!-- 가는 편 카드 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@drawable/bg_card"
+                    android:padding="12dp"
+                    android:layout_marginBottom="8dp">
 
-        <!-- 항목별 운임 상세 -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="@drawable/bg_card"
-            android:padding="12dp">
+                    <TextView
+                        android:id="@+id/tvOutFlight"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="가는 편 항공편 정보"
+                        android:background="@drawable/bg_card"
+                        android:padding="12dp"
+                        android:layout_marginBottom="8dp"/>
+                </LinearLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="항목별 운임 상세"
-                android:textStyle="bold" />
+                <!-- 오는 편 카드 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@drawable/bg_card"
+                    android:padding="12dp"
+                    android:layout_marginBottom="8dp">
 
-            <TextView android:id="@+id/tvBaseFare"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="항공 운임: 98,700원" />
+                    <TextView
+                        android:id="@+id/tvInFlight"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="오는 편 항공편 정보"
+                        android:background="@drawable/bg_card"
+                        android:padding="12dp"
+                        android:layout_marginBottom="8dp"/>
+                </LinearLayout>
 
-            <TextView android:id="@+id/tvFuel"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="유류 할증료: 15,400원" />
+                <!-- 항목별 운임 상세 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@drawable/bg_card"
+                    android:padding="12dp">
 
-            <TextView android:id="@+id/tvFacility"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="공항 시설료: 8,000원" />
-        </LinearLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="항목별 운임 상세"
+                        android:textStyle="bold" />
 
-        <!-- 합계 -->
-        <TextView
-            android:id="@+id/tvTotalPrice"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="예상 결제 금액: 122,100원"
-            android:textStyle="bold"
-            android:gravity="end"
-            android:paddingTop="16dp"/>
+                    <TextView
+                        android:id="@+id/tvBaseFare"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="항공 운임: 98,700원" />
 
-        <!-- 약관 동의 -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingTop="16dp">
+                    <TextView
+                        android:id="@+id/tvFuel"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="유류 할증료: 15,400원" />
 
-            <CheckBox
-                android:id="@+id/cbAgree"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="약관 및 규정 전체 동의"
-                android:textColor="@color/jeju_primary"/>
+                    <TextView
+                        android:id="@+id/tvFacility"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="공항 시설료: 8,000원" />
+                </LinearLayout>
 
-            <CheckBox
-                android:id="@+id/cbRule1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="항공권 운임 규정 동의" />
+                <!-- 합계 -->
+                <TextView
+                    android:id="@+id/tvTotalPrice"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="예상 결제 금액: 122,100원"
+                    android:textStyle="bold"
+                    android:gravity="end"
+                    android:paddingTop="16dp"/>
 
-            <CheckBox
-                android:id="@+id/cbRule2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="국내선 여객운송 약관 동의" />
+                <!-- 약관 동의 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingTop="16dp">
 
-            <CheckBox
-                android:id="@+id/cbRule3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="항공기 반입금지 위협물 확인" />
-        </LinearLayout>
+                    <CheckBox
+                        android:id="@+id/cbAgree"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="약관 및 규정 전체 동의"
+                        android:textColor="@color/jeju_primary"/>
 
-        <!-- 버튼 -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnNext"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="다음"
-            android:backgroundTint="@color/jeju_primary"
-            android:textColor="@android:color/white"
-            android:layout_marginTop="16dp"/>
-    </LinearLayout>
-</androidx.core.widget.NestedScrollView>
+                    <CheckBox
+                        android:id="@+id/cbRule1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="항공권 운임 규정 동의" />
+
+                    <CheckBox
+                        android:id="@+id/cbRule2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="국내선 여객운송 약관 동의" />
+
+                    <CheckBox
+                        android:id="@+id/cbRule3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="항공기 반입금지 위협물 확인" />
+                </LinearLayout>
+
+                <!-- 버튼 -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnNext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="다음"
+                    android:backgroundTint="@color/jeju_primary"
+                    android:textColor="@android:color/white"
+                    android:layout_marginTop="16dp"/>
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    <!-- ✅ 드로어 메뉴 -->
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/navigationView"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="end"
+        app:headerLayout="@layout/nav_header_jeu"
+        app:menu="@menu/drawer_menu_jeu"
+        app:itemBackground="@drawable/nav_item_bg_jeu"/>
+</androidx.drawerlayout.widget.DrawerLayout>

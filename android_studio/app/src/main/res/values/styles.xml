@@ -34,6 +34,7 @@
         <item name="android:textSize">20sp</item>
     </style>
 
+<<<<<<< HEAD
     <style name="FormField" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <item name="android:layout_marginBottom">12dp</item>
         <item name="boxStrokeWidth">1dp</item>
@@ -59,4 +60,26 @@
     </style>
 
 
+=======
+    <!-- footer -->
+    <style name="Jeu.FooterLink">
+        <item name="android:textColor">@color/jeju_text_primary</item>  <!-- #111111 -->
+        <item name="android:textStyle">normal</item>
+        <item name="android:textSize">12sp</item>
+        <item name="android:paddingStart">4dp</item>
+        <item name="android:paddingEnd">4dp</item>
+    </style>
+
+    <style name="Jeu.FooterSeparator">
+        <item name="android:textColor">@color/ink_600</item>            <!-- #556B69 -->
+        <item name="android:textSize">12sp</item>
+        <item name="android:paddingStart">2dp</item>
+        <item name="android:paddingEnd">2dp</item>
+    </style>
+
+    <style name="Jeu.FooterSmall">
+        <item name="android:textColor">@color/ink_600</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+>>>>>>> jgy/chat2
 </resources>

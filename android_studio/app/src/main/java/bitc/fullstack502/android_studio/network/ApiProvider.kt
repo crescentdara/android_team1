@@ -1,5 +1,8 @@
 package bitc.fullstack502.android_studio.network
 
+import bitc.fullstack502.android_studio.BuildConfig
+
+
 import bitc.fullstack502.android_studio.util.AuthManager
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -13,8 +16,11 @@ import java.util.concurrent.TimeUnit
  */
 object ApiProvider {
 
-    // 에뮬레이터에서 PC localhost 접속
-    private const val BASE_URL = "http://10.0.2.2:8080/"
+    // ✅ BuildConfig에서 주입한 서버 주소 사용 (예: http://10.100.202.31:8080)
+    private fun baseUrl(): String {
+        val b = BuildConfig.API_BASE
+        return if (b.endsWith("/")) b else "$b/"
+    }
 
     private val loggingInterceptor by lazy {
         HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
@@ -43,7 +49,7 @@ object ApiProvider {
 
     val retrofit: Retrofit by lazy {
         Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(baseUrl())
             .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()

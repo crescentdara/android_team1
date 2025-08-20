@@ -131,7 +131,8 @@
             android:name=".PassengerInputActivity"
             android:exported="false"
             android:parentActivityName=".FlightReservationActivity"
-            android:windowSoftInputMode="adjustResize">
+            android:windowSoftInputMode="adjustResize"
+            android:theme="@style/Theme.App">   <!-- ✅ 추가 -->
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".FlightReservationActivity" />

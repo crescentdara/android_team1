@@ -1,63 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-        <!-- 필요하면 변수 추가해서 바인딩 가능
+        <!-- 필요하면 바인딩 변수 추가 -->
+        <!--
         <variable
             name="vm"
             type="bitc.fullstack502.android_studio.ui.lodging.LodgingPaymentViewModel" />
         -->
     </data>
 
-    <ScrollView
+    <androidx.drawerlayout.widget.DrawerLayout
+        android:id="@+id/drawerLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true"
-        android:background="@color/white">
+        android:layout_height="match_parent">
 
-        <LinearLayout
+        <!-- 메인 컨텐츠 -->
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:layout_height="match_parent">
 
-            <ImageView
-                android:id="@+id/imgLodgingCover"
+            <!-- 스크롤 영역 -->
+            <androidx.core.widget.NestedScrollView
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:scaleType="centerCrop" />
+                android:layout_height="match_parent"
+                android:fillViewport="true"
+                android:background="@color/white"
+                android:overScrollMode="never">
 
-            <TextView
-                android:id="@+id/tvLodgingName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:textSize="20sp"
-                android:textStyle="bold" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="0dp">
 
-            <TextView
-                android:id="@+id/tvLodgingAddr"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                    <!-- ✅ 공통 헤더 -->
+                    <include
+                        android:id="@+id/header"
+                        layout="@layout/inc_header_jeu" />
 
-            <TextView
-                android:id="@+id/tvLodgingPhone"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                    <!-- 기존 결제 컨텐츠 -->
+                    <ImageView
+                        android:id="@+id/imgLodgingCover"
+                        android:layout_width="match_parent"
+                        android:layout_height="200dp"
+                        android:layout_marginTop="8dp"
+                        android:scaleType="centerCrop" />
 
-            <TextView
-                android:id="@+id/tvCheckInOut"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:textSize="16sp" />
+                    <TextView
+                        android:id="@+id/tvLodgingName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/tvRoomType"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="16sp" />
+                    <TextView
+                        android:id="@+id/tvLodgingAddr"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
 
+<<<<<<< HEAD
             <TextView
                 android:id="@+id/tvTotalPrice"
                 android:layout_width="match_parent"
@@ -93,13 +97,52 @@
                     android:text="무통장입금" />
             </RadioGroup>
 
+=======
+                    <TextView
+                        android:id="@+id/tvLodgingPhone"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+>>>>>>> jgy/chat2
 
-            <Button
-                android:id="@+id/btnLodgingPay"
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_marginTop="20dp"
-                android:text="결제하기" />
-        </LinearLayout>
-    </ScrollView>
+                    <TextView
+                        android:id="@+id/tvCheckInOut"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/tvRoomType"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/tvTotalPrice"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:textSize="18sp"
+                        android:textStyle="bold" />
+
+                    <Button
+                        android:id="@+id/btnLodgingPay"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:layout_marginTop="20dp"
+                        android:text="결제하기" />
+                </LinearLayout>
+            </androidx.core.widget.NestedScrollView>
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+        <!-- ✅ 드로어 메뉴 -->
+        <com.google.android.material.navigation.NavigationView
+            android:id="@+id/navigationView"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="end"
+            app:headerLayout="@layout/nav_header_jeu"
+            app:menu="@menu/drawer_menu_jeu"
+            app:itemBackground="@drawable/nav_item_bg_jeu" />
+    </androidx.drawerlayout.widget.DrawerLayout>
 </layout>

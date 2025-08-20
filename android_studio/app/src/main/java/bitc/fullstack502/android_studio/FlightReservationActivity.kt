@@ -6,23 +6,49 @@ import android.util.Log
 import android.util.TypedValue
 import android.view.View
 import android.widget.Button
+import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SwitchCompat
+import androidx.core.view.GravityCompat
 import androidx.core.widget.NestedScrollView
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+<<<<<<< HEAD
 import bitc.fullstack502.android_studio.databinding.ActivityFlightReservationBinding
 import bitc.fullstack502.android_studio.model.Flight
 import bitc.fullstack502.android_studio.adapter.FlightAdapter
 import bitc.fullstack502.android_studio.util.AuthManager
+=======
+import bitc.fullstack502.android_studio.FlightReservationActivity.Companion.EXTRA_INBOUND
+import bitc.fullstack502.android_studio.FlightReservationActivity.Companion.EXTRA_INFANT
+import bitc.fullstack502.android_studio.FlightReservationActivity.Companion.EXTRA_IN_PRICE
+import bitc.fullstack502.android_studio.FlightReservationActivity.Companion.EXTRA_TRIP_TYPE
+import bitc.fullstack502.android_studio.InboundSelectActivity.Companion.EXTRA_ADULT
+import bitc.fullstack502.android_studio.InboundSelectActivity.Companion.EXTRA_CHILD
+import bitc.fullstack502.android_studio.InboundSelectActivity.Companion.EXTRA_OUTBOUND
+import bitc.fullstack502.android_studio.InboundSelectActivity.Companion.EXTRA_OUT_PRICE
+import bitc.fullstack502.android_studio.adapter.FlightAdapter
+import bitc.fullstack502.android_studio.databinding.ActivityFlightReservationBinding
+import bitc.fullstack502.android_studio.databinding.ActivityPostListBinding
+import bitc.fullstack502.android_studio.model.Flight
+import bitc.fullstack502.android_studio.ui.ChatListActivity
+import bitc.fullstack502.android_studio.ui.MainActivity
+import bitc.fullstack502.android_studio.ui.lodging.LodgingSearchActivity
+import bitc.fullstack502.android_studio.ui.mypage.LoginActivity
+import bitc.fullstack502.android_studio.ui.mypage.MyPageActivity
+import bitc.fullstack502.android_studio.ui.post.PostListActivity
+>>>>>>> jgy/chat2
 import bitc.fullstack502.android_studio.viewmodel.FlightReservationViewModel
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.navigation.NavigationView
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -30,7 +56,18 @@ import java.util.TimeZone
 
 class FlightReservationActivity : AppCompatActivity() {
 
+<<<<<<< HEAD
     private val binding by lazy { ActivityFlightReservationBinding.inflate(layoutInflater) }
+=======
+    private lateinit var bind: ActivityFlightReservationBinding
+
+    // 고정 요금 상수 (1인 기준)
+    companion object {
+        const val ADULT_PRICE    = 98_700      // 항공운임 - 성인
+        const val CHILD_PRICE    = ADULT_PRICE - 20_000  // 항공운임 - 아동 (요청 반영)
+        const val FUEL_SURCHARGE = 15_400      // 1인당 고정
+        const val FACILITY_FEE   = 8_000       // 1인당 고정
+>>>>>>> jgy/chat2
 
     companion object {
         const val ADULT_PRICE    = 98_700
@@ -89,6 +126,12 @@ class FlightReservationActivity : AppCompatActivity() {
         "여수", "울산", "원주", "양양", "사천(진주)", "포항", "군산", "제주"
     )
 
+<<<<<<< HEAD
+=======
+
+
+    // ===== 요금 계산 보조 =====
+>>>>>>> jgy/chat2
     private fun unitTotalAdult()  = ADULT_PRICE + FUEL_SURCHARGE + FACILITY_FEE
     private fun unitTotalChild()  = CHILD_PRICE + FUEL_SURCHARGE + FACILITY_FEE
     private fun unitTotalInfant() = 0
@@ -103,6 +146,54 @@ class FlightReservationActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+
+        /////////////////////////////////////
+        // ✅ Drawer & NavigationView
+        val drawer = findViewById<DrawerLayout>(R.id.drawerLayout)
+        val navView = findViewById<NavigationView>(R.id.navigationView)
+
+        // ✅ 공통 헤더 버튼 세팅
+        val header = findViewById<View>(R.id.header)
+        val btnBack: ImageButton = header.findViewById(R.id.btnBack)
+        val imgLogo: ImageView   = header.findViewById(R.id.imgLogo)
+        val btnMenu: ImageButton = header.findViewById(R.id.btnMenu)
+
+        btnBack.setOnClickListener { finish() }  // 뒤로가기
+        imgLogo.setOnClickListener {             // 로고 → 메인으로
+            startActivity(
+                Intent(this, MainActivity::class.java)
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            )
+        }
+        btnMenu.setOnClickListener {             // 햄버거 → Drawer 열기
+            drawer.openDrawer(GravityCompat.END)
+        }
+
+        // 드로어 헤더 인사말 세팅 (로그인 상태 반영)
+        updateHeader(navView)
+
+        // ✅ Drawer 메뉴 클릭 처리
+        navView.setNavigationItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.nav_hotel -> {
+                    startActivity(Intent(this, LodgingSearchActivity::class.java)); true
+                }
+                R.id.nav_board -> {
+                    startActivity(Intent(this, PostListActivity::class.java)); true
+                }
+                R.id.nav_chat -> {
+                    startActivity(Intent(this, ChatListActivity::class.java)); true
+                }
+                R.id.nav_flight -> {
+                    // 현재 FlightReservationActivity니까 따로 이동 안 해도 됨
+                    true
+                }
+                else -> false
+            }.also { drawer.closeDrawers() }
+        }
+
+        //////////////////////////////////////////////////////////////////////////////////////
+
 
         // findViewById
         scroll       = findViewById(R.id.scroll)
@@ -469,4 +560,76 @@ class FlightReservationActivity : AppCompatActivity() {
                 .start()
         }
     }
+<<<<<<< HEAD
+=======
+
+    private fun showBottomBarSimple(
+        bottomBar: View,
+        tvTotal: TextView,
+        btn: MaterialButton,
+        amount: Int,
+        buttonText: String,
+        onClick: () -> Unit
+    ) {
+        tvTotal.text = amount.asWon()
+        btn.text = buttonText
+        btn.setOnClickListener { onClick() }
+        bottomBar.slideUpShow()
+    }
+
+    // ----------------- 로그인/헤더 처리 -----------------
+
+    private fun isLoggedIn(): Boolean {
+        val sp = getSharedPreferences("userInfo", MODE_PRIVATE)
+        return !sp.getString("usersId", null).isNullOrBlank()
+    }
+
+    private fun currentUserName(): String {
+        val sp = getSharedPreferences("userInfo", MODE_PRIVATE)
+        return sp.getString("name", null) ?: sp.getString("usersId", "") ?: ""
+    }
+
+    private fun currentUserEmail(): String {
+        val sp = getSharedPreferences("userInfo", MODE_PRIVATE)
+        return sp.getString("email", "") ?: ""
+    }
+
+    private fun updateHeader(navView: NavigationView) {
+        val header = navView.getHeaderView(0)
+        val tvGreet = header.findViewById<TextView>(R.id.tvUserGreeting)
+        val tvEmail = header.findViewById<TextView>(R.id.tvUserEmail)
+        val btnMyPage = header.findViewById<MaterialButton>(R.id.btnMyPage)
+        val btnLogout = header.findViewById<MaterialButton>(R.id.btnLogout)
+
+        if (isLoggedIn()) {
+            val name = currentUserName()
+            val email = currentUserEmail()
+            tvGreet.text = getString(R.string.greeting_fmt, if (name.isBlank()) "회원" else name)
+            tvEmail.visibility = View.VISIBLE
+            tvEmail.text = if (email.isNotBlank()) email else "로그인됨"
+
+            btnLogout.visibility = View.VISIBLE
+            btnMyPage.text = getString(R.string.mypage)
+            btnMyPage.setOnClickListener {
+                startActivity(Intent(this, MyPageActivity::class.java))
+            }
+            btnLogout.setOnClickListener {
+                val sp = getSharedPreferences("userInfo", MODE_PRIVATE)
+                sp.edit().clear().apply()
+                Toast.makeText(this, "로그아웃되었습니다.", Toast.LENGTH_SHORT).show()
+                updateHeader(navView)
+            }
+        } else {
+            // 비로그인: “000님” 같은 더미 표시 제거하고 “로그인”만 노출
+            tvGreet.text = "로그인"
+            tvEmail.visibility = View.GONE
+
+            btnLogout.visibility = View.GONE
+            btnMyPage.text = "로그인"
+            btnMyPage.setOnClickListener {
+                startActivity(Intent(this, LoginActivity::class.java))
+            }
+        }
+    }
+>>>>>>> jgy/chat2
 }
