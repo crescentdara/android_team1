@@ -56,6 +56,6 @@
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:src="@drawable/ic_chevron_right"
-            android:tint="@color/ink_400" />
+            app:tint="@color/ink_400" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>

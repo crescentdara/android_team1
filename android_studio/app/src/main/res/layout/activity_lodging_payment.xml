@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-        <!-- 필요하면 바인딩 변수 추가 -->
+        <!-- 필요시 바인딩 변수 선언 -->
         <!--
         <variable
             name="vm"
@@ -21,116 +21,122 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <!-- 스크롤 영역 -->
+            <!-- 스크롤 가능 영역 -->
             <androidx.core.widget.NestedScrollView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:fillViewport="true"
                 android:background="@color/white"
+                android:fillViewport="true"
                 android:overScrollMode="never">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="0dp">
+                    android:orientation="vertical">
 
-                    <!-- ✅ 공통 헤더 -->
+                    <!-- ✅ 공통 헤더 (마진 X, 항상 상단 고정) -->
                     <include
                         android:id="@+id/header"
-                        layout="@layout/inc_header_jeu" />
-
-                    <!-- 기존 결제 컨텐츠 -->
-                    <ImageView
-                        android:id="@+id/imgLodgingCover"
+                        layout="@layout/inc_header_jeu"
                         android:layout_width="match_parent"
-                        android:layout_height="200dp"
-                        android:layout_marginTop="8dp"
-                        android:scaleType="centerCrop" />
-
-                    <TextView
-                        android:id="@+id/tvLodgingName"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:textSize="20sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:id="@+id/tvLodgingAddr"
-                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
 
-<<<<<<< HEAD
-            <TextView
-                android:id="@+id/tvTotalPrice"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/holo_red_dark"/>
-
-            <RadioGroup
-                android:id="@+id/rgPayment"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginTop="16dp">
-
-                <RadioButton
-                    android:id="@+id/rbKakaoPay"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="카카오페이" />
-
-                <RadioButton
-                    android:id="@+id/rbCard"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="신용카드" />
-
-                <RadioButton
-                    android:id="@+id/rbBank"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="무통장입금" />
-            </RadioGroup>
-
-=======
-                    <TextView
-                        android:id="@+id/tvLodgingPhone"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" />
->>>>>>> jgy/chat2
-
-                    <TextView
-                        android:id="@+id/tvCheckInOut"
+                    <!-- 본문 컨텐츠는 padding 적용 -->
+                    <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="12dp"
-                        android:textSize="16sp" />
+                        android:orientation="vertical"
+                        android:paddingHorizontal="20dp">
 
-                    <TextView
-                        android:id="@+id/tvRoomType"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textSize="16sp" />
+                        <!-- 숙소 커버 이미지 -->
+                        <ImageView
+                            android:id="@+id/imgLodgingCover"
+                            android:layout_width="match_parent"
+                            android:layout_height="200dp"
+                            android:layout_marginTop="8dp"
+                            android:scaleType="centerCrop" />
 
-                    <TextView
-                        android:id="@+id/tvTotalPrice"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:textSize="18sp"
-                        android:textStyle="bold" />
+                        <!-- 숙소명 -->
+                        <TextView
+                            android:id="@+id/tvLodgingName"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
 
-                    <Button
-                        android:id="@+id/btnLodgingPay"
-                        android:layout_width="match_parent"
-                        android:layout_height="48dp"
-                        android:layout_marginTop="20dp"
-                        android:text="결제하기" />
+                        <!-- 숙소 주소 -->
+                        <TextView
+                            android:id="@+id/tvLodgingAddr"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                        <!-- 숙소 전화번호 -->
+                        <TextView
+                            android:id="@+id/tvLodgingPhone"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                        <!-- 체크인/아웃 -->
+                        <TextView
+                            android:id="@+id/tvCheckInOut"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="12dp"
+                            android:textSize="16sp" />
+
+                        <!-- 룸 타입 -->
+                        <TextView
+                            android:id="@+id/tvRoomType"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="16sp" />
+
+                        <!-- 총 결제 금액 -->
+                        <TextView
+                            android:id="@+id/tvTotalPrice"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:textColor="@android:color/holo_red_dark"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                        <!-- 결제 수단 -->
+                        <RadioGroup
+                            android:id="@+id/rgPayment"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:orientation="horizontal">
+
+                            <RadioButton
+                                android:id="@+id/rbKakaoPay"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="카카오페이" />
+
+                            <RadioButton
+                                android:id="@+id/rbCard"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="신용카드" />
+
+                            <RadioButton
+                                android:id="@+id/rbBank"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="무통장입금" />
+                        </RadioGroup>
+
+                        <!-- 결제 버튼 -->
+                        <Button
+                            android:id="@+id/btnLodgingPay"
+                            android:layout_width="match_parent"
+                            android:layout_height="48dp"
+                            android:layout_marginTop="20dp"
+                            android:text="결제하기" />
+                    </LinearLayout>
                 </LinearLayout>
             </androidx.core.widget.NestedScrollView>
         </androidx.coordinatorlayout.widget.CoordinatorLayout>
@@ -142,7 +148,7 @@
             android:layout_height="match_parent"
             android:layout_gravity="end"
             app:headerLayout="@layout/nav_header_jeu"
-            app:menu="@menu/drawer_menu_jeu"
-            app:itemBackground="@drawable/nav_item_bg_jeu" />
+            app:itemBackground="@drawable/nav_item_bg_jeu"
+            app:menu="@menu/drawer_menu_jeu" />
     </androidx.drawerlayout.widget.DrawerLayout>
 </layout>

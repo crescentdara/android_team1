@@ -29,9 +29,9 @@
                 android:id="@+id/tvGuide"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="여권 정보와 동일하게 입력해 주세요."
-                android:textColor="@color/ink_900"
-                android:textSize="22sp"
+                android:text="※ 여권 정보와 동일하게 입력해 주세요."
+                android:textColor="#383838"
+                android:textSize="15sp"
                 android:textStyle="bold" />
 
             <Space
@@ -65,16 +65,10 @@
                     android:id="@+id/formContainer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-<<<<<<< HEAD
-                    android:hint="성(영문)"
-                    android:layout_marginBottom="12dp"
-                    app:boxStrokeColor="@color/jeju_primary">
-=======
                     android:background="@color/surface"
                     android:orientation="vertical"
                     android:padding="12dp"
                     android:importantForAutofill="noExcludeDescendants">
->>>>>>> jgy/chat2
 
                     <!-- 성(영문) -->
                     <com.google.android.material.textfield.TextInputLayout
@@ -85,17 +79,6 @@
                         android:hint="성(영문)"
                         app:boxStrokeColor="@color/jeju_primary">
 
-<<<<<<< HEAD
-                <!-- 이름(영문) -->
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/tilFirstNameEn"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="이름(영문)"
-                    android:layout_marginBottom="12dp"
-                    app:boxStrokeColor="@color/jeju_primary">
-=======
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/etLastNameEn"
                             android:layout_width="match_parent"
@@ -106,7 +89,6 @@
                             android:importantForAutofill="no"
                             android:maxLines="1" />
                     </com.google.android.material.textfield.TextInputLayout>
->>>>>>> jgy/chat2
 
                     <!-- 이름(영문) -->
                     <com.google.android.material.textfield.TextInputLayout
@@ -128,20 +110,8 @@
                             android:maxLines="1" />
                     </com.google.android.material.textfield.TextInputLayout>
 
-<<<<<<< HEAD
-                <RadioGroup
-                    android:id="@+id/rgGender"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginBottom="12dp">
-
-                    <com.google.android.material.radiobutton.MaterialRadioButton
-                        android:id="@+id/rbMale"
-=======
                     <!-- 성별 -->
                     <TextView
->>>>>>> jgy/chat2
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
@@ -153,27 +123,14 @@
                         android:id="@+id/rgGender"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical">
+                        android:orientation="horizontal"
+                        android:layout_marginBottom="12dp">
 
-<<<<<<< HEAD
-                <!-- 생년월일 -->
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/tilBirth"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="생년월일 (YYYY-MM-DD)"
-                    android:layout_marginBottom="12dp"
-                    app:boxStrokeColor="@color/jeju_primary"
-                    app:endIconDrawable="@drawable/ic_calendar"
-                    app:endIconMode="custom">
-=======
                         <com.google.android.material.radiobutton.MaterialRadioButton
                             android:id="@+id/rbMale"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="남자" />
->>>>>>> jgy/chat2
 
                         <com.google.android.material.radiobutton.MaterialRadioButton
                             android:id="@+id/rbFemale"
@@ -193,17 +150,6 @@
                         app:endIconDrawable="@drawable/ic_calendar"
                         app:endIconMode="custom">
 
-<<<<<<< HEAD
-                <!-- 여권번호 -->
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/tilPassportNo"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="여권번호"
-                    android:layout_marginBottom="12dp"
-                    app:boxStrokeColor="@color/jeju_primary">
-=======
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/etBirth"
                             android:layout_width="match_parent"
@@ -213,7 +159,6 @@
                             android:autofillHints=""
                             android:importantForAutofill="no" />
                     </com.google.android.material.textfield.TextInputLayout>
->>>>>>> jgy/chat2
 
                     <!-- 여권번호 -->
                     <com.google.android.material.textfield.TextInputLayout
@@ -224,19 +169,6 @@
                         android:hint="여권번호"
                         app:boxStrokeColor="@color/jeju_primary">
 
-<<<<<<< HEAD
-                <!-- 여권 만료일 -->
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/tilPassportExpiry"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="여권 만료일 (YYYY-MM-DD)"
-                    android:layout_marginBottom="12dp"
-                    app:boxStrokeColor="@color/jeju_primary"
-                    app:endIconDrawable="@drawable/ic_calendar"
-                    app:endIconMode="custom">
-=======
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/etPassportNo"
                             android:layout_width="match_parent"
@@ -247,7 +179,6 @@
                             android:importantForAutofill="no"
                             android:maxLines="1" />
                     </com.google.android.material.textfield.TextInputLayout>
->>>>>>> jgy/chat2
 
                     <!-- 여권 만료일 -->
                     <com.google.android.material.textfield.TextInputLayout
@@ -260,17 +191,6 @@
                         app:endIconDrawable="@drawable/ic_calendar"
                         app:endIconMode="custom">
 
-<<<<<<< HEAD
-                <!-- 국적 -->
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/tilNationality"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="국적 (예: KOR)"
-                    android:layout_marginBottom="12dp"
-                    app:boxStrokeColor="@color/jeju_primary">
-=======
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/etPassportExpiry"
                             android:layout_width="match_parent"
@@ -280,7 +200,6 @@
                             android:autofillHints=""
                             android:importantForAutofill="no" />
                     </com.google.android.material.textfield.TextInputLayout>
->>>>>>> jgy/chat2
 
                     <!-- 국적 -->
                     <com.google.android.material.textfield.TextInputLayout
@@ -291,17 +210,6 @@
                         android:hint="국적 (예: KOR)"
                         app:boxStrokeColor="@color/jeju_primary">
 
-<<<<<<< HEAD
-                <!-- 연락처 -->
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/tilPhone"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="연락처 (숫자만)"
-                    android:layout_marginBottom="12dp"
-                    app:boxStrokeColor="@color/jeju_primary">
-=======
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/etNationality"
                             android:layout_width="match_parent"
@@ -312,7 +220,6 @@
                             android:importantForAutofill="no"
                             android:maxLines="1" />
                     </com.google.android.material.textfield.TextInputLayout>
->>>>>>> jgy/chat2
 
                     <!-- 연락처 -->
                     <com.google.android.material.textfield.TextInputLayout
@@ -323,17 +230,6 @@
                         android:hint="연락처 (숫자만)"
                         app:boxStrokeColor="@color/jeju_primary">
 
-<<<<<<< HEAD
-                <!-- 이메일 -->
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/tilEmail"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="이메일"
-                    android:layout_marginBottom="12dp"
-                    app:boxStrokeColor="@color/jeju_primary">
-=======
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/etPhone"
                             android:layout_width="match_parent"
@@ -344,7 +240,6 @@
                             android:importantForAutofill="no"
                             android:maxLines="1" />
                     </com.google.android.material.textfield.TextInputLayout>
->>>>>>> jgy/chat2
 
                     <!-- 이메일 -->
                     <com.google.android.material.textfield.TextInputLayout
@@ -366,16 +261,6 @@
                             android:maxLines="1" />
                     </com.google.android.material.textfield.TextInputLayout>
 
-<<<<<<< HEAD
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/tilEmergencyName"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="이름(선택)"
-                    android:layout_marginBottom="12dp"
-                    app:boxStrokeColor="@color/jeju_primary">
-=======
                     <!-- (선택) 비상 연락처 -->
                     <TextView
                         android:layout_width="wrap_content"
@@ -384,7 +269,6 @@
                         android:text="(선택) 비상 연락처"
                         android:textColor="@color/ink_700"
                         android:textStyle="bold" />
->>>>>>> jgy/chat2
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/tilEmergencyName"
@@ -394,16 +278,6 @@
                         android:hint="이름(선택)"
                         app:boxStrokeColor="@color/jeju_primary">
 
-<<<<<<< HEAD
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/tilEmergencyPhone"
-                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="연락처(선택)"
-                    android:layout_marginBottom="12dp"
-                    app:boxStrokeColor="@color/jeju_primary">
-=======
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/etEmergencyName"
                             android:layout_width="match_parent"
@@ -413,7 +287,6 @@
                             android:importantForAutofill="no"
                             android:maxLines="1" />
                     </com.google.android.material.textfield.TextInputLayout>
->>>>>>> jgy/chat2
 
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/tilEmergencyPhone"

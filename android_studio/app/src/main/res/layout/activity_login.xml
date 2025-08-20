@@ -59,7 +59,7 @@
 
         <Button
             android:id="@+id/btn_login"
-            android:text="로그인 버튼"
+            android:text="LOGIN"
             android:textColor="#fff"
             android:backgroundTint="@color/jeju_primary"
             android:layout_width="match_parent"

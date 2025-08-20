@@ -3,7 +3,6 @@ package bitc.fullstack502.android_studio
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.util.TypedValue
 import android.view.View
 import android.widget.Button
 import android.widget.ImageButton
@@ -20,23 +19,8 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-<<<<<<< HEAD
-import bitc.fullstack502.android_studio.databinding.ActivityFlightReservationBinding
-import bitc.fullstack502.android_studio.model.Flight
-import bitc.fullstack502.android_studio.adapter.FlightAdapter
-import bitc.fullstack502.android_studio.util.AuthManager
-=======
-import bitc.fullstack502.android_studio.FlightReservationActivity.Companion.EXTRA_INBOUND
-import bitc.fullstack502.android_studio.FlightReservationActivity.Companion.EXTRA_INFANT
-import bitc.fullstack502.android_studio.FlightReservationActivity.Companion.EXTRA_IN_PRICE
-import bitc.fullstack502.android_studio.FlightReservationActivity.Companion.EXTRA_TRIP_TYPE
-import bitc.fullstack502.android_studio.InboundSelectActivity.Companion.EXTRA_ADULT
-import bitc.fullstack502.android_studio.InboundSelectActivity.Companion.EXTRA_CHILD
-import bitc.fullstack502.android_studio.InboundSelectActivity.Companion.EXTRA_OUTBOUND
-import bitc.fullstack502.android_studio.InboundSelectActivity.Companion.EXTRA_OUT_PRICE
 import bitc.fullstack502.android_studio.adapter.FlightAdapter
 import bitc.fullstack502.android_studio.databinding.ActivityFlightReservationBinding
-import bitc.fullstack502.android_studio.databinding.ActivityPostListBinding
 import bitc.fullstack502.android_studio.model.Flight
 import bitc.fullstack502.android_studio.ui.ChatListActivity
 import bitc.fullstack502.android_studio.ui.MainActivity
@@ -44,7 +28,7 @@ import bitc.fullstack502.android_studio.ui.lodging.LodgingSearchActivity
 import bitc.fullstack502.android_studio.ui.mypage.LoginActivity
 import bitc.fullstack502.android_studio.ui.mypage.MyPageActivity
 import bitc.fullstack502.android_studio.ui.post.PostListActivity
->>>>>>> jgy/chat2
+import bitc.fullstack502.android_studio.util.AuthManager
 import bitc.fullstack502.android_studio.viewmodel.FlightReservationViewModel
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.datepicker.MaterialDatePicker
@@ -56,35 +40,26 @@ import java.util.TimeZone
 
 class FlightReservationActivity : AppCompatActivity() {
 
-<<<<<<< HEAD
-    private val binding by lazy { ActivityFlightReservationBinding.inflate(layoutInflater) }
-=======
-    private lateinit var bind: ActivityFlightReservationBinding
+    private lateinit var binding: ActivityFlightReservationBinding
 
-    // 고정 요금 상수 (1인 기준)
+    // ===== 상수만 companion에 둡니다 =====
     companion object {
-        const val ADULT_PRICE    = 98_700      // 항공운임 - 성인
-        const val CHILD_PRICE    = ADULT_PRICE - 20_000  // 항공운임 - 아동 (요청 반영)
-        const val FUEL_SURCHARGE = 15_400      // 1인당 고정
-        const val FACILITY_FEE   = 8_000       // 1인당 고정
->>>>>>> jgy/chat2
-
-    companion object {
-        const val ADULT_PRICE    = 98_700
-        const val CHILD_PRICE    = ADULT_PRICE - 20_000
+        const val ADULT_PRICE = 98_700
+        const val CHILD_PRICE = ADULT_PRICE - 20_000
         const val FUEL_SURCHARGE = 15_400
-        const val FACILITY_FEE   = 8_000
+        const val FACILITY_FEE = 8_000
 
         const val EXTRA_TRIP_TYPE = "EXTRA_TRIP_TYPE"
-        const val EXTRA_OUTBOUND  = "EXTRA_OUTBOUND"
+        const val EXTRA_OUTBOUND = "EXTRA_OUTBOUND"
         const val EXTRA_OUT_PRICE = "EXTRA_OUT_PRICE"
-        const val EXTRA_INBOUND   = "EXTRA_INBOUND"
-        const val EXTRA_IN_PRICE  = "EXTRA_IN_PRICE"
-        const val EXTRA_ADULT     = "EXTRA_ADULT"
-        const val EXTRA_CHILD     = "EXTRA_CHILD"
-        const val EXTRA_INFANT    = "EXTRA_INFANT"
+        const val EXTRA_INBOUND = "EXTRA_INBOUND"
+        const val EXTRA_IN_PRICE = "EXTRA_IN_PRICE"
+        const val EXTRA_ADULT = "EXTRA_ADULT"
+        const val EXTRA_CHILD = "EXTRA_CHILD"
+        const val EXTRA_INFANT = "EXTRA_INFANT"
     }
 
+    // ===== 상태/뷰 참조 (인스턴스 필드) =====
     private var adultCount: Int = 1
     private var childCount: Int = 0
     private var infantCount: Int = 0
@@ -126,100 +101,73 @@ class FlightReservationActivity : AppCompatActivity() {
         "여수", "울산", "원주", "양양", "사천(진주)", "포항", "군산", "제주"
     )
 
-<<<<<<< HEAD
-=======
-
-
     // ===== 요금 계산 보조 =====
->>>>>>> jgy/chat2
-    private fun unitTotalAdult()  = ADULT_PRICE + FUEL_SURCHARGE + FACILITY_FEE
-    private fun unitTotalChild()  = CHILD_PRICE + FUEL_SURCHARGE + FACILITY_FEE
+    private fun unitTotalAdult() = ADULT_PRICE + FUEL_SURCHARGE + FACILITY_FEE
+    private fun unitTotalChild() = CHILD_PRICE + FUEL_SURCHARGE + FACILITY_FEE
     private fun unitTotalInfant() = 0
-
     private fun calcTotal(adults: Int, children: Int, infants: Int): Int {
         return adults * unitTotalAdult() + children * unitTotalChild() + infants * unitTotalInfant()
     }
-
     private fun Int.asWon(): String = "₩%,d".format(this)
     private fun dp(v: Int) = (v * resources.displayMetrics.density).toInt()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        binding = ActivityFlightReservationBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        /////////////////////////////////////
-        // ✅ Drawer & NavigationView
+        // ===== Drawer & Navigation =====
         val drawer = findViewById<DrawerLayout>(R.id.drawerLayout)
         val navView = findViewById<NavigationView>(R.id.navigationView)
 
-        // ✅ 공통 헤더 버튼 세팅
         val header = findViewById<View>(R.id.header)
         val btnBack: ImageButton = header.findViewById(R.id.btnBack)
-        val imgLogo: ImageView   = header.findViewById(R.id.imgLogo)
+        val imgLogo: ImageView = header.findViewById(R.id.imgLogo)
         val btnMenu: ImageButton = header.findViewById(R.id.btnMenu)
 
-        btnBack.setOnClickListener { finish() }  // 뒤로가기
-        imgLogo.setOnClickListener {             // 로고 → 메인으로
-            startActivity(
-                Intent(this, MainActivity::class.java)
-                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-            )
+        btnBack.setOnClickListener { finish() }
+        imgLogo.setOnClickListener {
+            startActivity(Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
         }
-        btnMenu.setOnClickListener {             // 햄버거 → Drawer 열기
-            drawer.openDrawer(GravityCompat.END)
-        }
+        btnMenu.setOnClickListener { drawer.openDrawer(GravityCompat.END) }
 
-        // 드로어 헤더 인사말 세팅 (로그인 상태 반영)
         updateHeader(navView)
 
-        // ✅ Drawer 메뉴 클릭 처리
         navView.setNavigationItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.nav_hotel -> {
-                    startActivity(Intent(this, LodgingSearchActivity::class.java)); true
-                }
-                R.id.nav_board -> {
-                    startActivity(Intent(this, PostListActivity::class.java)); true
-                }
-                R.id.nav_chat -> {
-                    startActivity(Intent(this, ChatListActivity::class.java)); true
-                }
-                R.id.nav_flight -> {
-                    // 현재 FlightReservationActivity니까 따로 이동 안 해도 됨
-                    true
-                }
+                R.id.nav_hotel -> { startActivity(Intent(this, LodgingSearchActivity::class.java)); true }
+                R.id.nav_board -> { startActivity(Intent(this, PostListActivity::class.java)); true }
+                R.id.nav_chat  -> { startActivity(Intent(this, ChatListActivity::class.java)); true }
+                R.id.nav_flight -> true
                 else -> false
             }.also { drawer.closeDrawers() }
         }
 
-        //////////////////////////////////////////////////////////////////////////////////////
-
-
-        // findViewById
-        scroll       = findViewById(R.id.scroll)
-        bottomBar    = findViewById(R.id.bottomBar)
+        // ===== findViewById =====
+        scroll = findViewById(R.id.scroll)
+        bottomBar = findViewById(R.id.bottomBar)
         tvTotalPrice = findViewById(R.id.tvTotalPrice)
-        btnProceed   = findViewById(R.id.btnProceed)
+        btnProceed = findViewById(R.id.btnProceed)
 
         val rowDateView: View? = findViewById(R.id.rowDate)
-        val rowPaxView: View?  = findViewById(R.id.rowPax)
+        val rowPaxView: View? = findViewById(R.id.rowPax)
 
         switchTrip = findViewById(R.id.switchTripType)
-        tvDate     = findViewById(R.id.tvDate)
-        tvFrom     = findViewById(R.id.tvFrom)
-        tvTo       = findViewById(R.id.tvTo)
-        btnSwap    = findViewById(R.id.btnSwap)
-        tvPax      = findViewById(R.id.tvPax)
-        btnSearch  = findViewById(R.id.btnSearch)
-        rvResults  = findViewById(R.id.rvResults)
+        tvDate = findViewById(R.id.tvDate)
+        tvFrom = findViewById(R.id.tvFrom)
+        tvTo = findViewById(R.id.tvTo)
+        btnSwap = findViewById(R.id.btnSwap)
+        tvPax = findViewById(R.id.tvPax)
+        btnSearch = findViewById(R.id.btnSearch)
+        rvResults = findViewById(R.id.rvResults)
 
-        // 인원수 초기값
-        adultCount  = intent.getIntExtra(EXTRA_ADULT, 1)
-        childCount  = intent.getIntExtra(EXTRA_CHILD, 0)
+        // 인원 초기값
+        adultCount = intent.getIntExtra(EXTRA_ADULT, 1)
+        childCount = intent.getIntExtra(EXTRA_CHILD, 0)
         infantCount = intent.getIntExtra(EXTRA_INFANT, 0)
-        tvPax.text  = "총 ${adultCount + childCount + infantCount} 명"
+        tvPax.text = "총 ${adultCount + childCount + infantCount} 명"
 
-        // 초기 출/도착
+        // 출/도착 초기값
         setDeparture("김포(서울)", recordNonJeju = true)
         setArrival("제주", recordNonJeju = false)
 
@@ -231,8 +179,8 @@ class FlightReservationActivity : AppCompatActivity() {
         )
         rvResults.apply {
             layoutManager = LinearLayoutManager(this@FlightReservationActivity)
-            itemAnimator  = DefaultItemAnimator()
-            adapter       = flightAdapter
+            itemAnimator = DefaultItemAnimator()
+            adapter = flightAdapter
         }
 
         // ViewModel
@@ -254,7 +202,7 @@ class FlightReservationActivity : AppCompatActivity() {
         switchTrip.setOnCheckedChangeListener { _, checked ->
             isRoundTrip = checked
             outDateYmd = null
-            inDateYmd  = null
+            inDateYmd = null
             applyTripTypeText()
         }
 
@@ -265,14 +213,14 @@ class FlightReservationActivity : AppCompatActivity() {
         rowDateView?.setOnClickListener(dateClicker)
         tvDate.setOnClickListener(dateClicker)
 
-        // 인원수
+        // 인원수 선택
         val paxClicker = View.OnClickListener { showPassengerPickerDialog() }
         rowPaxView?.setOnClickListener(paxClicker)
         tvPax.setOnClickListener(paxClicker)
 
         // 출/도착 & 스왑
         tvFrom.setOnClickListener { showAirportModalAll(true) }
-        tvTo.setOnClickListener   { showAirportModalAll(false) }
+        tvTo.setOnClickListener { showAirportModalAll(false) }
         btnSwap.setOnClickListener { swapAirports() }
 
         // 검색
@@ -301,7 +249,8 @@ class FlightReservationActivity : AppCompatActivity() {
         btnProceed.setOnClickListener { guardAndProceed() }
     }
 
-    // 🔧 guardAndProceed() 함수 수정 (중요 부분만 발췌)
+    // ===== 로직 함수들 (모두 인스턴스 컨텍스트) =====
+
     private fun guardAndProceed() {
         val loggedIn = AuthManager.isLoggedIn()
         val userPk = AuthManager.id()
@@ -309,12 +258,10 @@ class FlightReservationActivity : AppCompatActivity() {
             Toast.makeText(this, "로그인 후 이용해주세요", Toast.LENGTH_SHORT).show()
             return
         }
-
         if (outDateYmd.isNullOrBlank()) {
             Toast.makeText(this, "출발 날짜를 선택하세요", Toast.LENGTH_SHORT).show()
             return
         }
-
         if (isRoundTrip) {
             if (inDateYmd.isNullOrBlank()) {
                 Toast.makeText(this, "오는 날짜를 선택하세요", Toast.LENGTH_SHORT).show()
@@ -322,8 +269,7 @@ class FlightReservationActivity : AppCompatActivity() {
             }
             openInboundSelection()
         } else {
-            val out = selectedOut
-            if (out == null) {
+            val out = selectedOut ?: run {
                 Toast.makeText(this, "먼저 가는 편을 선택하세요", Toast.LENGTH_SHORT).show()
                 return
             }
@@ -334,7 +280,6 @@ class FlightReservationActivity : AppCompatActivity() {
     private fun onFlightSelected(item: Flight, price: Int) {
         selectedOut = item
         selectedOutPrice = price
-
         val totalAmountOneWay = calcTotal(adultCount, childCount, infantCount)
         showBottomBar(
             amount = totalAmountOneWay,
@@ -399,6 +344,7 @@ class FlightReservationActivity : AppCompatActivity() {
         picker.show(supportFragmentManager, "single_date")
         Log.d("*** flight ***", "$")
     }
+
     private fun showRangeDatePicker() {
         val picker = MaterialDatePicker.Builder.dateRangePicker()
             .setTitleText("가는 날과 오는 날")
@@ -415,7 +361,7 @@ class FlightReservationActivity : AppCompatActivity() {
                 }
                 tvDate.text = "${displayFmt.format(Date(start))} ~ ${displayFmt.format(Date(end))}"
                 outDateYmd = apiFmt.format(Date(start))
-                inDateYmd  = apiFmt.format(Date(end))
+                inDateYmd = apiFmt.format(Date(end))
             }
         }
         picker.show(supportFragmentManager, "range_date")
@@ -434,22 +380,10 @@ class FlightReservationActivity : AppCompatActivity() {
         tvAdultCount.text = adultCount.toString()
         tvChildCount.text = childCount.toString()
 
-        btnAdultMinus.setOnClickListener {
-            if (adultCount > 1) adultCount--
-            tvAdultCount.text = adultCount.toString()
-        }
-        btnAdultPlus.setOnClickListener {
-            adultCount++
-            tvAdultCount.text = adultCount.toString()
-        }
-        btnChildMinus.setOnClickListener {
-            if (childCount > 0) childCount--
-            tvChildCount.text = childCount.toString()
-        }
-        btnChildPlus.setOnClickListener {
-            childCount++
-            tvChildCount.text = childCount.toString()
-        }
+        btnAdultMinus.setOnClickListener { if (adultCount > 1) adultCount--; tvAdultCount.text = adultCount.toString() }
+        btnAdultPlus.setOnClickListener { adultCount++; tvAdultCount.text = adultCount.toString() }
+        btnChildMinus.setOnClickListener { if (childCount > 0) childCount--; tvChildCount.text = childCount.toString() }
+        btnChildPlus.setOnClickListener { childCount++; tvChildCount.text = childCount.toString() }
 
         val dialog = AlertDialog.Builder(this).setView(dialogView).create()
         btnConfirmPassenger.setOnClickListener {
@@ -491,22 +425,19 @@ class FlightReservationActivity : AppCompatActivity() {
             Toast.makeText(this, "가는 날/오는 날을 선택하세요", Toast.LENGTH_SHORT).show()
             return
         }
-
-        val depInbound = normalizeAirport(tvTo.text.toString())   // IN dep = 기존 도착
-        val arrInbound = normalizeAirport(tvFrom.text.toString()) // IN arr = 기존 출발
+        val depInbound = normalizeAirport(tvTo.text.toString())
+        val arrInbound = normalizeAirport(tvFrom.text.toString())
 
         startActivity(Intent(this, InboundSelectActivity::class.java).apply {
             putExtra(InboundSelectActivity.EXTRA_OUTBOUND, selectedOut)
             putExtra(InboundSelectActivity.EXTRA_OUT_PRICE, selectedOutPrice)
-            putExtra(InboundSelectActivity.EXTRA_DEP,  depInbound)
-            putExtra(InboundSelectActivity.EXTRA_ARR,  arrInbound)
-            putExtra(InboundSelectActivity.EXTRA_DATE, inDateYmd)     // yyyy-MM-dd
+            putExtra(InboundSelectActivity.EXTRA_DEP, depInbound)
+            putExtra(InboundSelectActivity.EXTRA_ARR, arrInbound)
+            putExtra(InboundSelectActivity.EXTRA_DATE, inDateYmd)
             putExtra(InboundSelectActivity.EXTRA_ADULT, adultCount)
             putExtra(InboundSelectActivity.EXTRA_CHILD, childCount)
-
-            // 🔥 PassengerInputActivity가 읽을 날짜를 미리 넘겨둠(오는편 화면에서 그대로 전달)
             putExtra(PassengerInputActivity.EXTRA_OUT_DATE, outDateYmd)
-            putExtra(PassengerInputActivity.EXTRA_IN_DATE,  inDateYmd)
+            putExtra(PassengerInputActivity.EXTRA_IN_DATE, inDateYmd)
         })
     }
 
@@ -529,10 +460,8 @@ class FlightReservationActivity : AppCompatActivity() {
             putExtra(EXTRA_ADULT, adultCount)
             putExtra(EXTRA_CHILD, childCount)
             putExtra(EXTRA_INFANT, infantCount)
-
-            // 🔥 핵심: 승객 입력 화면으로 날짜 전달
             putExtra(PassengerInputActivity.EXTRA_OUT_DATE, outDateYmd)
-            putExtra(PassengerInputActivity.EXTRA_IN_DATE,  inDateYmd) // 편도면 null이어도 OK
+            putExtra(PassengerInputActivity.EXTRA_IN_DATE, inDateYmd)
         }
         startActivity(intent)
     }
@@ -560,8 +489,6 @@ class FlightReservationActivity : AppCompatActivity() {
                 .start()
         }
     }
-<<<<<<< HEAD
-=======
 
     private fun showBottomBarSimple(
         bottomBar: View,
@@ -578,7 +505,6 @@ class FlightReservationActivity : AppCompatActivity() {
     }
 
     // ----------------- 로그인/헤더 처리 -----------------
-
     private fun isLoggedIn(): Boolean {
         val sp = getSharedPreferences("userInfo", MODE_PRIVATE)
         return !sp.getString("usersId", null).isNullOrBlank()
@@ -610,9 +536,7 @@ class FlightReservationActivity : AppCompatActivity() {
 
             btnLogout.visibility = View.VISIBLE
             btnMyPage.text = getString(R.string.mypage)
-            btnMyPage.setOnClickListener {
-                startActivity(Intent(this, MyPageActivity::class.java))
-            }
+            btnMyPage.setOnClickListener { startActivity(Intent(this, MyPageActivity::class.java)) }
             btnLogout.setOnClickListener {
                 val sp = getSharedPreferences("userInfo", MODE_PRIVATE)
                 sp.edit().clear().apply()
@@ -620,16 +544,11 @@ class FlightReservationActivity : AppCompatActivity() {
                 updateHeader(navView)
             }
         } else {
-            // 비로그인: “000님” 같은 더미 표시 제거하고 “로그인”만 노출
             tvGreet.text = "로그인"
             tvEmail.visibility = View.GONE
-
             btnLogout.visibility = View.GONE
             btnMyPage.text = "로그인"
-            btnMyPage.setOnClickListener {
-                startActivity(Intent(this, LoginActivity::class.java))
-            }
+            btnMyPage.setOnClickListener { startActivity(Intent(this, LoginActivity::class.java)) }
         }
     }
->>>>>>> jgy/chat2
 }

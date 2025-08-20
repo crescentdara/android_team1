@@ -6,69 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-<<<<<<< HEAD
-    <!-- 상단: 선택된 검색 조건 요약 -->
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/cardFilterSummary"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:cardCornerRadius="16dp"
-        app:cardUseCompatPadding="true"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="12dp">
-
-            <!-- 위치 -->
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/tvLocation"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="위치: 전체" />
-
-            <!-- 날짜 -->
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/tvDates"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="날짜: -" />
-
-            <!-- 인원 -->
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/tvGuests"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:text="인원: 성인 1, 아동 0" />
-        </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
-
-    <!-- 숙소 목록 -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvLodgings"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:clipToPadding="false"
-        android:paddingTop="8dp"
-        app:layout_constraintBottom_toTopOf="@id/placeholderEmpty"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cardFilterSummary" />
-
-    <!-- 빈 상태 플레이스홀더 (초기/검색결과 없음) -->
-    <LinearLayout
-        android:id="@+id/placeholderEmpty"
-=======
     <!-- 메인 컨텐츠 -->
     <androidx.coordinatorlayout.widget.CoordinatorLayout
->>>>>>> jgy/chat2
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -82,22 +21,23 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="12dp">
+                android:orientation="vertical">
 
                 <!-- ✅ 공통 헤더 -->
                 <include
                     android:id="@+id/header"
-                    layout="@layout/inc_header_jeu" />
+                    layout="@layout/inc_header_jeu"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
 
                 <!-- 선택된 검색 조건 요약 -->
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/cardFilterSummary"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
                     app:cardCornerRadius="16dp"
-                    app:cardUseCompatPadding="true"
-                    android:layout_marginTop="8dp">
+                    app:cardUseCompatPadding="true">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -109,19 +49,21 @@
                             android:id="@+id/tvLocation"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="위치: 전체" />
+                            android:text="위치: 전체"/>
 
                         <com.google.android.material.textview.MaterialTextView
                             android:id="@+id/tvDates"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="날짜: -" />
+                            android:layout_marginTop="4dp"
+                            android:text="날짜: -"/>
 
                         <com.google.android.material.textview.MaterialTextView
                             android:id="@+id/tvGuests"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="인원: 성인 2, 아동 0" />
+                            android:layout_marginTop="4dp"
+                            android:text="인원: 성인 2, 아동 0"/>
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
@@ -133,7 +75,7 @@
                     android:clipToPadding="false"
                     android:paddingTop="8dp"
                     android:overScrollMode="never"
-                    android:nestedScrollingEnabled="false" />
+                    android:nestedScrollingEnabled="false"/>
 
                 <!-- 빈 상태 -->
                 <LinearLayout
@@ -149,7 +91,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="조건에 맞는 숙소가 없습니다."
-                        android:textAppearance="?attr/textAppearanceBodyMedium" />
+                        android:textAppearance="?attr/textAppearanceBodyMedium"/>
                 </LinearLayout>
             </LinearLayout>
         </androidx.core.widget.NestedScrollView>

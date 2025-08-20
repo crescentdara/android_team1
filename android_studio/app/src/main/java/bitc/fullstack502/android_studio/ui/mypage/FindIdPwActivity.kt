@@ -1,121 +1,186 @@
 package bitc.fullstack502.android_studio.ui.mypage
 
 import android.os.Bundle
-import android.util.Log
+import android.util.Patterns
+import android.view.View
+import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import bitc.fullstack502.android_studio.FindIdResponse
-import bitc.fullstack502.android_studio.FindPasswordRequest
-import bitc.fullstack502.android_studio.FindPasswordResponse
-import bitc.fullstack502.android_studio.FindIdRequest
+import androidx.core.content.ContextCompat
+import bitc.fullstack502.android_studio.*
+import bitc.fullstack502.android_studio.network.ApiProvider
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import bitc.fullstack502.android_studio.R
-import bitc.fullstack502.android_studio.network.ApiProvider
 
 class FindIdPwActivity : AppCompatActivity() {
 
+    private lateinit var tabId: TextView
+    private lateinit var tabPw: TextView
+    private lateinit var layoutIdFind: LinearLayout
+    private lateinit var layoutPwFind: LinearLayout
+
+    private lateinit var etEmailForId: EditText
+    private lateinit var etPassForId: EditText
+    private lateinit var btnFindId: Button
+
+    private lateinit var etUserIdForPw: EditText
+    private lateinit var etEmailForPw: EditText
+    private lateinit var btnFindPw: Button
+
+    // 간단 로딩뷰(없으면 자동 생성)
+    private lateinit var progress: ProgressBar
+
+    // 탭 색상(없으면 hex로 대체)
+    private val colorSelected by lazy { ContextCompat.getColor(this, R.color.ink_900) /* 진한 회색 등 */ }
+    private val colorUnselected by lazy { ContextCompat.getColor(this, R.color.jeju_tint) /* 연한 회색 등 */ }
+    private val textOnSelected by lazy { ContextCompat.getColor(this, android.R.color.white) }
+    private val textOnUnselected by lazy { ContextCompat.getColor(this, android.R.color.black) }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_find_id_pw)
+        setContentView(R.layout.activity_find_id_pw) // ⚠️ XML 파일명이 activity_find_id_pw.xml 인지 확인
 
-        val tabId = findViewById<TextView>(R.id.tab_id)
-        val tabPw = findViewById<TextView>(R.id.tab_pw)
+        // 탭/레이아웃
+        tabId = findViewById(R.id.tab_id)
+        tabPw = findViewById(R.id.tab_pw)
+        layoutIdFind = findViewById(R.id.layout_id_find)
+        layoutPwFind = findViewById(R.id.layout_pw_find)
 
-        val layoutIdFind = findViewById<LinearLayout>(R.id.layout_id_find)
-        val layoutPwFind = findViewById<LinearLayout>(R.id.layout_pw_find)
+        tabId.setOnClickListener { selectTab(isIdTab = true) }
+        tabPw.setOnClickListener { selectTab(isIdTab = false) }
 
-        tabId.setOnClickListener {
-            layoutIdFind.visibility = LinearLayout.VISIBLE
-            layoutPwFind.visibility = LinearLayout.GONE
-            tabId.isEnabled = false
-            tabPw.isEnabled = true
+        // 아이디 찾기 뷰
+        etEmailForId = findViewById(R.id.et_email_for_id)
+        etPassForId  = findViewById(R.id.et_pass_for_id)
+        btnFindId = findViewById(R.id.btn_find_id)
+        btnFindId.setOnClickListener { onFindId() }
+
+        // 비밀번호 찾기 뷰
+        etUserIdForPw = findViewById(R.id.et_userid_for_pw)
+        etEmailForPw  = findViewById(R.id.et_email_for_pw)
+        btnFindPw = findViewById(R.id.btn_find_pw)
+        btnFindPw.setOnClickListener { onFindPassword() }
+
+        // 프로그레스(레이아웃에 없으면 동적 추가)
+        progress = findViewById<ProgressBar?>(R.id.progressBar) ?: ProgressBar(this).also {
+            (findViewById<View>(android.R.id.content) as ViewGroup).addView(it)
+            it.visibility = View.GONE
         }
 
-        tabPw.setOnClickListener {
-            layoutIdFind.visibility = LinearLayout.GONE
-            layoutPwFind.visibility = LinearLayout.VISIBLE
-            tabId.isEnabled = true
-            tabPw.isEnabled = false
+        // 기본: 아이디 탭 활성
+        selectTab(isIdTab = true)
+    }
+
+    private fun selectTab(isIdTab: Boolean) {
+        layoutIdFind.visibility = if (isIdTab) View.VISIBLE else View.GONE
+        layoutPwFind.visibility = if (isIdTab) View.GONE else View.VISIBLE
+
+        // enabled만 바꾸면 접근성/색상 헷갈리니, 배경/텍스트 컬러까지 명시
+        styleTab(tabId, selected = isIdTab)
+        styleTab(tabPw, selected = !isIdTab)
+    }
+
+    private fun styleTab(tab: TextView, selected: Boolean) {
+        tab.isEnabled = !selected // 선택된 탭은 클릭 비활성화
+        tab.setBackgroundColor(if (selected) colorSelected else colorUnselected)
+        tab.setTextColor(if (selected) textOnSelected else textOnUnselected)
+    }
+
+    // --- 아이디 찾기 ---
+    private fun onFindId() {
+        hideKeyboard()
+        val email = etEmailForId.text.toString().trim()
+        val pass  = etPassForId.text.toString()
+
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            toast("올바른 이메일을 입력하세요.")
+            return
+        }
+        if (pass.isBlank()) {
+            toast("비밀번호를 입력하세요.")
+            return
         }
 
-        // 아이디 찾기
-        val etEmailForId = findViewById<EditText>(R.id.et_email_for_id)
-        val etPassForId = findViewById<EditText>(R.id.et_pass_for_id)
-
-        findViewById<Button>(R.id.btn_find_id).setOnClickListener {
-            val email = etEmailForId.text.toString()
-            val password = etPassForId.text.toString()
-
-            if (email.isBlank() || password.isBlank()) {
-                Toast.makeText(this, "이메일과 비밀번호를 입력해주세요.", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
+        lockUi(true)
+        val req = FindIdRequest(email = email, pass = pass)
+        ApiProvider.api.findUsersId(req).enqueue(object : Callback<FindIdResponse> {
+            override fun onResponse(call: Call<FindIdResponse>, res: Response<FindIdResponse>) {
+                lockUi(false)
+                if (res.isSuccessful) {
+                    val usersId = res.body()?.usersId.orEmpty()
+                    if (usersId.isNotBlank())
+                        showDialog("아이디 찾기 결과", "회원님의 아이디는 \"$usersId\" 입니다.")
+                    else toast("아이디를 찾을 수 없습니다.")
+                } else {
+                    toast("아이디를 찾을 수 없습니다. (코드 ${res.code()})")
+                }
             }
+            override fun onFailure(call: Call<FindIdResponse>, t: Throwable) {
+                lockUi(false); toast("네트워크 오류: ${t.localizedMessage}")
+            }
+        })
+    }
 
-            val request = FindIdRequest(email, password)
+    // --- 비밀번호 찾기 ---
+    private fun onFindPassword() {
+        hideKeyboard()
+        val usersId = etUserIdForPw.text.toString().trim()
+        val email   = etEmailForPw.text.toString().trim()
 
-            ApiProvider.api.findUsersId(request).enqueue(object : Callback<FindIdResponse> {
-                override fun onResponse(call: Call<FindIdResponse>, response: Response<FindIdResponse>) {
-                    if (response.isSuccessful) {
-                        val usersId = response.body()?.usersId
-                        if (usersId != null) {
-                            Toast.makeText(this@FindIdPwActivity, "당신의 아이디는: $usersId", Toast.LENGTH_LONG).show()
-                        } else {
-                            Toast.makeText(this@FindIdPwActivity, "아이디를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show()
-                            Log.e("FindIdPwActivity", "userId is null in successful response")
-                        }
-                    } else {
-                        val errorMsg = response.errorBody()?.string()
-                        Toast.makeText(this@FindIdPwActivity, "아이디를 찾을 수 없습니다. 에러: $errorMsg", Toast.LENGTH_SHORT).show()
-                        Log.e("FindIdPwActivity", "Failed findUserId response: $errorMsg")
-                    }
-                }
-
-                override fun onFailure(call: Call<FindIdResponse>, t: Throwable) {
-                    Toast.makeText(this@FindIdPwActivity, "서버 오류: ${t.message}", Toast.LENGTH_SHORT).show()
-                    Log.e("FindIdPwActivity", "findUserId onFailure: ${t.message}", t)
-                }
-            })
+        if (usersId.isBlank()) {
+            toast("아이디를 입력하세요.")
+            return
+        }
+        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            toast("올바른 이메일을 입력하세요.")
+            return
         }
 
-        // 비밀번호 찾기
-        val etUserIdForPw = findViewById<EditText>(R.id.et_userid_for_pw)
-        val etEmailForPw = findViewById<EditText>(R.id.et_email_for_pw)
-
-        findViewById<Button>(R.id.btn_find_pw).setOnClickListener {
-            val userId = etUserIdForPw.text.toString()
-            val email = etEmailForPw.text.toString()
-
-            if (userId.isBlank() || email.isBlank()) {
-                Toast.makeText(this, "아이디와 이메일을 입력해주세요.", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
+        lockUi(true)
+        val req = FindPasswordRequest(usersId = usersId, email = email)
+        ApiProvider.api.findUserPassword(req).enqueue(object : Callback<FindPasswordResponse> {
+            override fun onResponse(call: Call<FindPasswordResponse>, res: Response<FindPasswordResponse>) {
+                lockUi(false)
+                if (res.isSuccessful) {
+                    val pass = res.body()?.pass.orEmpty()
+                    if (pass.isNotBlank())
+                        showDialog("비밀번호 찾기 결과", "회원님의 비밀번호는 \"$pass\" 입니다.")
+                    else toast("비밀번호를 찾을 수 없습니다.")
+                } else {
+                    toast("비밀번호를 찾을 수 없습니다. (코드 ${res.code()})")
+                }
             }
+            override fun onFailure(call: Call<FindPasswordResponse>, t: Throwable) {
+                lockUi(false); toast("네트워크 오류: ${t.localizedMessage}")
+            }
+        })
+    }
 
-            val request = FindPasswordRequest(userId, email)
+    private fun lockUi(loading: Boolean) {
+        progress.visibility = if (loading) View.VISIBLE else View.GONE
+        btnFindId.isEnabled = !loading
+        btnFindPw.isEnabled = !loading
+        tabId.isEnabled = !loading && layoutPwFind.visibility == View.VISIBLE   // 다른 탭만 전환 가능
+        tabPw.isEnabled = !loading && layoutIdFind.visibility == View.VISIBLE
+    }
 
-            ApiProvider.api.findUserPassword(request).enqueue(object : Callback<FindPasswordResponse> {
-                override fun onResponse(call: Call<FindPasswordResponse>, response: Response<FindPasswordResponse>) {
-                    if (response.isSuccessful) {
-                        val password = response.body()?.pass
-                        if (password != null) {
-                            Toast.makeText(this@FindIdPwActivity, "비밀번호: $password", Toast.LENGTH_LONG).show()
-                        } else {
-                            Toast.makeText(this@FindIdPwActivity, "비밀번호를 찾을 수 없습니다.", Toast.LENGTH_SHORT).show()
-                            Log.e("FindIdPwActivity", "password is null in successful response")
-                        }
-                    } else {
-                        val errorMsg = response.errorBody()?.string()
-                        Toast.makeText(this@FindIdPwActivity, "비밀번호를 찾을 수 없습니다. 에러: $errorMsg", Toast.LENGTH_SHORT).show()
-                        Log.e("FindIdPwActivity", "Failed findUserPassword response: $errorMsg")
-                    }
-                }
-
-                override fun onFailure(call: Call<FindPasswordResponse>, t: Throwable) {
-                    Toast.makeText(this@FindIdPwActivity, "서버 오류: ${t.message}", Toast.LENGTH_SHORT).show()
-                    Log.e("FindIdPwActivity", "findUserPassword onFailure: ${t.message}", t)
-                }
-            })
+    private fun hideKeyboard() {
+        currentFocus?.let { v ->
+            val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(v.windowToken, 0)
         }
     }
+
+    private fun showDialog(title: String, msg: String) {
+        AlertDialog.Builder(this)
+            .setTitle(title)
+            .setMessage(msg)
+            .setPositiveButton("확인", null)
+            .show()
+    }
+
+    private fun toast(msg: String) = Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
 }

@@ -8,11 +8,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-<<<<<<< HEAD
-import bitc.fullstack502.android_studio.databinding.ActivityLodgingPaymentCompleteBinding
-import bitc.fullstack502.android_studio.ui.MainActivity
-import com.bumptech.glide.Glide
-=======
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import bitc.fullstack502.android_studio.R
@@ -22,9 +17,9 @@ import bitc.fullstack502.android_studio.ui.ChatListActivity
 import bitc.fullstack502.android_studio.ui.mypage.LoginActivity
 import bitc.fullstack502.android_studio.ui.mypage.MyPageActivity
 import bitc.fullstack502.android_studio.ui.post.PostListActivity
+import com.bumptech.glide.Glide
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.navigation.NavigationView
->>>>>>> jgy/chat2
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -37,9 +32,6 @@ class LodgingPaymentCompleteActivity : AppCompatActivity() {
         b = ActivityLodgingPaymentCompleteBinding.inflate(layoutInflater)
         setContentView(b.root)
 
-<<<<<<< HEAD
-        // ✅ Intent 로 값 받기
-=======
         /////////////////////////////////////
         // ✅ Drawer & NavigationView
         val drawer = findViewById<DrawerLayout>(R.id.drawerLayout)
@@ -87,7 +79,6 @@ class LodgingPaymentCompleteActivity : AppCompatActivity() {
 
         //////////////////////////////////////////////////////////////////////////////////////
 
->>>>>>> jgy/chat2
         val lodgingName = intent.getStringExtra("lodgingName") ?: ""
         val lodgingAddr = intent.getStringExtra("lodgingAddr") ?: ""
         val checkIn = intent.getStringExtra("checkIn") ?: ""

@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <!-- 메인 컨텐츠 -->
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
@@ -25,30 +26,9 @@
                 android:orientation="vertical"
                 android:padding="16dp"
                 android:layout_width="match_parent"
-<<<<<<< HEAD
-                android:layout_height="wrap_content"
-                android:backgroundTint="@color/white"/>
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:hint="내용"
-            >
-
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etContent"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="top"
-                android:minLines="6"
-                android:backgroundTint="@color/white"/>
-        </com.google.android.material.textfield.TextInputLayout>
-=======
                 android:layout_height="wrap_content">
 
-                <!-- 정사각형 미리보기 -->
+                <!-- 정사각형 이미지 미리보기 -->
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
@@ -66,8 +46,8 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintDimensionRatio="1:1" />
                 </androidx.constraintlayout.widget.ConstraintLayout>
->>>>>>> jgy/chat2
 
+                <!-- 이미지 선택 버튼 -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnImage"
                     style="@style/FilledButton"
@@ -76,6 +56,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
 
+                <!-- 제목 입력 -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -84,10 +65,12 @@
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etTitle"
+                        android:backgroundTint="@color/jeju_tint"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <!-- 내용 입력 -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -98,10 +81,12 @@
                         android:id="@+id/etContent"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:backgroundTint="@color/jeju_tint"
                         android:gravity="top"
                         android:minLines="6"/>
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <!-- 등록 버튼 -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btnSubmit"
                     style="@style/FilledButton"

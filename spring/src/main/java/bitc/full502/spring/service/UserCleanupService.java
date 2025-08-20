@@ -19,7 +19,7 @@ public class UserCleanupService {
     private final FlWishRepository flWishRepository;
     private final LodWishRepository lodWishRepository;
     private final FlBookRepository flBookRepository;
-    private final LodBookRepository lodBookRepository;
+//    private final LodBookRepository lodBookRepository;
 
     @Transactional
     public void cascadeDeleteByUsersId(String usersId) {
@@ -61,9 +61,9 @@ public class UserCleanupService {
         flBookRepository.findAll().stream()
                 .filter(b -> b.getUser().getId().equals(user.getId()))
                 .forEach(flBookRepository::delete);
-        lodBookRepository.findAll().stream()
-                .filter(b -> b.getUser().getId().equals(user.getId()))
-                .forEach(lodBookRepository::delete);
+//        lodBookRepository.findAll().stream()
+//                .filter(b -> b.getUser().getId().equals(user.getId()))
+//                .forEach(lodBookRepository::delete);
 
         // 6) 마지막으로 사용자 삭제
         usersRepository.delete(user);

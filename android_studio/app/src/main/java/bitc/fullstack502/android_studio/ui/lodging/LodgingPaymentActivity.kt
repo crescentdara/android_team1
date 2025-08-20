@@ -30,7 +30,6 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.text.NumberFormat
 import java.util.Locale
-import bitc.fullstack502.android_studio.R
 
 class LodgingPaymentActivity : AppCompatActivity() {
 

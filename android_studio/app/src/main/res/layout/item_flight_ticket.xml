@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/cardRoot"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -18,7 +19,7 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- 상단: 항공사/시간/소요시간/도착시간 + ★ -->
+        <!-- 상단: 항공사 / 편명 / 즐겨찾기 -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -40,41 +41,55 @@
             <!-- 항공사 -->
             <TextView
                 android:id="@+id/tvAirline"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
                 android:text="진에어"
                 android:textColor="@color/ink_800"
                 android:textSize="14sp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/btnWish"
                 app:layout_constraintTop_toTopOf="parent"
-                android:ellipsize="end"
-                android:maxLines="1"/>
+                app:layout_constraintEnd_toStartOf="@id/tvFlightNo" />
+
+            <!-- 편명 -->
+            <TextView
+                android:id="@+id/tvFlightNo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="LJ517"
+                android:textColor="@color/ink_500"
+                android:textSize="12sp"
+                app:layout_constraintStart_toEndOf="@id/tvAirline"
+                app:layout_constraintBaseline_toBaselineOf="@id/tvAirline"
+                app:layout_constraintEnd_toStartOf="@id/btnWish"
+                android:layout_marginStart="6dp"/>
 
             <!-- 출발 시간 -->
             <TextView
                 android:id="@+id/tvDep"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="6dp"
+                android:layout_marginTop="8dp"
                 android:text="06:00"
-                android:textStyle="bold"
-                android:textSize="20sp"
                 android:textColor="@color/ink_900"
+                android:textSize="20sp"
+                android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tvAirline" />
 
-            <!-- 도착 시간 (별 왼쪽에 정렬) -->
+            <!-- 도착 시간 -->
             <TextView
                 android:id="@+id/tvArr"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
                 android:text="07:10"
-                android:textStyle="bold"
-                android:textSize="20sp"
                 android:textColor="@color/ink_900"
-                app:layout_constraintEnd_toStartOf="@id/btnWish"
-                app:layout_constraintBaseline_toBaselineOf="@id/tvDep" />
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintBaseline_toBaselineOf="@id/tvDep"
+                app:layout_constraintEnd_toStartOf="@id/btnWish" />
 
             <!-- 소요 시간 -->
             <TextView
@@ -89,19 +104,6 @@
                 app:layout_constraintStart_toEndOf="@id/tvDep"
                 app:layout_constraintEnd_toStartOf="@id/tvArr"
                 app:layout_constraintBaseline_toBaselineOf="@id/tvDep" />
-
-            <!-- 편명 -->
-            <TextView
-                android:id="@+id/tvFlightNo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:text="LJ517"
-                android:textColor="@color/ink_500"
-                android:textSize="12sp"
-                app:layout_constraintStart_toStartOf="@id/tvDep"
-                app:layout_constraintTop_toBottomOf="@id/tvDep" />
-
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!-- 구분선 -->

@@ -17,21 +17,14 @@ import com.google.zxing.EncodeHintType
 import com.google.zxing.MultiFormatWriter
 import com.google.zxing.common.BitMatrix
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
-import bitc.fullstack502.android_studio.R
-
-import bitc.fullstack502.android_studio.model.Passenger   // ✅ 추가
-import bitc.fullstack502.android_studio.model.PassengerType   // ✅ 추가
-<<<<<<< HEAD
+import bitc.fullstack502.android_studio.model.Passenger   //
 import bitc.fullstack502.android_studio.ui.MainActivity
-=======
 import bitc.fullstack502.android_studio.ui.ChatListActivity
-import bitc.fullstack502.android_studio.ui.MainActivity
 import bitc.fullstack502.android_studio.ui.lodging.LodgingSearchActivity
 import bitc.fullstack502.android_studio.ui.mypage.LoginActivity
 import bitc.fullstack502.android_studio.ui.mypage.MyPageActivity
 import bitc.fullstack502.android_studio.ui.post.PostListActivity
 import com.google.android.material.navigation.NavigationView
->>>>>>> jgy/chat2
 
 class TicketSuccessActivity : AppCompatActivity() {
 

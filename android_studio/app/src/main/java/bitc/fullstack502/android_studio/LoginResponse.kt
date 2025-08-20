@@ -5,6 +5,5 @@ data class LoginResponse(
     val usersId: String,
     val name: String,
     val email: String,
-    val phone: String,
-    val accessToken: String?    // ✅ JWT/세션 토큰
+    val phone: String
 )

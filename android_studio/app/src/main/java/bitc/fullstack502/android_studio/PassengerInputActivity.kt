@@ -4,51 +4,34 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-<<<<<<< HEAD
-=======
 import android.view.View
 import android.widget.ImageButton
 import android.widget.ImageView
->>>>>>> jgy/chat2
 import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-<<<<<<< HEAD
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import bitc.fullstack502.android_studio.adapter.PassengerSelectorAdapter
 import bitc.fullstack502.android_studio.model.*
-import bitc.fullstack502.android_studio.network.ApiProvider.api
 import bitc.fullstack502.android_studio.util.AuthManager
-import com.google.android.material.appbar.MaterialToolbar
-=======
 import androidx.core.view.GravityCompat
-import androidx.core.view.ViewCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import bitc.fullstack502.android_studio.adapter.PassengerSelectorAdapter
 import bitc.fullstack502.android_studio.model.Flight
 import bitc.fullstack502.android_studio.model.Passenger
 import bitc.fullstack502.android_studio.model.PassengerType
 import bitc.fullstack502.android_studio.ui.ChatListActivity
 import bitc.fullstack502.android_studio.ui.MainActivity
->>>>>>> jgy/chat2
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.radiobutton.MaterialRadioButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
-<<<<<<< HEAD
-=======
 // ✅ 추가
 import bitc.fullstack502.android_studio.ui.PhoneHyphenTextWatcher
 import bitc.fullstack502.android_studio.ui.lodging.LodgingSearchActivity
@@ -59,7 +42,6 @@ import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.navigation.NavigationView
 import kotlin.collections.all
 
->>>>>>> jgy/chat2
 class PassengerInputActivity : AppCompatActivity() {
 
     companion object {
@@ -138,11 +120,6 @@ class PassengerInputActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_passenger_input)
 
-<<<<<<< HEAD
-        val toolbar = findViewById<MaterialToolbar>(R.id.toolbar)
-        setSupportActionBar(toolbar)
-        toolbar.setNavigationOnClickListener { onBackPressedDispatcher.onBackPressed() }
-=======
         /////////////////////////////////////
         // ✅ Drawer & NavigationView
         val drawer = findViewById<DrawerLayout>(R.id.drawerLayout)
@@ -188,7 +165,6 @@ class PassengerInputActivity : AppCompatActivity() {
             }.also { drawer.closeDrawers() }
         }
         /////////////////////////////////////
->>>>>>> jgy/chat2
 
         // 0) 버튼 초기화
         btnNext = findViewById(R.id.btnNext)
@@ -222,12 +198,6 @@ class PassengerInputActivity : AppCompatActivity() {
         rv.layoutManager = LinearLayoutManager(this, RecyclerView.HORIZONTAL, false)
         adapter = PassengerSelectorAdapter(passengers) { pos ->
             if (pos == selectedIndex) return@PassengerSelectorAdapter
-<<<<<<< HEAD
-            val old = selectedIndex
-            if (old in passengers.indices) saveFormToModel(old)
-            selectedIndex = pos
-            adapter.setSelected(pos)
-=======
 
             val old = selectedIndex
             if (old in passengers.indices) saveFormToModel(old)
@@ -235,7 +205,6 @@ class PassengerInputActivity : AppCompatActivity() {
             selectedIndex = pos
             adapter.setSelected(pos)
 
->>>>>>> jgy/chat2
             val target = passengers[pos]
             if (!target.edited) bindEmptyForm() else bindForm(target)
         }
@@ -256,9 +225,6 @@ class PassengerInputActivity : AppCompatActivity() {
         etEmgPhone= findViewById(R.id.etEmergencyPhone)
         rgGender  = findViewById(R.id.rgGender)
 
-<<<<<<< HEAD
-        // 4) 날짜 피커/워처
-=======
         rgGender = findViewById(R.id.rgGender)
         rbMale   = findViewById(R.id.rbMale)
         rbFemale = findViewById(R.id.rbFemale)
@@ -266,7 +232,6 @@ class PassengerInputActivity : AppCompatActivity() {
         etPhone.addTextChangedListener(PhoneHyphenTextWatcher(etPhone))
         etEmgPhone.addTextChangedListener(PhoneHyphenTextWatcher(etEmgPhone))
 
->>>>>>> jgy/chat2
         findViewById<TextInputLayout>(R.id.tilBirth)
             .setEndIconOnClickListener { showMaterialDatePicker(etBirth) }
         findViewById<TextInputLayout>(R.id.tilPassportExpiry)
@@ -274,13 +239,8 @@ class PassengerInputActivity : AppCompatActivity() {
         etBirth.setOnClickListener { showMaterialDatePicker(etBirth) }
         etPassExp.setOnClickListener { showMaterialDatePicker(etPassExp) }
 
-<<<<<<< HEAD
-        // 5) 기본 폼 바인딩 + 워처 연결
-        bindForm(passengers[0])
-=======
         bindForm(passengers[0])
 
->>>>>>> jgy/chat2
         listOf(etLast, etFirst, etPassNo, etNation, etPhone, etEmail, etEmgName, etEmgPhone)
             .forEach { it.addTextChangedListener(object : TextWatcher {
                 override fun afterTextChanged(s: Editable?) { if (!isBinding) syncCurrentPassengerAndValidate() }
@@ -289,15 +249,11 @@ class PassengerInputActivity : AppCompatActivity() {
             }) }
         rgGender.setOnCheckedChangeListener { _, _ -> if (!isBinding) syncCurrentPassengerAndValidate() }
 
-<<<<<<< HEAD
-        // 6) 다음(=예약) 버튼
-=======
         rgGender.setOnCheckedChangeListener { _, _ ->
             if (isBinding) return@setOnCheckedChangeListener
             syncCurrentPassengerAndValidate()
         }
 
->>>>>>> jgy/chat2
         btnNext.setOnClickListener {
             val allOk = passengers.all { it.isRequiredFilled() }
             if (!allOk) {
@@ -335,7 +291,6 @@ class PassengerInputActivity : AppCompatActivity() {
             )
 
             val intent = Intent(this, ItineraryActivity::class.java).apply {
-<<<<<<< HEAD
                 putExtra(FlightReservationActivity.EXTRA_TRIP_TYPE, tripType)
                 putExtra(FlightReservationActivity.EXTRA_OUTBOUND, outFlight)
                 putExtra(FlightReservationActivity.EXTRA_INBOUND,  inFlight)
@@ -349,7 +304,6 @@ class PassengerInputActivity : AppCompatActivity() {
                 inDate?.let { putExtra(PassengerInputActivity.EXTRA_IN_DATE, it) }
 
                 putExtra("PASSENGERS", ArrayList(passengers))
-=======
                 putExtra("PASSENGERS", ArrayList(passengers))
                 putExtra(FlightReservationActivity.EXTRA_ADULT, adults)
                 putExtra(FlightReservationActivity.EXTRA_CHILD, children)
@@ -358,66 +312,29 @@ class PassengerInputActivity : AppCompatActivity() {
                 putExtra(FlightReservationActivity.EXTRA_OUT_PRICE, outPrice)
                 putExtra(FlightReservationActivity.EXTRA_INBOUND, inFlight)
                 putExtra(FlightReservationActivity.EXTRA_IN_PRICE, inPrice)
->>>>>>> jgy/chat2
             }
             startActivity(intent)
-//            api.createFlightBooking(req).enqueue(object : Callback<BookingResponse> {
-//                override fun onResponse(
-//                    call: Call<BookingResponse>,
-//                    response: Response<BookingResponse>
-//                ) {
-//                    if (!response.isSuccessful) {
-//                        val msg = when (response.code()) {
-//                            409 -> "잔여좌석이 부족합니다. 다른 항공편을 선택해주세요."
-//                            400 -> "예약 정보가 올바르지 않습니다."
-//                            else -> "예약 실패: ${response.code()}"
-//                        }
-//                        Toast.makeText(this@PassengerInputActivity, msg, Toast.LENGTH_SHORT).show()
-//                        return
-//                    }
-//
-//                    startActivity(Intent(this@PassengerInputActivity, ItineraryActivity::class.java).apply {
-//                        putExtra(PassengerInputActivity.EXTRA_OUT_DATE, outDate)   // ★ 추가
-//                        inDate?.let { putExtra(PassengerInputActivity.EXTRA_IN_DATE, it) } // 왕복일 경우
-//
-//                        putExtra("PASSENGERS", ArrayList(passengers))
-//                        putExtra(FlightReservationActivity.EXTRA_TRIP_TYPE, tripType)
-//                        putExtra(FlightReservationActivity.EXTRA_OUTBOUND, outFlight)
-//                        putExtra(FlightReservationActivity.EXTRA_OUT_PRICE, outPrice)
-//                        putExtra(FlightReservationActivity.EXTRA_INBOUND, inFlight)
-//                        putExtra(FlightReservationActivity.EXTRA_IN_PRICE, inPrice)
-//                    })
-//                    finish()
-//                }
-//
-//                override fun onFailure(call: Call<BookingResponse>, t: Throwable) {
-//                    Toast.makeText(this@PassengerInputActivity, "네트워크 오류: ${t.message}", Toast.LENGTH_SHORT).show()
-//                }
-//            })
         }
 
         validateAll()
     }
 
-<<<<<<< HEAD
-=======
 
-    private fun removeAllWatchers() {
-        listOf(etLast, etFirst, etPassNo, etNation, etPhone, etEmail, etEmgName, etEmgPhone)
-            .forEach { it.removeTextChangedListener(watcher) }
-        rbMale.setOnCheckedChangeListener(null)
-        rbFemale.setOnCheckedChangeListener(null)
-    }
+//    private fun removeAllWatchers() {
+//        listOf(etLast, etFirst, etPassNo, etNation, etPhone, etEmail, etEmgName, etEmgPhone)
+//            .forEach { it.removeTextChangedListener(watcher) }
+//        rbMale.setOnCheckedChangeListener(null)
+//        rbFemale.setOnCheckedChangeListener(null)
+//    }
 
-    private fun addAllWatchers() {
-        listOf(etLast, etFirst, etPassNo, etNation, etPhone, etEmail, etEmgName, etEmgPhone)
-            .forEach { it.addTextChangedListener(watcher) }
-        rbMale.setOnCheckedChangeListener { _, _ -> syncCurrentPassengerAndValidate() }
-        rbFemale.setOnCheckedChangeListener { _, _ -> syncCurrentPassengerAndValidate() }
-    }
+//    private fun addAllWatchers() {
+//        listOf(etLast, etFirst, etPassNo, etNation, etPhone, etEmail, etEmgName, etEmgPhone)
+//            .forEach { it.addTextChangedListener(watcher) }
+//        rbMale.setOnCheckedChangeListener { _, _ -> syncCurrentPassengerAndValidate() }
+//        rbFemale.setOnCheckedChangeListener { _, _ -> syncCurrentPassengerAndValidate() }
+//    }
 
 
->>>>>>> jgy/chat2
     private fun syncCurrentPassengerAndValidate() {
         val p = current()
         p.lastNameEn     = etLast.text?.toString()?.trim().orEmpty()

@@ -2,11 +2,8 @@ package bitc.fullstack502.android_studio
 
 import android.content.Intent
 import android.os.Bundle
-<<<<<<< HEAD
 import android.util.Log
-=======
 import android.view.View
->>>>>>> jgy/chat2
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
@@ -14,7 +11,6 @@ import android.widget.RadioButton
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-<<<<<<< HEAD
 import bitc.fullstack502.android_studio.model.Flight
 import bitc.fullstack502.android_studio.model.Passenger
 import bitc.fullstack502.android_studio.model.BookingRequest
@@ -24,13 +20,8 @@ import bitc.fullstack502.android_studio.util.AuthManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-=======
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import bitc.fullstack502.android_studio.FlightReservationActivity
-import bitc.fullstack502.android_studio.model.Flight
-import bitc.fullstack502.android_studio.model.Passenger
-import bitc.fullstack502.android_studio.R
 import bitc.fullstack502.android_studio.ui.ChatListActivity
 import bitc.fullstack502.android_studio.ui.MainActivity
 import bitc.fullstack502.android_studio.ui.lodging.LodgingSearchActivity
@@ -39,7 +30,6 @@ import bitc.fullstack502.android_studio.ui.mypage.MyPageActivity
 import bitc.fullstack502.android_studio.ui.post.PostListActivity
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.navigation.NavigationView
->>>>>>> jgy/chat2
 
 class PaymentActivity : AppCompatActivity() {
 
@@ -71,9 +61,6 @@ class PaymentActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_payment)
 
-<<<<<<< HEAD
-        // --- Views ---
-=======
 
         /////////////////////////////////////
         // ✅ Drawer & NavigationView
@@ -123,7 +110,6 @@ class PaymentActivity : AppCompatActivity() {
         //////////////////////////////////////////////////////////////////////////////////////
 
         // === View refs ===
->>>>>>> jgy/chat2
         val tvTotal    = findViewById<TextView>(R.id.tvTotalPrice)
         val tvFuel     = findViewById<TextView>(R.id.tvFuel)
         val tvFacility = findViewById<TextView>(R.id.tvFacility)

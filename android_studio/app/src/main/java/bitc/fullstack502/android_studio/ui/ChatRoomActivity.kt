@@ -96,8 +96,8 @@ class ChatRoomActivity : AppCompatActivity() {
 
         // 3) 뷰 바인딩
         tvTitle = findViewById(R.id.tvTitle)
-        rvChat  = findViewById(R.id.rvChat)
-        etMsg   = findViewById(R.id.etMsg)
+        rvChat = findViewById(R.id.rvChat)
+        etMsg = findViewById(R.id.etMsg)
         btnSend = findViewById(R.id.btnSend)
         tvTitle.text = partnerId
 
@@ -124,7 +124,8 @@ class ChatRoomActivity : AppCompatActivity() {
                 if (reachedTop && hasMore && !isLoadingMore && messageAdapter.itemCount > 0) {
                     loadOlder()
                 }
-                val atBottom = layoutManager.findLastVisibleItemPosition() >= (messageAdapter.itemCount - 3)
+                val atBottom =
+                    layoutManager.findLastVisibleItemPosition() >= (messageAdapter.itemCount - 3)
                 if (atBottom) debounceMarkRead()
             }
         })
@@ -202,7 +203,12 @@ class ChatRoomActivity : AppCompatActivity() {
                 stomp.subscribeTopic(
                     "/topic/room.$roomId",
                     onMessage = { payload ->
-                        val m = runCatching { gson.fromJson(payload, ChatMessage::class.java) }.getOrNull()
+                        val m = runCatching {
+                            gson.fromJson(
+                                payload,
+                                ChatMessage::class.java
+                            )
+                        }.getOrNull()
                         if (m != null && m.roomId == roomId) {
                             runOnUiThread { onIncoming(m) }
                         }
@@ -214,7 +220,12 @@ class ChatRoomActivity : AppCompatActivity() {
                 stomp.subscribeTopic(
                     "/topic/room.$roomId.read",
                     onMessage = { payload ->
-                        val rc = runCatching { gson.fromJson(payload, ReadReceiptDTO::class.java) }.getOrNull()
+                        val rc = runCatching {
+                            gson.fromJson(
+                                payload,
+                                ReadReceiptDTO::class.java
+                            )
+                        }.getOrNull()
                         if (rc != null && rc.roomId == roomId && rc.readerId != myUserId) {
                             if (rc.lastReadId > lastReadByOtherId) lastReadByOtherId = rc.lastReadId
                             runOnUiThread { messageAdapter.markReadByOtherUpTo(lastReadByOtherId) }
@@ -307,7 +318,10 @@ class ChatRoomActivity : AppCompatActivity() {
                     if (filtered.isNotEmpty()) {
                         messageAdapter.prependMany(filtered)
                         rvChat.post {
-                            layoutManager.scrollToPositionWithOffset(firstIndex + filtered.size, firstTop)
+                            layoutManager.scrollToPositionWithOffset(
+                                firstIndex + filtered.size,
+                                firstTop
+                            )
                         }
                     }
                 }
@@ -324,3 +338,4 @@ class ChatRoomActivity : AppCompatActivity() {
         runCatching { stomp.disconnect() }
     }
 }
+

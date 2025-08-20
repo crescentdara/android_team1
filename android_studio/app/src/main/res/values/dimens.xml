@@ -8,7 +8,6 @@
     <dimen name="card_stroke_selected">2dp</dimen>
     <dimen name="card_stroke_normal">1dp</dimen>
 
-<<<<<<< HEAD
     <!-- 추가 -->
     <!-- 칩 공통 규격 -->
     <dimen name="chip_height">44dp</dimen>
@@ -22,8 +21,8 @@
     <!-- 공통 너비: 가장 긴 라벨 기준으로 한 번만 맞추세요 -->
     <!-- 필요하면 96~128dp 사이에서 조정 -->
     <dimen name="chip_fixed_width">112dp</dimen>
-=======
+
     <!-- 푸터 -->
     <dimen name="footer_height">56dp</dimen>
->>>>>>> jgy/chat2
+
 </resources>

@@ -285,9 +285,6 @@ class InboundSelectActivity : AppCompatActivity() {
 
     // ----------------- 로그인/헤더 처리 -----------------
 
-<<<<<<< HEAD
-
-=======
     private fun isLoggedIn(): Boolean {
         val sp = getSharedPreferences("userInfo", MODE_PRIVATE)
         return !sp.getString("usersId", null).isNullOrBlank()
@@ -340,5 +337,4 @@ class InboundSelectActivity : AppCompatActivity() {
             }
         }
     }
->>>>>>> jgy/chat2
 }

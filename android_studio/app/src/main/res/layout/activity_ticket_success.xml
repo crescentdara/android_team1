@@ -51,7 +51,7 @@
                         android:layout_width="40dp"
                         android:layout_height="40dp"
                         android:src="@android:drawable/ic_menu_send"
-                        android:tint="@color/jeju_primary" />
+                        app:tint="@color/jeju_primary" />
 
                     <View
                         android:layout_width="0dp"
