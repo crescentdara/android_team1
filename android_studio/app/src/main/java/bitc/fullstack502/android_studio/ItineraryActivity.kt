@@ -2,6 +2,7 @@ package bitc.fullstack502.android_studio
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.CheckBox
@@ -69,7 +70,7 @@ class ItineraryActivity : AppCompatActivity() {
 
         val btnNext = findViewById<Button>(R.id.btnNext)
 
-        // ===== PassengerInputActivity에서 넘어온 값들 (키 통일!) =====
+        // ===== PassengerInputActivity 에서 넘어온 값들 (키 통일!) =====
         val outFlight = intent.getSerializableExtra(FlightReservationActivity.EXTRA_OUTBOUND) as? Flight
         val inFlight  = intent.getSerializableExtra(FlightReservationActivity.EXTRA_INBOUND)  as? Flight
         val outPrice  = intent.getIntExtra(FlightReservationActivity.EXTRA_OUT_PRICE, 0)
@@ -157,6 +158,10 @@ class ItineraryActivity : AppCompatActivity() {
         // ===== 다음(결제) =====
         btnNext.setOnClickListener {
             if (!btnNext.isEnabled) return@setOnClickListener
+
+            val outDate = intent.getStringExtra(PassengerInputActivity.EXTRA_OUT_DATE)
+            val inDate  = intent.getStringExtra(PassengerInputActivity.EXTRA_IN_DATE)
+
             startActivity(Intent(this, PaymentActivity::class.java).apply {
                 // 👉 결제 화면으로는 '구간 반영 후' 금액 전달
                 putExtra("EXTRA_TOTAL", totalX)
@@ -166,12 +171,16 @@ class ItineraryActivity : AppCompatActivity() {
 
                 putExtra(FlightReservationActivity.EXTRA_OUTBOUND, outFlight)
                 putExtra(FlightReservationActivity.EXTRA_INBOUND, inFlight)
-                intent.putExtra(FlightReservationActivity.EXTRA_ADULT, adultCount)
-                intent.putExtra(FlightReservationActivity.EXTRA_CHILD, childCount)
-                intent.putExtra(FlightReservationActivity.EXTRA_INFANT, infantCount)
+                putExtra(FlightReservationActivity.EXTRA_ADULT, adultCount)
+                putExtra(FlightReservationActivity.EXTRA_CHILD, childCount)
+                putExtra(FlightReservationActivity.EXTRA_INFANT, infantCount)
 
                 // 필요 시 승객 리스트도 넘김
                 putExtra("PASSENGERS", passengers)
+
+                // ✅ 날짜 전달(핵심)
+                putExtra(PassengerInputActivity.EXTRA_OUT_DATE, outDate)
+                inDate?.let { putExtra(PassengerInputActivity.EXTRA_IN_DATE, it) }
             })
         }
     }

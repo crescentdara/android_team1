@@ -232,7 +232,10 @@ class PassengerInputActivity : AppCompatActivity() {
                         return
                     }
 
-                    startActivity(Intent(this@PassengerInputActivity, TicketSuccessActivity::class.java).apply {
+                    startActivity(Intent(this@PassengerInputActivity, ItineraryActivity::class.java).apply {
+                        putExtra(PassengerInputActivity.EXTRA_OUT_DATE, outDate)   // ★ 추가
+                        inDate?.let { putExtra(PassengerInputActivity.EXTRA_IN_DATE, it) } // 왕복일 경우
+
                         putExtra("PASSENGERS", ArrayList(passengers))
                         putExtra(FlightReservationActivity.EXTRA_TRIP_TYPE, tripType)
                         putExtra(FlightReservationActivity.EXTRA_OUTBOUND, outFlight)
