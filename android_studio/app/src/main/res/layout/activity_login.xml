@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#f2f2f2"
+    android:background="@color/colorBg_je"
     android:orientation="vertical"
     android:padding="24dp"
     android:gravity="center_horizontal">
@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="#fff"
+        android:background="#FFFDF9"
         android:padding="24dp"
         android:elevation="4dp"
         android:layout_marginBottom="24dp">
@@ -61,7 +61,7 @@
             android:id="@+id/btn_login"
             android:text="로그인 버튼"
             android:textColor="#fff"
-            android:backgroundTint="#6a4fff"
+            android:backgroundTint="@color/jeju_primary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="12dp"/>
