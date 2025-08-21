@@ -11,6 +11,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.lifecycleScope
+import bitc.fullstack502.android_studio.model.BookingResponse
+import bitc.fullstack502.android_studio.model.Flight
 import com.google.android.material.button.MaterialButton
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
@@ -18,6 +21,7 @@ import com.google.zxing.MultiFormatWriter
 import com.google.zxing.common.BitMatrix
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel
 import bitc.fullstack502.android_studio.model.Passenger   //
+import bitc.fullstack502.android_studio.network.ApiProvider
 import bitc.fullstack502.android_studio.ui.MainActivity
 import bitc.fullstack502.android_studio.ui.ChatListActivity
 import bitc.fullstack502.android_studio.ui.lodging.LodgingSearchActivity
@@ -25,6 +29,7 @@ import bitc.fullstack502.android_studio.ui.mypage.LoginActivity
 import bitc.fullstack502.android_studio.ui.mypage.MyPageActivity
 import bitc.fullstack502.android_studio.ui.post.PostListActivity
 import com.google.android.material.navigation.NavigationView
+import kotlinx.coroutines.launch
 
 class TicketSuccessActivity : AppCompatActivity() {
 
@@ -32,7 +37,68 @@ class TicketSuccessActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_ticket_success)
 
+        val container = findViewById<LinearLayout>(R.id.ticketContainer)
+        container.removeAllViews()
 
+        val bookingId = intent.getLongExtra("EXTRA_BOOKING_ID", -1L)
+        if (bookingId <= 0L) {
+            Toast.makeText(this, "예약 번호가 없습니다.", Toast.LENGTH_SHORT).show()
+            finish(); return
+        }
+
+        lifecycleScope.launch {
+            try {
+                // 1) 예약 상세
+                val b: BookingResponse = ApiProvider.api.getFlightBooking(bookingId)
+
+                // 2) 항공편 조회(가는 편)
+                val out: Flight = ApiProvider.api.getFlight(b.flightId)
+
+                // 3) (왕복이면) 오는 편 조회
+                val isRound = (b.returnFlightId != null && b.retDate != null)
+                val `in` = if (isRound) ApiProvider.api.getFlight(b.returnFlightId!!) else null
+
+                // 4) 표시용 문자열
+                val passengerTitle = "승객 ${b.seatCnt}명 (성인 ${b.adult}" +
+                        (if ((b.child ?: 0) > 0) ", 소아 ${b.child}" else "") + ")"
+                val status = if (b.status.equals("PAID", true)) "결제 완료" else b.status
+
+                // 5) 가는 편 티켓
+                addTicket(
+                    container = container,
+                    badge = "가는 편",
+                    routeDep = out.dep,
+                    routeArr = out.arr,
+                    dateTime = "${b.depDate} ${out.depTime}",   // 예: 2025-08-28 09:05
+                    flightNo = out.flNo,
+                    gate = randomGate(),
+                    seat = randomSeat(),
+                    seatClass = "이코노미",
+                    passenger = passengerTitle,
+                    status = status
+                )
+
+                // 6) 오는 편(왕복일 때만)
+                if (isRound && `in` != null) {
+                    addTicket(
+                        container = container,
+                        badge = "오는 편",
+                        routeDep = `in`.dep,
+                        routeArr = `in`.arr,
+                        dateTime = "${b.retDate} ${`in`.depTime}",
+                        flightNo = `in`.flNo,
+                        gate = randomGate(),
+                        seat = randomSeat(),
+                        seatClass = "이코노미",
+                        passenger = passengerTitle,
+                        status = status
+                    )
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Toast.makeText(this@TicketSuccessActivity, "예약 내역을 불러오지 못했습니다.", Toast.LENGTH_SHORT).show()
+            }
+        }
         /////////////////////////////////////
         // ✅ Drawer & NavigationView
         val drawer = findViewById<DrawerLayout>(R.id.drawerLayout)
@@ -71,7 +137,7 @@ class TicketSuccessActivity : AppCompatActivity() {
                     startActivity(Intent(this, ChatListActivity::class.java)); true
                 }
                 R.id.nav_flight -> {
-                    // 현재 FlightReservationActivity니까 따로 이동 안 해도 됨
+                    // 현재 FlightReservationActivity 니까 따로 이동 안 해도 됨
                     true
                 }
                 else -> false
@@ -89,7 +155,6 @@ class TicketSuccessActivity : AppCompatActivity() {
             finish()
         }
 
-        val container = findViewById<LinearLayout>(R.id.ticketContainer)
         container.removeAllViews()
 
         val isRoundTrip = intent.getBooleanExtra("EXTRA_ROUNDTRIP", false)
