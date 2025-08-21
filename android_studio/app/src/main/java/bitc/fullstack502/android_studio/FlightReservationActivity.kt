@@ -72,6 +72,9 @@ class FlightReservationActivity : AppCompatActivity() {
     private var selectedIn: Flight? = null
     private var selectedInPrice: Int = 0
 
+    private fun currentDeparture() = tvFrom.text.toString()
+    private fun currentArrival()  = tvTo.text.toString()
+
     private lateinit var scroll: NestedScrollView
     private lateinit var bottomBar: View
     private lateinit var tvTotalPrice: TextView
@@ -220,8 +223,13 @@ class FlightReservationActivity : AppCompatActivity() {
         tvPax.setOnClickListener(paxClicker)
 
         // 출/도착 & 스왑
-        tvFrom.setOnClickListener { showAirportModalAll(true) }
-        tvTo.setOnClickListener { showAirportModalAll(false) }
+        // 출발이 제주로 고정, 스왑 후 도착이 제주로 고정
+        tvFrom.setOnClickListener {
+            if (currentDeparture() != "제주") showAirportModalAll(true)
+        }
+        tvTo.setOnClickListener {
+            if (currentArrival() != "제주") showAirportModalAll(false)
+        }
         btnSwap.setOnClickListener { swapAirports() }
 
         // 검색

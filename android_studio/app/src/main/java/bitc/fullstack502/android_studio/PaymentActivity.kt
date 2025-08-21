@@ -214,8 +214,16 @@ class PaymentActivity : AppCompatActivity() {
                         return
                     }
 
+                    // ✅ 서버가 반환한 예약 결과에서 bookingId 확보
+                    val booked = response.body()
+                    if (booked == null) {
+                        Toast.makeText(this@PaymentActivity, "예약 결과를 받지 못했습니다.", Toast.LENGTH_SHORT).show()
+                        return
+                    }
+
                     // 결제 성공 화면 이동
                     startActivity(Intent(this@PaymentActivity, TicketSuccessActivity::class.java).apply {
+                        putExtra("EXTRA_BOOKING_ID", booked.bookingId)
                         putExtra("EXTRA_ROUNDTRIP", isRoundTrip)
                         // 가는 편
                         putExtra("EXTRA_DEP", outFlight.dep)

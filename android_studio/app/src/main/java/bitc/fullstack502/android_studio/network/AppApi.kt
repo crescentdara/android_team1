@@ -234,8 +234,20 @@ interface AppApi {
     ): List<LodgingListDto>
 
     // ApiProvider.kt (인터페이스 일부)
+//    @GET("/api/mypage/flight-bookings")
+//    suspend fun getFlightBookings(@Query("userPk") userPk: Long): List<BookingResponse>
+
+    // 사용자 예약 목록
     @GET("/api/mypage/flight-bookings")
     suspend fun getFlightBookings(@Query("userPk") userPk: Long): List<BookingResponse>
+
+    // 예약 단건 상세
+    @GET("/api/bookings/flight/{id}")
+    suspend fun getFlightBooking(@Path("id") bookingId: Long): BookingResponse
+
+    // 항공편 단건
+    @GET("/api/flights/{id}")
+    suspend fun getFlight(@Path("id") id: Long): Flight
 
     @GET("/api/mypage/flight-wishlist")
     suspend fun getFlightWishlist(@Query("userPk") userPk: Long): List<FlightWishDto>
@@ -275,6 +287,7 @@ interface AppApi {
         @Path("flightId") flightId: Long,
         @Header("X-USER-ID") userId: Long
     ): Call<WishStatusDto>
+
 
 
 }
