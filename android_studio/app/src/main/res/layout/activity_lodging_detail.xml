@@ -43,6 +43,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:gravity="end"
+                    android:layout_marginHorizontal="16dp"
                     android:orientation="horizontal">
 
                     <ImageButton
@@ -69,17 +70,20 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:textSize="20sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:layout_marginHorizontal="16dp"/>
 
                 <TextView
                     android:id="@+id/tvAddr"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="16dp"/>
 
                 <TextView
                     android:id="@+id/tvPhone"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginHorizontal="16dp"/>
 
                 <FrameLayout
                     android:layout_width="match_parent"
@@ -97,7 +101,8 @@
                     android:id="@+id/rgRoom"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp">
+                    android:layout_marginTop="12dp"
+                    android:layout_marginHorizontal="16dp">
 
                     <RadioButton
                         android:id="@+id/rbSingle"
@@ -123,7 +128,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="선택한 옵션: -" />
+                    android:text="선택한 옵션: -"
+                    android:layout_marginHorizontal="16dp"/>
 
                 <TextView
                     android:id="@+id/tvTotalPrice"
@@ -132,6 +138,7 @@
                     android:layout_marginTop="4dp"
                     android:text="총 결제금액: ₩0"
                     android:textSize="16sp"
+                    android:layout_marginHorizontal="16dp"
                     android:textStyle="bold" />
 
                 <Button

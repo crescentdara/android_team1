@@ -58,7 +58,6 @@
         <item name="android:textStyle">bold</item> <!-- 굵게 -->
     </style>
 
-
     <!-- footer -->
     <style name="Jeu.FooterLink">
         <item name="android:textColor">@color/jeju_text_primary</item>  <!-- #111111 -->
