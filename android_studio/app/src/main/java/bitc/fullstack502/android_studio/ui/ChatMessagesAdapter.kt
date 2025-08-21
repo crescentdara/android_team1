@@ -144,45 +144,65 @@ class ChatMessagesAdapter(private val myUserId: String)
     }
 
     /** 한 건 삽입(항상 id ASC 유지, 임시는 맨 아래 취급, 헤더 자동 처리); 반환 = 삽입 위치 */
+//    private fun addOneSortedById(m: ChatMessage): Int {
+//        val key = sortKey(m)
+//
+//        // 1) 삽입 인덱스 탐색
+//        var insertAt = items.size
+//        for (i in items.indices) {
+//            val it = items[i]
+//            if (it is ChatItem.Msg) {
+//                val cur = sortKey(it.m)
+//                if (cur > key) { insertAt = i; break }
+//            }
+//        }
+//        val needLabel = DateLabels.labelOf(m.sentAt)
+//
+//        // 2) 삽입 위치 앞 구간에 같은 라벨 헤더가 있는지 확인
+//        var hasHeader = false
+//        var j = insertAt - 1
+//        while (j >= 0) {
+//            when (val it = items[j]) {
+//                is ChatItem.Header -> { hasHeader = (it.label == needLabel); break }
+//                is ChatItem.Msg    -> {
+//                    if (DateLabels.labelOf(it.m.sentAt) == needLabel) hasHeader = true
+//                    break
+//                }
+//            }
+//            j--
+//        }
+//
+//        var pos = insertAt
+//        if (!hasHeader) {
+//            items.add(insertAt, ChatItem.Header(needLabel))
+//            notifyItemInserted(insertAt)
+//            pos++
+//        }
+//        items.add(pos, ChatItem.Msg(m))
+//        notifyItemInserted(pos)
+//        dedupAround(pos)
+//        return pos
+//    }
+
     private fun addOneSortedById(m: ChatMessage): Int {
-        val key = sortKey(m)
+        // 1) 기존 메시지 목록만 뽑아오기
+        val msgs = items.filterIsInstance<ChatItem.Msg>().map { it.m }.toMutableList()
+        msgs.add(m)
 
-        // 1) 삽입 인덱스 탐색
-        var insertAt = items.size
-        for (i in items.indices) {
-            val it = items[i]
-            if (it is ChatItem.Msg) {
-                val cur = sortKey(it.m)
-                if (cur > key) { insertAt = i; break }
-            }
-        }
-        val needLabel = DateLabels.labelOf(m.sentAt)
+        // 2) 정렬 (id ASC + 시간 ASC)
+        val sorted = msgs.sortedWith(compareBy<ChatMessage> { sortKey(it) }.thenBy { it.sentAt })
 
-        // 2) 삽입 위치 앞 구간에 같은 라벨 헤더가 있는지 확인
-        var hasHeader = false
-        var j = insertAt - 1
-        while (j >= 0) {
-            when (val it = items[j]) {
-                is ChatItem.Header -> { hasHeader = (it.label == needLabel); break }
-                is ChatItem.Msg    -> {
-                    if (DateLabels.labelOf(it.m.sentAt) == needLabel) hasHeader = true
-                    break
-                }
-            }
-            j--
-        }
+        // 3) 헤더 다시 생성
+        items.clear()
+        items.addAll(withHeaders(sorted))
 
-        var pos = insertAt
-        if (!hasHeader) {
-            items.add(insertAt, ChatItem.Header(needLabel))
-            notifyItemInserted(insertAt)
-            pos++
-        }
-        items.add(pos, ChatItem.Msg(m))
-        notifyItemInserted(pos)
-        dedupAround(pos)
-        return pos
+        // 4) 갱신 통지
+        notifyDataSetChanged()
+
+        // 5) 새로 넣은 메시지 위치 찾아서 반환
+        return items.indexOfFirst { it is ChatItem.Msg && it.m.id == m.id }
     }
+
 
     private fun dedupAround(pos: Int) {
         fun headerAt(i: Int) = (items.getOrNull(i) as? ChatItem.Header)?.label

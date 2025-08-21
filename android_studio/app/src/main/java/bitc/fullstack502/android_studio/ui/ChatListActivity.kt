@@ -1,3 +1,5 @@
+package bitc.fullstack502.android_studio.ui
+
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle

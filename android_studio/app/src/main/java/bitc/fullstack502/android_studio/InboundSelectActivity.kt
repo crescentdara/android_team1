@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import bitc.fullstack502.android_studio.adapter.FlightAdapter
 import bitc.fullstack502.android_studio.model.Flight
 import bitc.fullstack502.android_studio.ui.ChatListActivity
+
 import bitc.fullstack502.android_studio.ui.MainActivity
 import bitc.fullstack502.android_studio.ui.lodging.LodgingSearchActivity
 import bitc.fullstack502.android_studio.ui.mypage.LoginActivity
