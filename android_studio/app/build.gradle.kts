@@ -16,9 +16,8 @@ android {
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        // ✅ 공용 서버 주소(BuildConfig에 주입)
-        buildConfigField("String", "API_BASE", "\"http://10.100.202.31:8080\"")
-        buildConfigField("String", "WS_BASE",  "\"ws://10.100.202.31:8080/ws\"")
+        buildConfigField("String", "API_BASE", "\"http://10.0.2.2:8080\"")
+        buildConfigField("String", "WS_BASE",  "\"ws://10.0.2.2:8080/ws\"")
     }
 
     buildFeatures {

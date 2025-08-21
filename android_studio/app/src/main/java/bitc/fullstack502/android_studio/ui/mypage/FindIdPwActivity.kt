@@ -95,10 +95,11 @@ class FindIdPwActivity : AppCompatActivity() {
         val email = etEmailForId.text.toString().trim()
         val pass  = etPassForId.text.toString()
 
-        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            toast("올바른 이메일을 입력하세요.")
+        if (email.isBlank()) {
+            toast("이메일을 입력하세요.")
             return
         }
+
         if (pass.isBlank()) {
             toast("비밀번호를 입력하세요.")
             return
@@ -134,10 +135,11 @@ class FindIdPwActivity : AppCompatActivity() {
             toast("아이디를 입력하세요.")
             return
         }
-        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            toast("올바른 이메일을 입력하세요.")
+        if (email.isBlank()) {
+            toast("이메일을 입력하세요.")
             return
         }
+
 
         lockUi(true)
         val req = FindPasswordRequest(usersId = usersId, email = email)

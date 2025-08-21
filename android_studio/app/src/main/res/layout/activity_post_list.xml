@@ -29,7 +29,9 @@
                     android:orientation="vertical">
 
                     <!-- ✅ 공통 헤더 -->
-                    <include layout="@layout/inc_header_jeu" />
+                    <include
+                        android:id="@+id/header"
+                        layout="@layout/inc_header_jeu" />
 
                     <!-- 🔎 검색 영역 카드 -->
                     <com.google.android.material.card.MaterialCardView

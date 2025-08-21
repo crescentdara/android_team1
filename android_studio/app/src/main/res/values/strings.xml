@@ -5,8 +5,8 @@
 
     <string name="greeting_fmt">%1$s님, 안녕하세요!</string>
     <string name="sample_email">jay@example.com</string>
-    <string name="mypage">마이페이지</string>
-    <string name="logout">로그아웃</string>
+    <string name="mypage">MY</string>
+    <string name="logout">LOGOUT</string>
 
     <string name="prev_image">이전 이미지</string>
     <string name="next_image">다음 이미지</string>

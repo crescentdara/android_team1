@@ -118,17 +118,17 @@ class MyPageActivity : AppCompatActivity() {
             finish()
         }
 
-        findViewById<Button>(R.id.btn_delete_account).setOnClickListener {
-            AlertDialog.Builder(this)
-                .setTitle("회원 탈퇴")
-                .setMessage("정말 탈퇴하시겠습니까? 탈퇴 시 모든 데이터가 삭제됩니다.")
-                .setPositiveButton("확인") { d, _ ->
-                    d.dismiss()
-                    deleteUser()
-                }
-                .setNegativeButton("취소") { d, _ -> d.dismiss() }
-                .show()
-        }
+//        findViewById<Button>(R.id.btn_delete_account).setOnClickListener {
+//            AlertDialog.Builder(this)
+//                .setTitle("회원 탈퇴")
+//                .setMessage("정말 탈퇴하시겠습니까? 탈퇴 시 모든 데이터가 삭제됩니다.")
+//                .setPositiveButton("확인") { d, _ ->
+//                    d.dismiss()
+//                    deleteUser()
+//                }
+//                .setNegativeButton("취소") { d, _ -> d.dismiss() }
+//                .show()
+//        }
 
         findViewById<View>(R.id.row_my_posts).setOnClickListener {
             startActivity(Intent(this, MyPostsActivity::class.java))

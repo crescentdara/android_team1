@@ -78,6 +78,7 @@ class FlightReservationActivity : AppCompatActivity() {
     private lateinit var btnProceed: MaterialButton
 
     private lateinit var switchTrip: SwitchCompat
+
     private lateinit var tvDate: TextView
     private lateinit var tvFrom: TextView
     private lateinit var tvTo: TextView

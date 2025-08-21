@@ -7,178 +7,179 @@
     android:layout_height="wrap_content"
     android:layout_marginHorizontal="12dp"
     android:layout_marginVertical="8dp"
+    app:cardBackgroundColor="@color/surface"
     app:cardCornerRadius="16dp"
     app:cardElevation="4dp"
-    app:cardBackgroundColor="@color/surface"
     app:strokeColor="@color/divider"
     app:strokeWidth="1dp">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
 
-        <!-- 상단: 항공사 / 편명 / 즐겨찾기 -->
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <!-- 즐겨찾기(별) -->
-            <ImageButton
-                android:id="@+id/btnWish"
-                style="?attr/borderlessButtonStyle"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:padding="4dp"
-                android:contentDescription="@string/app_name"
-                app:tint="@color/jeju_primary"
-                android:src="@drawable/ic_star_border_24"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
-
-            <!-- 항공사 -->
-            <TextView
-                android:id="@+id/tvAirline"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:text="진에어"
-                android:textColor="@color/ink_800"
-                android:textSize="14sp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/tvFlightNo" />
-
-            <!-- 편명 -->
-            <TextView
-                android:id="@+id/tvFlightNo"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="LJ517"
-                android:textColor="@color/ink_500"
-                android:textSize="12sp"
-                app:layout_constraintStart_toEndOf="@id/tvAirline"
-                app:layout_constraintBaseline_toBaselineOf="@id/tvAirline"
-                app:layout_constraintEnd_toStartOf="@id/btnWish"
-                android:layout_marginStart="6dp"/>
-
-            <!-- 출발 시간 -->
-            <TextView
-                android:id="@+id/tvDep"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="06:00"
-                android:textColor="@color/ink_900"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tvAirline" />
-
-            <!-- 도착 시간 -->
-            <TextView
-                android:id="@+id/tvArr"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="20dp"
-                android:text="07:10"
-                android:textColor="@color/ink_900"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                app:layout_constraintBaseline_toBaselineOf="@id/tvDep"
-                app:layout_constraintEnd_toStartOf="@id/btnWish" />
-
-            <!-- 소요 시간 -->
-            <TextView
-                android:id="@+id/tvDuration"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="10dp"
-                android:layout_marginEnd="10dp"
-                android:text="1시간 10분"
-                android:textColor="@color/ink_600"
-                android:textSize="13sp"
-                app:layout_constraintStart_toEndOf="@id/tvDep"
-                app:layout_constraintEnd_toStartOf="@id/tvArr"
-                app:layout_constraintBaseline_toBaselineOf="@id/tvDep" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <!-- 구분선 -->
-        <View
-            android:id="@+id/divider"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginTop="12dp"
-            android:background="@color/divider" />
-
-        <!-- 가격 -->
-        <TextView
-            android:id="@+id/tvPrice"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:gravity="center"
-            android:text="98,700"
-            android:textStyle="bold"
-            android:textSize="18sp"
-            android:textColor="@color/ink_900" />
-
-        <!-- 펼쳐지는 이코노미 상세 -->
         <LinearLayout
-            android:id="@+id/panelDetails"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:visibility="gone"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="16dp">
 
-            <!-- 요금제명 -->
-            <LinearLayout
+            <!-- 상단: 항공사 / 편명 / 즐겨찾기 -->
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical">
+                android:layout_height="wrap_content">
 
+                <!-- 즐겨찾기(별) -->
+                <ImageButton
+                    android:id="@+id/btnWish"
+                    style="?attr/borderlessButtonStyle"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@string/app_name"
+                    android:padding="4dp"
+                    android:src="@drawable/ic_star_border_24"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:tint="@color/jeju_primary" />
+
+                <!-- 항공사 -->
                 <TextView
-                    android:id="@+id/tvFareName"
+                    android:id="@+id/tvAirline"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="이코노미"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="진에어"
+                    android:textColor="@color/ink_800"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toStartOf="@id/tvFlightNo"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <!-- 편명 -->
+                <TextView
+                    android:id="@+id/tvFlightNo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:text="LJ517"
+                    android:textColor="@color/ink_500"
+                    android:textSize="12sp"
+                    app:layout_constraintBaseline_toBaselineOf="@id/tvAirline"
+                    app:layout_constraintEnd_toStartOf="@id/btnWish"
+                    app:layout_constraintStart_toEndOf="@id/tvAirline" />
+
+                <!-- 출발 시간 -->
+                <TextView
+                    android:id="@+id/tvDep"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="06:00"
+                    android:textColor="@color/ink_900"
+                    android:textSize="20sp"
                     android:textStyle="bold"
-                    android:textSize="15sp"
-                    android:textColor="@color/ink_900" />
-            </LinearLayout>
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tvAirline" />
 
-            <!-- 혜택 리스트 -->
-            <LinearLayout
+                <!-- 도착 시간 -->
+                <TextView
+                    android:id="@+id/tvArr"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="20dp"
+                    android:text="07:10"
+                    android:textColor="@color/ink_900"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:layout_constraintBaseline_toBaselineOf="@id/tvDep"
+                    app:layout_constraintEnd_toStartOf="@id/btnWish" />
+
+                <!-- 소요 시간 -->
+                <TextView
+                    android:id="@+id/tvDuration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:text="1시간 10분"
+                    android:textColor="@color/ink_600"
+                    android:textSize="13sp"
+                    app:layout_constraintBaseline_toBaselineOf="@id/tvDep"
+                    app:layout_constraintEnd_toStartOf="@id/tvArr"
+                    app:layout_constraintStart_toEndOf="@id/tvDep" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- 구분선 -->
+            <View
+                android:id="@+id/divider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="12dp"
+                android:background="@color/divider" />
+
+            <!-- 가격 -->
+            <TextView
+                android:id="@+id/tvPrice"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:gravity="center"
+                android:text="98,700"
+                android:textColor="@color/ink_900"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <!-- 펼쳐지는 이코노미 상세 -->
+            <LinearLayout
+                android:id="@+id/panelDetails"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
                 android:orientation="vertical"
-                android:layout_marginTop="8dp">
+                android:visibility="gone">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <!-- 요금제명 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="• 기내수하물 10KG"
-                    android:textColor="@color/ink_700"
-                    android:textSize="13sp"/>
+                    android:gravity="center_vertical">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="• 위탁수하물 15KG"
-                    android:textColor="@color/ink_700"
-                    android:textSize="13sp"/>
+                    <TextView
+                        android:id="@+id/tvFareName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="이코노미"
+                        android:textColor="@color/ink_900"
+                        android:textSize="15sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <!-- 혜택 리스트 -->
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="• 일부 할인이 적용될 수 있음"
-                    android:textColor="@color/ink_700"
-                    android:textSize="13sp"/>
+                    android:layout_marginTop="8dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="• 기내수하물 10KG"
+                        android:textColor="@color/ink_700"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="• 위탁수하물 15KG"
+                        android:textColor="@color/ink_700"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="• 일부 할인이 적용될 수 있음"
+                        android:textColor="@color/ink_700"
+                        android:textSize="13sp" />
+                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
 </com.google.android.material.card.MaterialCardView>
