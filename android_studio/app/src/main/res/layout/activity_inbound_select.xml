@@ -12,6 +12,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <!-- ✅ 공통 헤더 -->
+        <include
+            android:id="@+id/header"
+            layout="@layout/inc_header_jeu"/>
+
+
         <!-- 스크롤 영역 -->
         <androidx.core.widget.NestedScrollView
             android:id="@+id/scroll"
@@ -21,6 +27,7 @@
             android:overScrollMode="never"
             android:clipToPadding="false">
 
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -28,10 +35,7 @@
                 android:padding="12dp"
                 android:paddingBottom="112dp">
 
-                <!-- ✅ 공통 헤더 -->
-                <include
-                    android:id="@+id/header"
-                    layout="@layout/inc_header_jeu" />
+
 
                 <!-- ✅ 상단 요약 카드 -->
                 <com.google.android.material.card.MaterialCardView
@@ -44,13 +48,13 @@
                     app:cardElevation="0dp"
                     app:strokeColor="@color/divider"
                     app:strokeWidth="1dp"
-                    android:layout_marginTop="30dp">
+                    android:layout_marginTop="50dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:padding="0dp">
+                        android:padding="16dp">
 
                         <!-- 출발 / 도착 -->
                         <LinearLayout
