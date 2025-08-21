@@ -17,8 +17,8 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         // ✅ 공용 서버 주소(BuildConfig에 주입)
-        buildConfigField("String", "API_BASE", "\"http://10.100.202.31:8080\"")
-        buildConfigField("String", "WS_BASE",  "\"ws://10.100.202.31:8080/ws\"")
+        buildConfigField("String", "API_BASE", "\"http://10.0.2.2:8080\"")
+        buildConfigField("String", "WS_BASE",  "\"ws://10.0.2.2:8080/ws\"")
     }
 
     buildFeatures {
@@ -30,8 +30,8 @@ android {
     buildTypes {
         debug {
             // 필요하면 디버그 전용 값으로 덮어쓰기 가능
-            // buildConfigField("String", "API_BASE", "\"http://10.100.202.31:8080\"")
-            // buildConfigField("String", "WS_BASE",  "\"ws://10.100.202.31:8080/ws\"")
+             buildConfigField("String", "API_BASE", "\"http://10.100.202.31:8080\"")
+             buildConfigField("String", "WS_BASE",  "\"ws://10.100.202.31:8080/ws\"")
         }
         release {
             isMinifyEnabled = false
