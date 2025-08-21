@@ -1,0 +1,11 @@
+<com.google.android.material.button.MaterialButton xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="6dp"
+    android:text="옵션"
+    android:textColor="@color/jeju_text_primary"
+    android:backgroundTint="@color/jeju_surface"
+    app:strokeColor="@color/jeju_primary"
+    app:cornerRadius="12dp" />
