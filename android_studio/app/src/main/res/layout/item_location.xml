@@ -1,0 +1,10 @@
+<!-- res/layout/item_location.xml -->
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tvLocation"
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:gravity="center_vertical"
+    android:padding="12dp"
+    android:textSize="16sp"
+    android:textColor="@android:color/black"
+    android:background="@drawable/bg_location_item_selector"/>

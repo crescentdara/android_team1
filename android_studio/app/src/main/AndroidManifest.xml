@@ -169,5 +169,6 @@
                 android:value=".PaymentActivity" />
         </activity>
 
+
     </application>
 </manifest>

@@ -36,76 +36,134 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"/>
 
-                    <!-- 🔎 도시/읍면동/리 선택 -->
+                    <!-- 🔎 본문 -->
+
+                    <!-- ✅ 푸터 -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
                         android:padding="16dp">
 
-                        <!-- 도시 -->
-                        <com.google.android.flexbox.FlexboxLayout
-                            android:id="@+id/layoutCity"
-                            android:layout_width="match_parent"
+                        <!-- 안내 타이틀 -->
+                        <TextView
+                            android:id="@+id/tvLocationTitle"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:paddingTop="8dp"
-                            app:flexWrap="wrap"
-                            app:justifyContent="center" />
+                            android:layout_marginTop="30dp"
+                            android:layout_marginBottom="12dp"
+                            android:text="원하시는 위치를 골라주세요"
+                            android:textColor="@color/jeju_text_primary"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
 
-                        <!-- 읍/면/동 -->
+                        <!-- 선택된 칩 요약 영역 -->
                         <com.google.android.flexbox.FlexboxLayout
-                            android:id="@+id/layoutTown"
+                            android:id="@+id/layoutSelectedChips"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
-                            android:visibility="gone"
-                            app:flexWrap="wrap"
-                            app:justifyContent="flex_start" />
-
-                        <!-- 리 -->
-                        <com.google.android.flexbox.FlexboxLayout
-                            android:id="@+id/layoutVill"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
-                            android:visibility="gone"
+                            android:layout_marginBottom="16dp"
                             app:flexWrap="wrap"
                             app:justifyContent="flex_start" />
 
-                        <!-- 날짜/인원 -->
+                        <!-- 🔽 위치 선택 리스트 3개 (가로 배치) -->
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="300dp"
+                            android:layout_marginTop="8dp"
+                            android:orientation="horizontal">
+
+                            <!-- 도시 리스트 -->
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/recyclerCity"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:overScrollMode="never"
+                                android:scrollbars="vertical" />
+
+                            <!-- 읍/면/동 리스트 -->
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/recyclerTown"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:overScrollMode="never"
+                                android:scrollbars="vertical"
+                                android:visibility="gone" />
+
+                            <!-- 리 리스트 -->
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/recyclerVill"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:overScrollMode="never"
+                                android:scrollbars="vertical"
+                                android:visibility="gone" />
+                        </LinearLayout>
+
+                        <!-- 날짜 및 인원 선택 버튼 -->
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/btnDateGuest"
+                            style="@style/Widget.MaterialComponents.Button"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
+                            android:layout_marginTop="24dp"
                             android:text="날짜, 인원 선택"
                             android:textSize="16sp"
-                            style="@style/Widget.Material3.Button" />
+                            android:layout_marginBottom="20dp"/>
 
-                        <!-- 숙소 검색 -->
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/btnSearch"
+                        <!-- 선택된 일정 및 인원 표시 -->
+                        <LinearLayout
+                            android:id="@+id/layoutSummary"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
+                            android:layout_marginTop="12dp"
+                            android:background="@color/jeju_tint"
+                            android:orientation="vertical"
+                            android:padding="12dp"
+                            android:layout_marginBottom="10dp">
+
+                            <TextView
+                                android:id="@+id/tvDateSummary"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="날짜 미선택"
+                                android:textColor="@color/jeju_text_primary"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:layout_marginBottom="12dp"/>
+
+                            <TextView
+                                android:id="@+id/tvGuestSummary"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:text="성인 1, 아동 0"
+                                android:textColor="@color/jeju_text_secondary"
+                                android:textSize="14sp" />
+                        </LinearLayout>
+
+                        <!-- 숙소 검색 버튼 -->
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/btnSearch"
+                            style="@style/Widget.Material3.Button"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="20dp"
+                            android:backgroundTint="@color/jeju_primary"
                             android:text="숙소 검색"
+                            android:textColor="@color/white"
                             android:textSize="16sp"
-                            style="@style/Widget.Material3.Button" />
+                            android:layout_marginBottom="60dp"/>
+
                     </LinearLayout>
+
+                    <include layout="@layout/inc_footer_jeu"/>
                 </LinearLayout>
             </androidx.core.widget.NestedScrollView>
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
-        <!-- 플로팅 버튼 -->
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/fab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_margin="16dp"
-            android:contentDescription="@string/app_name"
-            app:srcCompat="@android:drawable/ic_input_add"
-            app:backgroundTint="@color/jeju_tint"/>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <!-- ✅ 드로어 -->
