@@ -34,6 +34,7 @@
     <color name="ink_600">#556B69</color>
     <color name="ink_500">#6F8583</color>
     <color name="ink_400">#8AA09E</color>
+    <color name="ink_300">#FFF7CF</color>
 
     <color name="surface">#FFFFFF</color>
     <color name="divider">#E6E6E6</color>

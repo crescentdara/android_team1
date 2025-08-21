@@ -91,7 +91,7 @@
                         android:layout_width="0dp"
                         android:layout_height="@dimen/menu_card_height"
                         android:layout_margin="@dimen/menu_item_margin"
-                        app:cardBackgroundColor="@color/colorTextLight"
+                        app:cardBackgroundColor="@color/ink_300"
                         app:cardCornerRadius="16dp"
                         app:cardElevation="4dp"
                         app:layout_columnWeight="1">
@@ -123,7 +123,7 @@
                         android:layout_width="0dp"
                         android:layout_height="@dimen/menu_card_height"
                         android:layout_margin="@dimen/menu_item_margin"
-                        app:cardBackgroundColor="@color/colorTextLight"
+                        app:cardBackgroundColor="@color/jeju_tint"
                         app:cardCornerRadius="16dp"
                         app:cardElevation="4dp"
                         app:layout_columnWeight="1">
@@ -155,7 +155,7 @@
                         android:layout_width="0dp"
                         android:layout_height="@dimen/menu_card_height"
                         android:layout_margin="@dimen/menu_item_margin"
-                        app:cardBackgroundColor="@color/colorTextLight"
+                        app:cardBackgroundColor="@color/jeju_tint"
                         app:cardCornerRadius="16dp"
                         app:cardElevation="4dp"
                         app:layout_columnWeight="1">
@@ -187,7 +187,7 @@
                         android:layout_width="0dp"
                         android:layout_height="@dimen/menu_card_height"
                         android:layout_margin="@dimen/menu_item_margin"
-                        app:cardBackgroundColor="@color/colorTextLight"
+                        app:cardBackgroundColor="@color/ink_300"
                         app:cardCornerRadius="16dp"
                         app:cardElevation="4dp"
                         app:layout_columnWeight="1">
