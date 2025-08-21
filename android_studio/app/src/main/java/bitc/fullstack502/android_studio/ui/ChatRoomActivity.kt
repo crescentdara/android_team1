@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -102,6 +103,12 @@ class ChatRoomActivity : AppCompatActivity() {
         tvTitle.text = partnerId
 
         Log.d("CHAT", "room=$roomId partner=$partnerId me=$myUserId serverUrl=$serverUrl")
+
+        // 뒤로가기 버튼 이벤트
+        val btnBack = findViewById<ImageButton>(R.id.btnBack)
+        btnBack.setOnClickListener {
+            finish()   // 현재 액티비티 종료 → 이전 화면으로 이동
+        }
 
         // 4) 리스트 + 레이아웃 매니저
         messageAdapter = ChatMessagesAdapter(myUserId)

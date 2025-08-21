@@ -13,6 +13,17 @@
         android:layout_height="48dp"
         android:gravity="center_vertical">
 
+
+        <!-- ✅ 뒤로가기 버튼 -->
+        <ImageButton
+            android:id="@+id/btnBack"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_arrow_left"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:tint="@color/jeju_primary"
+            android:contentDescription="뒤로가기" />
+
         <TextView
             android:id="@+id/tvTitle"
             android:layout_width="0dp"
