@@ -12,6 +12,7 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.time.format.TextStyle
 import java.util.Locale
 
 class ConversationsAdapter(
@@ -117,9 +118,10 @@ class ConversationsAdapter(
         if ("lastContent" in changed) h.tvLast.text = ellipsize1Line(item.lastContent)
         if ("lastAt" in changed) h.tvTime.text = formatTime(item.lastAt)
         if ("unread" in changed) {
-            if (item.unreadCount > 0) {
+            if (item.unreadCount > 0L) {
                 h.badge.visibility = View.VISIBLE
-                h.badge.text = if (item.unreadCount > 99) "99+" else item.unreadCount.toString()
+                val count = item.unreadCount.toInt().coerceAtMost(Int.MAX_VALUE)
+                h.badge.text = if (count > 99) "99+" else count.toString()
             } else {
                 h.badge.visibility = View.GONE
             }
@@ -163,13 +165,27 @@ class ConversationsAdapter(
             val zdt = Instant.parse(iso).atZone(zone)
             val d = zdt.toLocalDate()
             val today = LocalDate.now(zone)
-            when (d) {
-                today -> zdt.format(AMPM_FMT)                            // 오늘 → "오전 08:09"
-                today.minusDays(1) -> "어제"                             // 어제 → "어제"
-                else -> d.format(DateTimeFormatter.ofPattern("yyyy-MM-dd", Locale.KOREA))
+            when {
+                d.isEqual(today) -> zdt.format(AMPM_FMT)
+                d.isEqual(today.minusDays(1)) -> "어제"
+                d.isAfter(today.minusWeeks(1)) -> d.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.KOREAN) // 예: "월"
+                else -> d.format(DateTimeFormatter.ofPattern("yyyy.MM.dd", Locale.KOREA))
             }
+
         } catch (_: Exception) {
             iso.take(16).replace('T',' ')
         }
     }
+
+    fun clearUnread(roomId: String) {
+        val idx = items.indexOfFirst { it.roomId == roomId }
+        if (idx == -1) return
+        val cur = items[idx]
+        if (cur.unreadCount == 0L) return   // ✅ Long 리터럴
+
+        val updated = cur.copy(unreadCount = 0L) // ✅ Long 리터럴
+        items[idx] = updated
+        notifyItemChanged(idx, mutableSetOf("unread"))
+    }
+
 }

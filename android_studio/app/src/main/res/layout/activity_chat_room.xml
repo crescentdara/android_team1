@@ -31,7 +31,9 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:clipToPadding="false"
-        android:paddingTop="6dp"/>
+        android:paddingTop="6dp"
+        android:stackFromEnd="true"/>
+
 
     <!-- 입력영역 -->
     <LinearLayout
@@ -47,10 +49,13 @@
             android:layout_height="48dp"
             android:layout_weight="1"
             android:hint="메시지 입력"
+            android:imeOptions="actionSend"
+            android:singleLine="true"
             android:paddingHorizontal="14dp"
             android:background="@drawable/bg_input"
             android:textColor="@color/jeju_text_primary"
             android:textColorHint="@color/jeju_text_muted"/>
+
 
         <!-- MaterialButton로 바꾸고 tint 고정 -->
         <com.google.android.material.button.MaterialButton

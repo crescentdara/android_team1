@@ -29,9 +29,8 @@ android {
 
     buildTypes {
         debug {
-            // 필요하면 디버그 전용 값으로 덮어쓰기 가능
-            // buildConfigField("String", "API_BASE", "\"http://10.100.202.31:8080\"")
-            // buildConfigField("String", "WS_BASE",  "\"ws://10.100.202.31:8080/ws\"")
+            buildConfigField("String", "API_BASE", "\"http://10.100.202.31:8080\"")
+            buildConfigField("String", "WS_BASE",  "\"ws://10.100.202.31:8080/ws\"")
         }
         release {
             isMinifyEnabled = false
@@ -39,11 +38,11 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            // 릴리즈에서도 동일 주소 사용 (필요시 여기서만 바꿔도 됨)
             buildConfigField("String", "API_BASE", "\"http://10.100.202.31:8080\"")
             buildConfigField("String", "WS_BASE",  "\"ws://10.100.202.31:8080/ws\"")
         }
     }
+
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
