@@ -113,35 +113,23 @@ class ChatRoomActivity : AppCompatActivity() {
                 messageAdapter.addLocalEcho(content, roomId, partnerId, myUserId)
                 rvChat.scrollToPosition(messageAdapter.itemCount - 1)
                 etMsg.setText("")
-                StompManager.send(roomId, myUserId, partnerId, content)   // ✅ 변경
+                StompManager.send(roomId, myUserId, partnerId, content)   // ✅ 서버로 전송
                 debounceMarkRead()
             }
         }
 
-        // ChatRoomActivity
+        // 뒤로가기 콜백
         onBackPressedDispatcher.addCallback(this) {
             if (isFinishingByBack) return@addCallback
             isFinishingByBack = true
             lifecycleScope.launch {
                 runCatching { ApiProvider.api.markRead(roomId, myUserId) }
                 ForegroundRoom.current = null
-
-                // ✅ 결과 전달
                 val result = Intent().putExtra("roomId", roomId)
                 setResult(Activity.RESULT_OK, result)
-
                 finish()
             }
         }
-
-
-        StompManager.subscribeRoom(roomId, { msg ->
-            messageAdapter.reconcileIncoming(msg)
-            rvChat.scrollToPosition(messageAdapter.itemCount - 1)
-        }, { err ->
-            Log.e("CHAT", "Error", err)
-        })
-
     }
 
 
@@ -154,11 +142,10 @@ class ChatRoomActivity : AppCompatActivity() {
         super.onStart()
         ForegroundRoom.current = roomId
 
-        // 기존 connectGlobal(userId, onConnected, onError) 시그니처에 맞춤
         StompManager.connectGlobal(
             myUserId,
             onConnected = {
-                // 1) 메시지 구독
+                // ✅ 메시지 구독
                 StompManager.subscribeTopic(
                     "/topic/room.$roomId",
                     { payload ->
@@ -168,7 +155,7 @@ class ChatRoomActivity : AppCompatActivity() {
                     { err -> Log.e("CHAT", "subscribe error", err) }
                 )
 
-                // 2) 읽음 영수증 구독
+                // ✅ 읽음 영수증 구독
                 StompManager.subscribeTopic(
                     "/topic/room.$roomId.read",
                     { payload ->
@@ -177,6 +164,9 @@ class ChatRoomActivity : AppCompatActivity() {
                     },
                     { err -> Log.e("CHAT", "subscribe(read) error", err) }
                 )
+
+                // ✅ 연결 완료 후 히스토리 로드
+                runOnUiThread { loadHistoryAndMarkRead() }
             },
             onError = { Log.e("CHAT", "stomp error: ${it.message}") }
         )
@@ -272,7 +262,7 @@ class ChatRoomActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        runCatching { StompManager.disconnect() }   // ✅ 변경
+        runCatching { StompManager.disconnect() }
     }
 }
 
