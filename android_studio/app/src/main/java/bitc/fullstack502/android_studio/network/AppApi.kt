@@ -238,7 +238,7 @@ interface AppApi {
 //    suspend fun getFlightBookings(@Query("userPk") userPk: Long): List<BookingResponse>
 
     // 사용자 예약 목록
-    @GET("/api/mypage/flight-bookings")
+    @GET("/api/mypage/flight/bookings")
     suspend fun getFlightBookings(@Query("userPk") userPk: Long): List<BookingResponse>
 
     // 예약 단건 상세
@@ -271,8 +271,6 @@ interface AppApi {
     @POST("/api/bookings/flight")
     fun createFlightBooking(@Body req: BookingRequest): Call<BookingResponse>
 
-    @GET("/api/bookings/flight/user/{userId}")
-    fun getMyFlightBookings(@Path("userId") userId: Long): Call<List<BookingResponse>>
 
     /* ---------- 항공 즐겨찾기 ---------- */
     @GET("/api/flight/{flightId}/wish/status")

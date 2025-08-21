@@ -48,15 +48,16 @@ class TicketSuccessActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             try {
-                // 1) 예약 상세
+                // 예약 상세
                 val b: BookingResponse = ApiProvider.api.getFlightBooking(bookingId)
 
-                // 2) 항공편 조회(가는 편)
-                val out: Flight = ApiProvider.api.getFlight(b.flightId)
+// 항공편 조회(가는 편)
+                val out: Flight = ApiProvider.api.getFlight(b.outFlightId)   // ✅ 수정
 
-                // 3) (왕복이면) 오는 편 조회
-                val isRound = (b.returnFlightId != null && b.retDate != null)
-                val `in` = if (isRound) ApiProvider.api.getFlight(b.returnFlightId!!) else null
+// 왕복이면 오는 편 조회
+                val isRound = (b.inFlightId != null && b.retDate != null)    // ✅ 수정
+                val `in` = if (isRound) ApiProvider.api.getFlight(b.inFlightId!!) else null
+
 
                 // 4) 표시용 문자열
                 val passengerTitle = "승객 ${b.seatCnt}명 (성인 ${b.adult}" +

@@ -2,7 +2,9 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("kotlin-kapt")
+    id("kotlin-parcelize")
 }
+
 
 android {
     namespace = "bitc.fullstack502.android_studio"
@@ -17,9 +19,13 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
 
-        // ✅ 공용 서버 주소(BuildConfig에 주입)
-        buildConfigField("String", "API_BASE", "\"http://10.0.2.2:8080\"")
-        buildConfigField("String", "WS_BASE",  "\"ws://10.0.2.2:8080/ws\"")
+//        buildConfigField("String", "API_BASE", "\"http://10.0.2.2:8080\"")
+//        buildConfigField("String", "WS_BASE",  "\"ws://10.0.2.2:8080/ws\"")
+
+        // 에뮬레이터에서 API는 로컬 톰캣/스프링
+        buildConfigField("String", "API_BASE", "\"http://10.0.2.2:8080/\"")
+        // 채팅은 공용 서버
+        buildConfigField("String", "WS_BASE",  "\"ws://10.100.202.31:8080/ws\"")
     }
 
     buildFeatures {
@@ -31,8 +37,11 @@ android {
     buildTypes {
         debug {
             // 필요하면 디버그 전용 값으로 덮어쓰기 가능
-             buildConfigField("String", "API_BASE", "\"http://10.100.202.31:8080\"")
-             buildConfigField("String", "WS_BASE",  "\"ws://10.100.202.31:8080/ws\"")
+//             buildConfigField("String", "API_BASE", "\"http://10.0.2.2:8080\"")
+//             buildConfigField("String", "WS_BASE",  "\"ws://10.0.2.2:8080/ws\"")
+
+//            buildConfigField("String", "API_BASE", "\"http://10.100.202.31:8080\"")
+//            buildConfigField("String", "WS_BASE",  "\"ws://10.100.202.31:8080/ws\"")
         }
         release {
             isMinifyEnabled = false
@@ -43,6 +52,8 @@ android {
             // 릴리즈에서도 동일 주소 사용 (필요시 여기서만 바꿔도 됨)
             buildConfigField("String", "API_BASE", "\"http://10.100.202.31:8080\"")
             buildConfigField("String", "WS_BASE",  "\"ws://10.100.202.31:8080/ws\"")
+//            buildConfigField("String", "API_BASE", "\"http://10.0.2.2:8080\"")
+//            buildConfigField("String", "WS_BASE",  "\"ws://10.0.2.2:8080/ws\"")
         }
     }
 
