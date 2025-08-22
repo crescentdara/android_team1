@@ -44,8 +44,11 @@ public class ChatController {
     /* ===================== REST: 읽음 처리 + 영수증 브로드캐스트 ===================== */
     @PutMapping("/read")
     @Transactional
-    public ReadReceiptDTO markRead(@RequestParam String roomId, @RequestParam String userId) {
-        long maxId = chatMessageService.findMaxIdByRoom(roomId);
+    public ReadReceiptDTO markRead(
+            @RequestParam String roomId,
+            @RequestParam String userId,
+            @RequestParam long lastReadId
+    ) {
         Instant now = Instant.now();
 
         ChatLastReadEntity e = lastReadRepo.findByRoomIdAndUserId(roomId, userId)
@@ -55,26 +58,21 @@ public class ChatController {
                         .lastReadId(0L)
                         .build());
 
-        if (maxId > e.getLastReadId()) {
-            e.setLastReadId(maxId);
+        if (lastReadId > e.getLastReadId()) {
+            e.setLastReadId(lastReadId);
             e.setLastReadAt(now);
             lastReadRepo.save(e);
         }
 
-        ReadReceiptDTO dto = new ReadReceiptDTO(roomId, userId, e.getLastReadId(), now);
+        // ✅ 항상 클라가 보낸 lastReadId를 브로드캐스트에 담는다
+        ReadReceiptDTO dto = new ReadReceiptDTO(roomId, userId, lastReadId, now);
 
-        // ✅ 읽음 영수증도 방 토픽으로 브로드캐스트 (클라 구독: /topic/room.{roomId}.read)
         messagingTemplate.convertAndSend("/topic/room." + roomId + ".read", dto);
-
-        // ❌ 개인 큐 전송 비활성화
-        // messagingTemplate.convertAndSendToUser(userId, "/queue/read-receipt", dto);
-        // String partnerId = chatMessageService.findPartnerId(roomId, userId);
-        // if (partnerId != null && !partnerId.isBlank() && !partnerId.equals(userId)) {
-        //     messagingTemplate.convertAndSendToUser(partnerId, "/queue/read-receipt", dto);
-        // }
 
         return dto;
     }
+
+
 
     private boolean hasText(String s) { return s != null && !s.isBlank(); }
 }

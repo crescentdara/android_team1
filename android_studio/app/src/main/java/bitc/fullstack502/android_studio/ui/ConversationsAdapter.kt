@@ -172,4 +172,19 @@ class ConversationsAdapter(
             iso.take(16).replace('T',' ')
         }
     }
+
+    /** 특정 roomId의 안읽음 배지를 0으로 만든다 */
+    fun clearUnread(roomId: String) {
+        val idx = items.indexOfFirst { it.roomId == roomId }
+        if (idx == -1) return
+
+        val cur = items[idx]
+        if (cur.unreadCount == 0L) return
+
+        val updated = cur.copy(unreadCount = 0)
+        items[idx] = updated
+        notifyItemChanged(idx, setOf("unread"))
+    }
+
+
 }

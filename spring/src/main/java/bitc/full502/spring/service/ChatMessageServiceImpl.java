@@ -5,6 +5,7 @@ import bitc.full502.spring.domain.entity.ChatMessageEntity;
 import bitc.full502.spring.domain.repository.ChatLastReadRepository;
 import bitc.full502.spring.domain.repository.ChatMessageRepository;
 import bitc.full502.spring.dto.ChatMessageDTO;
+import bitc.full502.spring.util.RoomIdUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -34,14 +35,24 @@ public class ChatMessageServiceImpl implements ChatMessageService {
                         ? ChatMessageEntity.MessageType.valueOf(dto.getType().name())
                         : ChatMessageEntity.MessageType.TEXT;
 
+//        ChatMessageEntity e = ChatMessageEntity.builder()
+//                .roomId(dto.getRoomId())
+//                .senderId(dto.getSenderId())
+//                .receiverId(dto.getReceiverId())
+//                .content(dto.getContent())
+//                .type(type)
+//                .sentAt(dto.getSentAt() != null ? dto.getSentAt() : Instant.now())
+//                .build();
+
         ChatMessageEntity e = ChatMessageEntity.builder()
-                .roomId(dto.getRoomId())
+                .roomId(RoomIdUtil.directRoomId(dto.getSenderId(), dto.getReceiverId()))
                 .senderId(dto.getSenderId())
                 .receiverId(dto.getReceiverId())
                 .content(dto.getContent())
                 .type(type)
                 .sentAt(dto.getSentAt() != null ? dto.getSentAt() : Instant.now())
                 .build();
+
 
         ChatMessageEntity saved = msgRepo.save(e);
 

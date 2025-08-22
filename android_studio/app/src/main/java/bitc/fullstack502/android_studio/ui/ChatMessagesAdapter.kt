@@ -22,6 +22,7 @@ class ChatMessagesAdapter(private val myUserId: String)
     // 파일 상단에 포맷터 하나 준비
     private val timeFmt = DateTimeFormatter.ofPattern("a hh:mm", Locale.KOREA)
 
+
     companion object {
         private const val TYPE_HEADER = 0
         private const val TYPE_ME     = 1
@@ -72,7 +73,7 @@ class ChatMessagesAdapter(private val myUserId: String)
         items.firstOrNull { it is ChatItem.Msg }?.let { (it as ChatItem.Msg).m.id }
 
     /** 로컬 에코: 전송 즉시 화면에 임시 말풍선 표시 */
-    fun addLocalEcho(content: String, roomId: String, partnerId: String, myUserId: String): Long {
+    fun addLocalEcho(content: String, roomId: String, partnerId: String): Long {
         val tempId = -System.nanoTime() // 음수
         val nowIso = Instant.now().toString()
         val local = ChatMessage(
@@ -117,24 +118,27 @@ class ChatMessagesAdapter(private val myUserId: String)
     fun markReadByOtherUpTo(lastReadId: Long) {
         var firstChanged = -1
         var lastChanged = -1
-        for (idx in items.indices) {
-            val row = items[idx]
+
+        items.forEachIndexed { idx, row ->
             if (row is ChatItem.Msg) {
                 val msg = row.m
                 val id = msg.id
-                if (msg.senderId == myUserId && id != null && id > 0 && id <= lastReadId) {
-                    if (msg.readByOther != true) {
-                        row.m = msg.copy(readByOther = true)
-                        if (firstChanged == -1) firstChanged = idx
-                        lastChanged = idx
-                    }
+                // ✅ 내가 보낸 메시지 + 유효 ID + 아직 안 읽은 것만 업데이트
+                if (msg.senderId == myUserId && id != null && id > 0 && id <= lastReadId && msg.readByOther != true) {
+                    row.m = msg.copy(readByOther = true)
+
+                    if (firstChanged == -1) firstChanged = idx
+                    lastChanged = idx
                 }
             }
         }
+
+        // ✅ 바뀐 구간만 갱신
         if (firstChanged != -1) {
-            notifyItemRangeChanged(firstChanged, lastChanged - firstChanged + 1)
+            notifyItemRangeChanged(firstChanged, lastChanged - firstChanged + 1, "read_receipt")
         }
     }
+
 
     /* ---------- 내부 로직 ---------- */
 
@@ -238,10 +242,35 @@ class ChatMessagesAdapter(private val myUserId: String)
         try {
             Instant.parse(iso).atZone(zone).format(timeFmt)   // 예: 오전 08:09 / 오후 08:09
         } catch (_: Exception) {
-            // ISO가 아닐 때 간단 Fallback: "yyyy-MM-dd HH:mm"등에서 시분만
-            iso.replace('T',' ').takeLast(5).let { "오전 $it" } // 필요시 더 정교화 가능
+            // ISO가 아닐 때 간단 Fallback
+            iso.replace('T',' ').takeLast(5).let { "오전 $it" }
         }
 
+//    override fun onBindViewHolder(holder: VH, position: Int) {
+//        when (val it = items[position]) {
+//            is ChatItem.Header -> holder.tvDate?.text = it.label
+//            is ChatItem.Msg -> {
+//                val m = it.m
+//                holder.tvContent?.text = m.content
+//
+//                // ✅ 버블 시각 표시
+//                holder.tvTime?.visibility = View.VISIBLE
+//                holder.tvTime?.text = formatTimeShort(m.sentAt)
+//
+//                // 읽음 배지
+//                holder.tvUnread?.let { badge ->
+//                    if (m.senderId == myUserId && (m.readByOther != true)) {
+//                        badge.visibility = View.VISIBLE
+//                        badge.text = "1"
+//                    } else {
+//                        badge.visibility = View.GONE
+//                    }
+//                }
+//            }
+//        }
+//    }
+
+    // 기본 풀바인딩 (최초 표시 / payload 없는 경우)
     override fun onBindViewHolder(holder: VH, position: Int) {
         when (val it = items[position]) {
             is ChatItem.Header -> holder.tvDate?.text = it.label
@@ -253,22 +282,43 @@ class ChatMessagesAdapter(private val myUserId: String)
                 holder.tvTime?.visibility = View.VISIBLE
                 holder.tvTime?.text = formatTimeShort(m.sentAt)
 
-                // 읽음 배지
-                holder.tvUnread?.let { badge ->
-                    if (m.senderId == myUserId && (m.readByOther != true)) {
-                        badge.visibility = View.VISIBLE
-                        badge.text = "1"
-                    } else {
-                        badge.visibility = View.GONE
-                    }
-                }
+                // ✅ 읽음 배지 표시
+                bindUnreadBadge(holder, m)
             }
         }
     }
 
+    // 부분 바인딩 (읽음 영수증 들어왔을 때만 호출됨)
+    override fun onBindViewHolder(holder: VH, position: Int, payloads: MutableList<Any>) {
+        if (payloads.isNotEmpty() && payloads[0] == "read_receipt") {
+            val row = items[position]
+            if (row is ChatItem.Msg) {
+                // ✅ 메시지 데이터 자체를 다시 읽어서 배지만 갱신
+                bindUnreadBadge(holder, row.m)
+            }
+        } else {
+            // payload 없으면 그냥 전체 바인딩
+            onBindViewHolder(holder, position)
+        }
+    }
+
+    // 공통 함수: 배지 갱신 로직
+    private fun bindUnreadBadge(holder: VH, m: ChatMessage) {
+        holder.tvUnread?.let { badge ->
+            if (m.senderId == myUserId && (m.readByOther != true)) {
+                badge.visibility = View.VISIBLE
+                badge.text = "1"
+            } else {
+                badge.visibility = View.GONE
+            }
+        }
+    }
+
+
+
     override fun getItemCount(): Int = items.size
 
-    /** ⚠️ ID 충돌 금지: 메시지는 양수/임시는 음수, 헤더는 매우 작은 음수의 “날짜 키” */
+    /** ⚠️ ID 충돌 금지 */
     override fun getItemId(position: Int): Long = when (val it = items[position]) {
         is ChatItem.Header -> headerIdOf(it.label)
         is ChatItem.Msg -> {
@@ -286,18 +336,25 @@ class ChatMessagesAdapter(private val myUserId: String)
     }
 
     class VH(v: View, type: Int) : RecyclerView.ViewHolder(v) {
-        // 헤더
         val tvDate: TextView?    = if (type == TYPE_HEADER) v.findViewById(R.id.tvDate) else null
-        // 메시지
         val tvContent: TextView? = if (type != TYPE_HEADER) v.findViewById(R.id.tvContent) else null
         val tvTime: TextView?    = if (type != TYPE_HEADER) v.findViewById(R.id.tvTime) else null
-        // 내 메시지 말풍선 오른쪽의 읽음 배지
         val tvUnread: TextView?  = if (type == TYPE_ME) v.findViewById(R.id.tvUnread) else null
     }
 
-    /** 리스트의 한 줄: 헤더 또는 메시지 */
     sealed class ChatItem {
         data class Header(val label: String) : ChatItem()
         data class Msg(var m: ChatMessage)  : ChatItem()
     }
+
+    /** 가장 최신(마지막) 메시지 id */
+    fun getLastIdOrNull(): Long? =
+        items.lastOrNull { it is ChatItem.Msg }?.let { (it as ChatItem.Msg).m.id }
+
+    fun getLastVisibleOtherId(myUserId: String): Long? {
+        return items.lastOrNull {
+            it is ChatItem.Msg && it.m.senderId != myUserId
+        }?.let { (it as ChatItem.Msg).m.id }
+    }
+
 }

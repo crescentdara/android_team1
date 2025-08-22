@@ -42,8 +42,10 @@ interface AppApi {
     @PUT("/api/chat/read")
     suspend fun markRead(
         @Query("roomId") roomId: String,
-        @Query("userId") userId: String
+        @Query("userId") userId: String,
+        @Query("lastReadId") lastReadId: Long   // ✅ 추가
     ): Response<Unit>
+
 
     // ---------- Naver Local (서버 프록시) ----------
     @GET("/api/naver/local/nearby")

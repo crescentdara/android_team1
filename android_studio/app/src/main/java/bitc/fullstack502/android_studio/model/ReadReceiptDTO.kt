@@ -2,7 +2,7 @@ package bitc.fullstack502.android_studio.model
 
 data class ReadReceiptDTO(
     val roomId: String,
-    val readerId: String,
+    val userId: String,       // readerId → userId
     val lastReadId: Long,
-    val at: String
+    val lastReadAt: String    // at → lastReadAt
 )

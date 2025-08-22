@@ -1,5 +1,6 @@
 package bitc.fullstack502.android_studio.ui
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -8,6 +9,7 @@ import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.core.view.isVisible
@@ -21,6 +23,7 @@ import bitc.fullstack502.android_studio.model.ChatMessage
 import bitc.fullstack502.android_studio.model.ConversationSummary
 import bitc.fullstack502.android_studio.util.ForegroundRoom
 import bitc.fullstack502.android_studio.StompManager
+import bitc.fullstack502.android_studio.model.ReadReceiptDTO
 import bitc.fullstack502.android_studio.network.ApiProvider
 import bitc.fullstack502.android_studio.ui.lodging.LodgingSearchActivity
 import bitc.fullstack502.android_studio.ui.mypage.LoginActivity
@@ -126,6 +129,18 @@ class ChatListActivity : AppCompatActivity() {
         loadData()
     }
 
+    // ✅ registerForActivityResult 로 결과 받기
+    private val openChatRoom =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == RESULT_OK) {
+                val roomId = result.data?.getStringExtra("CLEARED_ROOM_ID")
+                if (!roomId.isNullOrBlank()) {
+                    adapter.clearUnread(roomId) // ✅ 배지 제거
+                }
+            }
+        }
+
+
     override fun onStart() {
         super.onStart()
         if (::stomp.isInitialized) runCatching { stomp.disconnect() }
@@ -179,17 +194,27 @@ class ChatListActivity : AppCompatActivity() {
         if (!::stomp.isInitialized) return
         for (rid in roomsToSubscribe) {
             if (subscribedRooms.add(rid)) {
+                // ✅ 메시지 구독
                 stomp.subscribeTopic(
                     "/topic/room.$rid",
                     onMessage = { payload ->
                         val msg = runCatching { gson.fromJson(payload, ChatMessage::class.java) }.getOrNull()
                         msg?.let { onInboxMessage(it) }
-                    },
-                    onError = { /* 필요시 로그 */ }
+                    }
+                )
+
+                // ✅ 읽음 이벤트 구독 추가
+                stomp.subscribeTopic(
+                    "/topic/room.$rid.read",
+                    onMessage = { payload ->
+                        val receipt = runCatching { gson.fromJson(payload, ReadReceiptDTO::class.java) }.getOrNull()
+                        receipt?.let { onReadEvent(it) }
+                    }
                 )
             }
         }
     }
+
 
     // 방 토픽 수신: 배지/내용/시간 갱신 + 맨 위로 이동
     private fun onInboxMessage(m: ChatMessage) {
@@ -211,14 +236,14 @@ class ChatListActivity : AppCompatActivity() {
     }
 
     private fun openChat(item: ConversationSummary) {
-        // ✅ roomId가 비어 있을 수도 있으니 안전하게 생성
         val roomId = if (!item.roomId.isNullOrBlank()) item.roomId
         else ChatIds.roomIdFor(myUsersId, item.partnerId)
 
-        startActivity(Intent(this, ChatRoomActivity::class.java).apply {
+        val intent = Intent(this, ChatRoomActivity::class.java).apply {
             putExtra("roomId", roomId)
             putExtra("partnerId", item.partnerId)
-        })
+        }
+        openChatRoom.launch(intent)   // ✅ 여기서 launch
     }
 
     override fun onResume() {
@@ -280,4 +305,20 @@ class ChatListActivity : AppCompatActivity() {
             }
         }
     }
+
+    private fun onReadEvent(receipt: ReadReceiptDTO) {
+        // 내가 아닌 상대방이 읽었을 때만 배지 제거
+        if (receipt.userId != myUsersId) {
+            adapter.clearUnread(receipt.roomId)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == 1001 && resultCode == Activity.RESULT_OK) {
+            val clearedRoomId = data?.getStringExtra("CLEARED_ROOM_ID") ?: return
+            adapter.clearUnread(clearedRoomId)  // ✅ 안읽음 배지 제거
+        }
+    }
+
 }
