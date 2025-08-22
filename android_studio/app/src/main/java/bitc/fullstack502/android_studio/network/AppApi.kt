@@ -286,6 +286,8 @@ interface AppApi {
         @Header("X-USER-ID") userId: Long
     ): Call<WishStatusDto>
 
+    @POST("/api/bookings/flight/{id}/cancel")
+    suspend fun cancelBooking(@Path("id") bookingId: Long): Response<Void>
 
 
 }

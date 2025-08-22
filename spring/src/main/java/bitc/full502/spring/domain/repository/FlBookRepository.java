@@ -9,11 +9,14 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface FlBookRepository extends JpaRepository<FlBook, Long> {
 
     List<FlBook> findByUser(Users user);
+
+    Optional<FlBook> findByIdAndUser_Id(Long bookingId, Long userId);
 
     // 특정 비행기/여행일의 이미 예약된 좌석 수 (adult+child, CANCEL 제외)
     @Query("""
@@ -25,4 +28,6 @@ public interface FlBookRepository extends JpaRepository<FlBook, Long> {
     """)
     long countBookedSeats(@Param("flightId") Long flightId,
                           @Param("tripDate") LocalDate tripDate);
+
+
 }

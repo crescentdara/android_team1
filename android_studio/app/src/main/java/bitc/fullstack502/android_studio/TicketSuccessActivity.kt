@@ -97,7 +97,7 @@ class TicketSuccessActivity : AppCompatActivity() {
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                Toast.makeText(this@TicketSuccessActivity, "예약 내역을 불러오지 못했습니다.", Toast.LENGTH_SHORT).show()
+//                Toast.makeText(this@TicketSuccessActivity, "예약 내역을 불러오지 못했습니다.", Toast.LENGTH_SHORT).show()
             }
         }
         /////////////////////////////////////

@@ -115,8 +115,15 @@ public class FlBookServiceImpl implements FlBookService {
     public void cancelBooking(Long bookingId) {
         FlBook b = flBookRepository.findById(bookingId)
                 .orElseThrow(() -> new IllegalArgumentException("예약 없음: " + bookingId));
+
+        // 이미 취소된 예약은 다시 취소할 수 없게
+        if ("CANCEL".equalsIgnoreCase(b.getStatus())) {
+            throw new IllegalStateException("이미 취소된 예약입니다.");
+        }
+
         b.setStatus("CANCEL");
     }
+
 
     private BookingResponseDto toDto(FlBook b) {
         BookingResponseDto dto = new BookingResponseDto();

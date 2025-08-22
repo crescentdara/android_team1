@@ -134,29 +134,52 @@ class LodgingSearchActivity : AppCompatActivity() {
         recyclerVill.visibility = View.GONE
         setSearchEnabled(false)
 
-        // Drawer & NavigationView
+        /////////////////////////////////////
+        // ✅ Drawer & NavigationView
         val drawer = findViewById<DrawerLayout>(R.id.drawerLayout)
         val navView = findViewById<NavigationView>(R.id.navigationView)
+
+        // ✅ 공통 헤더 버튼 세팅
         val header = findViewById<View>(R.id.header)
         val btnBack: ImageButton = header.findViewById(R.id.btnBack)
-        val imgLogo: ImageView = header.findViewById(R.id.imgLogo)
+        val imgLogo: ImageView   = header.findViewById(R.id.imgLogo)
         val btnMenu: ImageButton = header.findViewById(R.id.btnMenu)
 
-        btnBack.setOnClickListener { finish() }
-        imgLogo.setOnClickListener {
-            startActivity(Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP))
+        btnBack.setOnClickListener { finish() }  // 뒤로가기
+        imgLogo.setOnClickListener {             // 로고 → 메인으로
+            startActivity(
+                Intent(this, MainActivity::class.java)
+                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            )
         }
-        btnMenu.setOnClickListener { drawer.openDrawer(GravityCompat.END) }
+        btnMenu.setOnClickListener {             // 햄버거 → Drawer 열기
+            drawer.openDrawer(GravityCompat.END)
+        }
 
+        // 드로어 헤더 인사말 세팅 (로그인 상태 반영)
+        updateHeader(navView)
+
+        // ✅ Drawer 메뉴 클릭 처리
         navView.setNavigationItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.nav_hotel -> { startActivity(Intent(this, LodgingSearchActivity::class.java)); true }
-                R.id.nav_board -> { startActivity(Intent(this, PostListActivity::class.java)); true }
-                R.id.nav_chat  -> { startActivity(Intent(this, ChatListActivity::class.java)); true }
-                R.id.nav_flight-> { startActivity(Intent(this, FlightReservationActivity::class.java)); true }
+                R.id.nav_hotel -> {
+                    startActivity(Intent(this, LodgingSearchActivity::class.java)); true
+                }
+                R.id.nav_board -> {
+                    startActivity(Intent(this, PostListActivity::class.java)); true
+                }
+                R.id.nav_chat -> {
+                    startActivity(Intent(this, ChatListActivity::class.java)); true
+                }
+                R.id.nav_flight -> {
+                    // 현재 FlightReservationActivity니까 따로 이동 안 해도 됨
+                    true
+                }
                 else -> false
             }.also { drawer.closeDrawers() }
         }
+
+        //////////////////////////////////////////////////////////////////////////////////////
 
         // DB에서 도시 로드
         loadCities()

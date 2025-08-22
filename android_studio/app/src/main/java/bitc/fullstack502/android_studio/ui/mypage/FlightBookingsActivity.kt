@@ -1,29 +1,40 @@
 package bitc.fullstack502.android_studio.ui.mypage
 
 import android.os.Bundle
+import androidx.lifecycle.lifecycleScope
 import bitc.fullstack502.android_studio.model.CommonItem
 import bitc.fullstack502.android_studio.model.BookingResponse
 import bitc.fullstack502.android_studio.network.ApiProvider
 import java.text.NumberFormat
 import java.util.Locale
+import kotlinx.coroutines.launch
 
 class FlightBookingsActivity : BaseListActivity() {
+    private lateinit var bookingAdapter: BookingListAdapter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         title = "항공 예매내역"
+
+        bookingAdapter = BookingListAdapter(mutableListOf())
+        recycler.adapter = bookingAdapter
+
+        load()
+    }
+
+    private fun load() {
+        lifecycleScope.launch {
+            val data = fetchItems()
+            bookingAdapter.submit(data)
+        }
     }
 
     override suspend fun fetchItems(): List<CommonItem> {
-        // 1) 로그인 확인
         val uid = userPk()
-        if (uid <= 0L) {
-            return emptyList()
-        }
+        if (uid <= 0L) return emptyList()
 
         return try {
             val list: List<BookingResponse> = ApiProvider.api.getFlightBookings(uid)
-            android.util.Log.d("FlightBookings", "bookings.size = ${list.size}")
-
             val nf = NumberFormat.getInstance(Locale.KOREA)
 
             list.sortedByDescending { it.bookingId }
@@ -44,7 +55,7 @@ class FlightBookingsActivity : BaseListActivity() {
                         title = title,
                         subtitle = sub,
                         imageUrl = null,
-                        clickable = false   // ✅ 꺽쇠 숨김 & 클릭 막기
+                        clickable = false
                     )
                 }
         } catch (e: Exception) {

@@ -38,8 +38,9 @@ public class FlBookController {
 
     /** 예약 취소 */
     @PostMapping("/flight/{id}/cancel")
-    public ResponseEntity<Void> cancelBooking(@PathVariable Long id) {
+    public ResponseEntity<String> cancelBooking(@PathVariable Long id) {
         flBookService.cancelBooking(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok("예약이 취소되었습니다.");
     }
+
 }
