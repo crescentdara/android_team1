@@ -244,6 +244,7 @@ class ChatRoomActivity : AppCompatActivity() {
                         val rc = runCatching {
                             gson.fromJson(payload, ReadReceiptDTO::class.java)
                         }.getOrNull()
+
                         if (rc != null && rc.roomId == roomId && rc.userId != myUserId) {
                             // ✅ 무조건 갱신
                             lastReadByOtherId = rc.lastReadId
@@ -291,6 +292,8 @@ class ChatRoomActivity : AppCompatActivity() {
 
     private fun loadHistoryAndMarkRead() {
         val rid = roomId
+        lastReadByOtherId = 0L
+
         lifecycleScope.launch {
             try {
                 isLoadingMore = true
@@ -306,13 +309,20 @@ class ChatRoomActivity : AppCompatActivity() {
                 list.forEach { it.id?.let(seenIds::add) }
                 messageAdapter.setAll(list)
 
-                // ✅ 상대방 읽음 처리 반영
-                if (lastReadByOtherId > 0) {
-                    messageAdapter.markReadByOtherUpTo(lastReadByOtherId)
+                // ✅ 입장 시 서버에서 상대방 읽음 위치 가져오기 (UI thread 보장)
+                val rc = withContext(Dispatchers.IO) {
+                    runCatching { ApiProvider.api.getLastRead(rid, partnerId) }.getOrNull()
+                }
+                if (rc != null) {
+                    lastReadByOtherId = rc.lastReadId
+                    rvChat.post {
+                        messageAdapter.markReadByOtherUpTo(lastReadByOtherId)
+                    }
+                    Log.d("CHAT", "📥 상대방 마지막 읽음 위치 반영: ${rc.lastReadId}")
                 }
 
+                // ✅ 스크롤 + 내 읽음 처리
                 rvChat.post {
-                    // ✅ 마지막 메시지 위치로 스크롤
                     rvChat.scrollToPosition((messageAdapter.itemCount - 1).coerceAtLeast(0))
 
                     val lastId = messageAdapter.getLastIdOrNull()
@@ -322,10 +332,6 @@ class ChatRoomActivity : AppCompatActivity() {
                                 ApiProvider.api.markRead(rid, myUserId, lastId)
                             }.onSuccess {
                                 Log.d("CHAT", "입장 시 읽음 처리 성공: $lastId")
-
-                                // ✅ 여기서 바로 어댑터에 반영해야 함
-                                messageAdapter.markReadByOtherUpTo(lastId)   // ✅ 바로 UI 반영
-
                             }.onFailure { e ->
                                 Log.e("CHAT", "입장 시 읽음 처리 실패: ${e.message}", e)
                             }
@@ -341,6 +347,7 @@ class ChatRoomActivity : AppCompatActivity() {
                 isLoadingMore = false
             }
         }
+
 }
 
     private fun loadOlder() {

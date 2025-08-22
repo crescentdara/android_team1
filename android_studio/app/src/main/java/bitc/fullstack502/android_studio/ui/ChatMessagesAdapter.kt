@@ -117,23 +117,20 @@ class ChatMessagesAdapter(private val myUserId: String)
 
     /** 읽음 영수증: 상대 lastReadId 이하의 "내 메시지"를 모두 읽힘 처리 */
     fun markReadByOtherUpTo(lastReadId: Long) {
-        // 내 메시지 중 lastReadId 이하 찾기
-        var myMaxId = items
+        // 내 메시지 중 lastReadId 이하 id의 최댓값
+        val myMaxId = items
             .filterIsInstance<ChatItem.Msg>()
             .map { it.m }
             .filter { it.senderId == myUserId && (it.id ?: 0) > 0 && (it.id ?: 0) <= lastReadId }
             .maxOfOrNull { it.id ?: 0 }
 
-        // 못 찾았으면 → 그냥 내 메시지 중 가장 마지막 id 까지 읽었다고 처리
-        if (myMaxId == null) {
-            myMaxId = items
-                .filterIsInstance<ChatItem.Msg>()
-                .map { it.m }
-                .filter { it.senderId == myUserId && (it.id ?: 0) > 0 }
-                .maxOfOrNull { it.id ?: 0 }
-        }
+        val effectiveMaxId = myMaxId ?: items
+            .filterIsInstance<ChatItem.Msg>()
+            .map { it.m }
+            .filter { it.senderId == myUserId && (it.id ?: 0) > 0 }
+            .maxOfOrNull { it.id ?: 0 }
 
-        if (myMaxId == null) {
+        if (effectiveMaxId == null) {
             Log.d("CHAT", "❌ 읽을 내 메시지가 아예 없음")
             return
         }
@@ -145,7 +142,7 @@ class ChatMessagesAdapter(private val myUserId: String)
             if (row is ChatItem.Msg) {
                 val msg = row.m
                 val id = msg.id
-                if (msg.senderId == myUserId && id != null && id > 0 && id <= myMaxId && msg.readByOther != true) {
+                if (msg.senderId == myUserId && id != null && id > 0 && id <= effectiveMaxId && msg.readByOther != true) {
                     row.m = msg.copy(readByOther = true)
                     if (firstChanged == -1) firstChanged = idx
                     lastChanged = idx
@@ -154,10 +151,18 @@ class ChatMessagesAdapter(private val myUserId: String)
         }
 
         if (firstChanged != -1) {
-            notifyItemRangeChanged(firstChanged, lastChanged - firstChanged + 1, "read_receipt")
-            Log.d("CHAT", "✅ 내 메시지 갱신됨 upTo=$myMaxId (from server=$lastReadId)")
+            notifyItemRangeChanged(
+                firstChanged,
+                lastChanged - firstChanged + 1,
+                "read_receipt"   // ✅ payload 추가
+            )
+            Log.d("CHAT", "✅ 내 메시지 갱신됨 upTo=$effectiveMaxId (from server=$lastReadId)")
         }
+
+
     }
+
+
 
 
     /* ---------- 내부 로직 ---------- */
