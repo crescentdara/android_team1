@@ -382,4 +382,49 @@ class ChatMessagesAdapter(private val myUserId: String)
         }?.let { (it as ChatItem.Msg).m.id }
     }
 
+    /** ✅ 채팅방 입장 시, 해당 방의 모든 상대 메시지를 읽음 처리 */
+// ✅ 내가 받은 메시지 읽음 처리 (내 화면에서)
+    fun markAllAsRead(roomId: String, myUserId: String) {
+        var firstChanged = -1
+        var lastChanged = -1
+
+        items.forEachIndexed { idx, row ->
+            if (row is ChatItem.Msg) {
+                val m = row.m
+                if (m.roomId == roomId && m.senderId != myUserId && m.readByOther != true) {
+                    row.m = m.copy(readByOther = true)
+                    if (firstChanged == -1) firstChanged = idx
+                    lastChanged = idx
+                }
+            }
+        }
+
+        if (firstChanged != -1) {
+            notifyItemRangeChanged(firstChanged, lastChanged - firstChanged + 1, "read_receipt")
+        }
+    }
+
+    // ✅ 내가 보낸 메시지를 "상대가 읽음" 처리 (안읽음 배지 제거)
+    fun markAllMyMessagesRead(roomId: String, myUserId: String) {
+        var firstChanged = -1
+        var lastChanged = -1
+
+        items.forEachIndexed { idx, row ->
+            if (row is ChatItem.Msg) {
+                val m = row.m
+                if (m.roomId == roomId && m.senderId == myUserId && m.readByOther != true) {
+                    row.m = m.copy(readByOther = true)  // 상대가 읽은 걸로 표시
+                    if (firstChanged == -1) firstChanged = idx
+                    lastChanged = idx
+                }
+            }
+        }
+
+        if (firstChanged != -1) {
+            notifyItemRangeChanged(firstChanged, lastChanged - firstChanged + 1, "read_receipt")
+        }
+    }
+
+
+
 }

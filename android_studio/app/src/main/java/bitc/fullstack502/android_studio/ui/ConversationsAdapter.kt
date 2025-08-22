@@ -1,5 +1,6 @@
 package bitc.fullstack502.android_studio.ui
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -184,15 +185,19 @@ class ConversationsAdapter(
     /** 특정 roomId의 안읽음 배지를 0으로 만든다 */
     fun clearUnread(roomId: String) {
         val idx = items.indexOfFirst { it.roomId == roomId }
+        Log.d("CHAT", "clearUnread 호출됨, 찾은 idx=$idx, roomId=$roomId")
         if (idx == -1) return
 
         val cur = items[idx]
+        Log.d("CHAT", "기존 unreadCount=${cur.unreadCount}")
         if (cur.unreadCount == 0L) return
 
         val updated = cur.copy(unreadCount = 0)
         items[idx] = updated
         notifyItemChanged(idx, setOf("unread"))
+        Log.d("CHAT", "✅ $roomId unreadCount 0으로 갱신됨")
     }
+
 
 
 }

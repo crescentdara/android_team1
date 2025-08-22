@@ -69,11 +69,15 @@ class ChatRoomActivity : AppCompatActivity() {
                 ApiProvider.api.markRead(roomId, myUserId, lastId)
             }.onSuccess {
                 Log.d("CHAT", "읽음 처리 성공: $lastId")
+                runOnUiThread {
+                    messageAdapter.markAllAsRead(roomId, myUserId) // ✅ 성공 시만 UI 반영
+                }
             }.onFailure {
                 Log.e("CHAT", "읽음 처리 실패", it)
             }
         }
     }
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -95,7 +99,7 @@ class ChatRoomActivity : AppCompatActivity() {
 
         // ✅ stomp 초기화
         stomp = StompManager(serverUrl)
-        stomp.connectGlobal(myUserId)
+        // stomp.connectGlobal(myUserId)
 
         tvTitle = findViewById(R.id.tvTitle)
         rvChat = findViewById(R.id.rvChat)
@@ -195,12 +199,11 @@ class ChatRoomActivity : AppCompatActivity() {
         isActive = true
         ForegroundRoom.current = roomId
 
-        if (!::stomp.isInitialized) {
-            stomp = StompManager(serverUrl)
-        }
+        // ✅ 전역 stomp 연결은 ChatListActivity에서 이미 되어있음 → 방 구독만
         connectStomp()
 
         if (messageAdapter.itemCount == 0) {
+            // 히스토리 + 입장 시 읽음 처리
             loadHistoryAndMarkRead()
         } else {
             // ✅ 방에 들어오면 무조건 마지막 메시지까지 읽음 처리
@@ -214,54 +217,51 @@ class ChatRoomActivity : AppCompatActivity() {
         }
     }
 
+
     override fun onStop() {
         super.onStop()
         isActive = false
         ForegroundRoom.current = null
-        runCatching { stomp.disconnect() }
+
+        // ✅ 전체 연결 해제(X) → 현재 방 구독만 해제
+        runCatching {
+            stomp.unsubscribe("/topic/room.$roomId")
+            stomp.unsubscribe("/topic/room.$roomId.read")
+        }.onFailure { e ->
+            Log.e("CHAT", "구독 해제 실패: ${e.message}", e)
+        }
     }
 
+
     private fun connectStomp() {
-        stomp.connectGlobal(
-            userId = myUserId,
-            onConnected = {
-                stomp.subscribeTopic(
-                    "/topic/room.$roomId",
-                    onMessage = { payload ->
-                        val m = runCatching {
-                            gson.fromJson(payload, ChatMessage::class.java)
-                        }.getOrNull()
-                        if (m != null && m.roomId == roomId) {
-                            runOnUiThread { onIncoming(m) }
-                        }
-                    },
-                    onError = { err -> Log.e("CHAT", "room topic err: $err") }
-                )
-
-                stomp.subscribeTopic(
-                    "/topic/room.$roomId.read",
-                    onMessage = { payload ->
-                        val rc = runCatching {
-                            gson.fromJson(payload, ReadReceiptDTO::class.java)
-                        }.getOrNull()
-
-                        if (rc != null && rc.roomId == roomId && rc.userId != myUserId) {
-                            // ✅ 무조건 갱신
-                            lastReadByOtherId = rc.lastReadId
-                            Log.d("CHAT", "📥 read-receipt 적용: lastReadId=${rc.lastReadId}")
-                            runOnUiThread { messageAdapter.markReadByOtherUpTo(lastReadByOtherId) }
-                        }
-                    },
-                    onError = { err -> Log.e("CHAT", "read-receipt topic err: $err") }
-                )
-            },
-            onError = { err ->
-                Log.e("CHAT", "STOMP err: $err")
-                lifecycleScope.launch {
-                    delay(1500)
-                    if (isActive) connectStomp()
+        // ✅ 방 구독만 담당
+        stomp.subscribeTopic(
+            "/topic/room.$roomId",
+            onMessage = { payload ->
+                val m = runCatching {
+                    gson.fromJson(payload, ChatMessage::class.java)
+                }.getOrNull()
+                if (m != null && m.roomId == roomId) {
+                    runOnUiThread { onIncoming(m) }
                 }
-            }
+            },
+            onError = { err -> Log.e("CHAT", "room topic err: $err") }
+        )
+
+        stomp.subscribeTopic(
+            "/topic/room.$roomId.read",
+            onMessage = { payload ->
+                val rc = runCatching {
+                    gson.fromJson(payload, ReadReceiptDTO::class.java)
+                }.getOrNull()
+
+                if (rc != null && rc.roomId == roomId && rc.userId != myUserId) {
+                    lastReadByOtherId = rc.lastReadId
+                    Log.d("CHAT", "📥 read-receipt 적용: lastReadId=${rc.lastReadId}")
+                    runOnUiThread { messageAdapter.markReadByOtherUpTo(lastReadByOtherId) }
+                }
+            },
+            onError = { err -> Log.e("CHAT", "read-receipt topic err: $err") }
         )
     }
 
@@ -321,7 +321,7 @@ class ChatRoomActivity : AppCompatActivity() {
                     Log.d("CHAT", "📥 상대방 마지막 읽음 위치 반영: ${rc.lastReadId}")
                 }
 
-                // ✅ 스크롤 + 내 읽음 처리
+// ✅ 스크롤 + 내 읽음 처리
                 rvChat.post {
                     rvChat.scrollToPosition((messageAdapter.itemCount - 1).coerceAtLeast(0))
 
@@ -332,6 +332,11 @@ class ChatRoomActivity : AppCompatActivity() {
                                 ApiProvider.api.markRead(rid, myUserId, lastId)
                             }.onSuccess {
                                 Log.d("CHAT", "입장 시 읽음 처리 성공: $lastId")
+                                // ✅ ConversationsAdapterRef 제거 → 대신 결과에 roomId만 담기
+                                val intent = Intent().apply {
+                                    putExtra("CLEARED_ROOM_ID", rid)
+                                }
+                                setResult(RESULT_OK, intent)
                             }.onFailure { e ->
                                 Log.e("CHAT", "입장 시 읽음 처리 실패: ${e.message}", e)
                             }
@@ -340,6 +345,8 @@ class ChatRoomActivity : AppCompatActivity() {
                         Log.w("CHAT", "입장 시 읽음 처리 건너뜀 (lastId=null)")
                     }
                 }
+
+
 
             } catch (e: Exception) {
                 Log.e("CHAT", "history/read error: ${e.message}", e)
@@ -389,7 +396,7 @@ class ChatRoomActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        runCatching { stomp.disconnect() }
+        // ❌ disconnect() 제거
     }
 
     override fun finish() {
@@ -399,5 +406,13 @@ class ChatRoomActivity : AppCompatActivity() {
         setResult(RESULT_OK, intent)
         super.finish()
     }
+
+    private fun onReadEvent(receipt: ReadReceiptDTO) {
+        runOnUiThread {
+            // ✅ 내가 보낸 메시지를 모두 읽음 처리
+            messageAdapter.markAllMyMessagesRead(receipt.roomId, myUserId)
+        }
+    }
+
 
 }
