@@ -109,14 +109,20 @@ class ConversationsAdapter(
     override fun onBindViewHolder(h: VH, pos: Int) = h.bind(items[pos], onClick)
 
     override fun onBindViewHolder(h: VH, pos: Int, payloads: MutableList<Any>) {
-        if (payloads.isEmpty()) { onBindViewHolder(h, pos); return }
+        if (payloads.isEmpty()) {
+            onBindViewHolder(h, pos)
+            return
+        }
+
         val changed = payloads.flatMap { it as Set<*> }.toSet()
         val item = items[pos]
 
         if ("partner" in changed) h.tvPartner.text = item.partnerId
         if ("lastContent" in changed) h.tvLast.text = ellipsize1Line(item.lastContent)
         if ("lastAt" in changed) h.tvTime.text = formatTime(item.lastAt)
-        if ("unread" in changed) {
+
+        // ✅ unread + read_receipt 둘 다 처리
+        if ("unread" in changed || "read_receipt" in changed) {
             if (item.unreadCount > 0) {
                 h.badge.visibility = View.VISIBLE
                 h.badge.text = if (item.unreadCount > 99) "99+" else item.unreadCount.toString()
@@ -124,8 +130,10 @@ class ConversationsAdapter(
                 h.badge.visibility = View.GONE
             }
         }
+
         h.itemView.setOnClickListener { onClick(item) }
     }
+
 
     override fun getItemCount() = items.size
 
