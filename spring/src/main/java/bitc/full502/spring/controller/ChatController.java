@@ -67,10 +67,28 @@ public class ChatController {
         // ✅ 항상 클라가 보낸 lastReadId를 브로드캐스트에 담는다
         ReadReceiptDTO dto = new ReadReceiptDTO(roomId, userId, lastReadId, now);
 
+        log.info("📨 markRead: room={} user={} lastReadId={}", roomId, userId, lastReadId);
+
         messagingTemplate.convertAndSend("/topic/room." + roomId + ".read", dto);
 
         return dto;
     }
+
+    @GetMapping("/last-read")
+    public ReadReceiptDTO getLastRead(
+            @RequestParam String roomId,
+            @RequestParam String userId
+    ) {
+        ChatLastReadEntity e = lastReadRepo.findByRoomIdAndUserId(roomId, userId)
+                .orElseGet(() -> ChatLastReadEntity.builder()
+                        .roomId(roomId)
+                        .userId(userId)
+                        .lastReadId(0L)
+                        .build());
+        return new ReadReceiptDTO(e.getRoomId(), e.getUserId(), e.getLastReadId(), e.getLastReadAt());
+    }
+
+
 
 
 

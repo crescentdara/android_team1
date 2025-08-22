@@ -1,5 +1,6 @@
 package bitc.fullstack502.android_studio.ui
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -116,6 +117,27 @@ class ChatMessagesAdapter(private val myUserId: String)
 
     /** 읽음 영수증: 상대 lastReadId 이하의 "내 메시지"를 모두 읽힘 처리 */
     fun markReadByOtherUpTo(lastReadId: Long) {
+        // 내 메시지 중 lastReadId 이하 찾기
+        var myMaxId = items
+            .filterIsInstance<ChatItem.Msg>()
+            .map { it.m }
+            .filter { it.senderId == myUserId && (it.id ?: 0) > 0 && (it.id ?: 0) <= lastReadId }
+            .maxOfOrNull { it.id ?: 0 }
+
+        // 못 찾았으면 → 그냥 내 메시지 중 가장 마지막 id 까지 읽었다고 처리
+        if (myMaxId == null) {
+            myMaxId = items
+                .filterIsInstance<ChatItem.Msg>()
+                .map { it.m }
+                .filter { it.senderId == myUserId && (it.id ?: 0) > 0 }
+                .maxOfOrNull { it.id ?: 0 }
+        }
+
+        if (myMaxId == null) {
+            Log.d("CHAT", "❌ 읽을 내 메시지가 아예 없음")
+            return
+        }
+
         var firstChanged = -1
         var lastChanged = -1
 
@@ -123,19 +145,17 @@ class ChatMessagesAdapter(private val myUserId: String)
             if (row is ChatItem.Msg) {
                 val msg = row.m
                 val id = msg.id
-                // ✅ 내가 보낸 메시지 + 유효 ID + 아직 안 읽은 것만 업데이트
-                if (msg.senderId == myUserId && id != null && id > 0 && id <= lastReadId && msg.readByOther != true) {
+                if (msg.senderId == myUserId && id != null && id > 0 && id <= myMaxId && msg.readByOther != true) {
                     row.m = msg.copy(readByOther = true)
-
                     if (firstChanged == -1) firstChanged = idx
                     lastChanged = idx
                 }
             }
         }
 
-        // ✅ 바뀐 구간만 갱신
         if (firstChanged != -1) {
             notifyItemRangeChanged(firstChanged, lastChanged - firstChanged + 1, "read_receipt")
+            Log.d("CHAT", "✅ 내 메시지 갱신됨 upTo=$myMaxId (from server=$lastReadId)")
         }
     }
 

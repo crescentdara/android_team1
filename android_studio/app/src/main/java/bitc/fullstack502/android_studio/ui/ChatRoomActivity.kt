@@ -93,7 +93,7 @@ class ChatRoomActivity : AppCompatActivity() {
             finish(); return
         }
 
-        // ✅ 여기서 stomp 초기화 필수
+        // ✅ stomp 초기화
         stomp = StompManager(serverUrl)
         stomp.connectGlobal(myUserId)
 
@@ -136,15 +136,26 @@ class ChatRoomActivity : AppCompatActivity() {
             }
         })
 
-
         btnSend.setOnClickListener {
             val content = etMsg.text.toString().trim()
             if (content.isNotEmpty()) {
-                // ✅ myUserId는 어댑터 내부에서 이미 처리하므로 넘기지 않음
                 messageAdapter.addLocalEcho(content, roomId, partnerId)
                 rvChat.scrollToPosition(messageAdapter.itemCount - 1)
                 etMsg.setText("")
-                stomp.send(roomId, myUserId, partnerId, content) // 이건 그대로
+                stomp.send(roomId, myUserId, partnerId, content)
+            }
+        }
+
+        // ✅ 방 입장 시 상대방의 마지막 읽음 보정
+        lifecycleScope.launch {
+            val otherId = if (myUserId == partnerId) "" else partnerId  // 👉 여기 partnerId 쓰는 게 맞음
+            runCatching {
+                ApiProvider.api.getLastRead(roomId, otherId)
+            }.onSuccess { rc ->
+                lastReadByOtherId = rc.lastReadId
+                messageAdapter.markReadByOtherUpTo(lastReadByOtherId)
+            }.onFailure { err ->
+                Log.e("CHAT", "getLastRead 실패: ${err.message}")
             }
         }
 
@@ -154,15 +165,6 @@ class ChatRoomActivity : AppCompatActivity() {
             onMessage = { payload ->
                 Log.d("CHAT", "msg=$payload")
                 // TODO: payload -> ChatMessage 파싱 후 messageAdapter.addServerMessage() 호출
-            },
-            onError = { err -> Log.e("CHAT", "room sub error: $err") }
-        )
-
-        stomp.subscribeRoom(
-            roomId,
-            onMessage = { payload ->
-                Log.d("CHAT", "msg=$payload")
-                // TODO: payload 파싱해서 adapter.addServerMessage()
             },
             onError = { err -> Log.e("CHAT", "room sub error: $err") }
         )
@@ -179,6 +181,7 @@ class ChatRoomActivity : AppCompatActivity() {
             }
         }
     }
+
 
 
 
@@ -242,11 +245,10 @@ class ChatRoomActivity : AppCompatActivity() {
                             gson.fromJson(payload, ReadReceiptDTO::class.java)
                         }.getOrNull()
                         if (rc != null && rc.roomId == roomId && rc.userId != myUserId) {
-                            // ✅ lastReadId가 같아도 갱신하도록 수정
-                            if (rc.lastReadId >= lastReadByOtherId) {
-                                lastReadByOtherId = rc.lastReadId
-                                runOnUiThread { messageAdapter.markReadByOtherUpTo(lastReadByOtherId) }
-                            }
+                            // ✅ 무조건 갱신
+                            lastReadByOtherId = rc.lastReadId
+                            Log.d("CHAT", "📥 read-receipt 적용: lastReadId=${rc.lastReadId}")
+                            runOnUiThread { messageAdapter.markReadByOtherUpTo(lastReadByOtherId) }
                         }
                     },
                     onError = { err -> Log.e("CHAT", "read-receipt topic err: $err") }
@@ -390,7 +392,5 @@ class ChatRoomActivity : AppCompatActivity() {
         setResult(RESULT_OK, intent)
         super.finish()
     }
-
-
 
 }

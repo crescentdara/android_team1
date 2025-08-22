@@ -16,6 +16,7 @@ import bitc.fullstack502.android_studio.model.LodgingItem
 import bitc.fullstack502.android_studio.model.Flight
 import bitc.fullstack502.android_studio.model.BookingRequest
 import bitc.fullstack502.android_studio.model.BookingResponse
+import bitc.fullstack502.android_studio.model.ReadReceiptDTO
 import bitc.fullstack502.android_studio.network.dto.*
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -46,6 +47,11 @@ interface AppApi {
         @Query("lastReadId") lastReadId: Long   // ✅ 추가
     ): Response<Unit>
 
+    @GET("/api/chat/last-read")
+    suspend fun getLastRead(
+        @Query("roomId") roomId: String,
+        @Query("userId") userId: String
+    ): ReadReceiptDTO
 
     // ---------- Naver Local (서버 프록시) ----------
     @GET("/api/naver/local/nearby")
